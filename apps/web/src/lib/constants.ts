@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { OrderStatus } from "./types";
 
 // حالات الطلبات مع الألوان والنصوص العربية
@@ -50,6 +51,9 @@ export const MEDICINE_FORMS = [
   "بخاخ",
   "لبوس",
   "أخرى",
-];
+] as const;
 
-export type MedicineForm = (typeof MEDICINE_FORMS)[number];
+// Schema لشكل الدواء
+export const MedicineFormSchema = z.enum(MEDICINE_FORMS);
+
+export type MedicineForm = z.infer<typeof MedicineFormSchema>;

@@ -1,13 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { z } from "zod";
 import db from "@/lib/db";
-import type { Supplier, SupplierFormData } from "@/lib/types";
+import {
+  SupplierSchema,
+  SupplierFormDataSchema,
+  type Supplier,
+  type SupplierFormData,
+} from "@/lib/types";
 
 // Hook لجلب جميع الموردين
 export function useSuppliers() {
   return useQuery({
     queryKey: ["suppliers"],
-    queryFn: () => db.suppliers.getAll(),
+    queryFn: async (): Promise<Supplier[]> => {
+      const suppliers = await db.suppliers.getAll();
+      // التحقق من صحة البيانات
+      return z.array(SupplierSchema).parse(suppliers);
+    },
   });
 }
 
@@ -15,7 +25,12 @@ export function useSuppliers() {
 export function useSupplier(id: string) {
   return useQuery({
     queryKey: ["suppliers", id],
-    queryFn: () => db.suppliers.getById(id),
+    queryFn: async (): Promise<Supplier | null> => {
+      const supplier = await db.suppliers.getById(id);
+      if (!supplier) return null;
+      // التحقق من صحة البيانات
+      return SupplierSchema.parse(supplier);
+    },
     enabled: !!id,
   });
 }
@@ -24,7 +39,11 @@ export function useSupplier(id: string) {
 export function useSuggestedSuppliers(medicineName: string) {
   return useQuery({
     queryKey: ["suppliers", "suggested", medicineName],
-    queryFn: () => db.suppliers.findByMedicine(medicineName),
+    queryFn: async (): Promise<Supplier[]> => {
+      const suppliers = await db.suppliers.findByMedicine(medicineName);
+      // التحقق من صحة البيانات
+      return z.array(SupplierSchema).parse(suppliers);
+    },
     enabled: !!medicineName && medicineName.length > 2,
   });
 }
@@ -35,9 +54,12 @@ export function useCreateSupplier() {
 
   return useMutation({
     mutationFn: async (data: SupplierFormData) => {
+      // التحقق من صحة البيانات المدخلة
+      const validatedData = SupplierFormDataSchema.parse(data);
+
       const newSupplier: Supplier = {
         id: crypto.randomUUID(),
-        ...data,
+        ...validatedData,
         avgDeliveryDays: 3,
         rating: 3,
         totalOrders: 0,
@@ -45,7 +67,9 @@ export function useCreateSupplier() {
         updatedAt: new Date(),
       };
 
-      return await db.suppliers.create(newSupplier);
+      // التحقق من صحة المورد الكامل
+      const validatedSupplier = SupplierSchema.parse(newSupplier);
+      return await db.suppliers.create(validatedSupplier);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] });
@@ -53,7 +77,12 @@ export function useCreateSupplier() {
     },
     onError: (error) => {
       console.error("Error creating supplier:", error);
-      toast.error("فشل في إضافة المورد");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else {
+        toast.error("فشل في إضافة المورد");
+      }
     },
   });
 }
@@ -70,7 +99,9 @@ export function useUpdateSupplier() {
       id: string;
       data: Partial<SupplierFormData>;
     }) => {
-      return await db.suppliers.update(id, data);
+      // التحقق من صحة البيانات المدخلة
+      const validatedData = SupplierFormDataSchema.partial().parse(data);
+      return await db.suppliers.update(id, validatedData);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] });
@@ -79,7 +110,12 @@ export function useUpdateSupplier() {
     },
     onError: (error) => {
       console.error("Error updating supplier:", error);
-      toast.error("فشل في تحديث المورد");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else {
+        toast.error("فشل في تحديث المورد");
+      }
     },
   });
 }

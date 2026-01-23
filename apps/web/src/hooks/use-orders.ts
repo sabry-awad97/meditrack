@@ -1,13 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { z } from "zod";
 import db from "@/lib/db";
-import type { Order, OrderFormData, OrderStatus } from "@/lib/types";
+import {
+  OrderSchema,
+  OrderFormDataSchema,
+  OrderStatusSchema,
+  type Order,
+  type OrderFormData,
+  type OrderStatus,
+} from "@/lib/types";
 
 // Hook لجلب جميع الطلبات
 export function useOrders() {
   return useQuery({
     queryKey: ["orders"],
-    queryFn: () => db.orders.getAll(),
+    queryFn: async (): Promise<Order[]> => {
+      const orders = await db.orders.getAll();
+      // التحقق من صحة البيانات
+      return z.array(OrderSchema).parse(orders);
+    },
   });
 }
 
@@ -15,7 +27,12 @@ export function useOrders() {
 export function useOrder(id: string) {
   return useQuery({
     queryKey: ["orders", id],
-    queryFn: () => db.orders.getById(id),
+    queryFn: async (): Promise<Order | null> => {
+      const order = await db.orders.getById(id);
+      if (!order) return null;
+      // التحقق من صحة البيانات
+      return OrderSchema.parse(order);
+    },
     enabled: !!id,
   });
 }
@@ -26,21 +43,26 @@ export function useCreateOrder() {
 
   return useMutation({
     mutationFn: async (data: OrderFormData) => {
+      // التحقق من صحة البيانات المدخلة
+      const validatedData = OrderFormDataSchema.parse(data);
+
       const newOrder: Order = {
         id: crypto.randomUUID(),
-        customerName: data.customerName,
-        phoneNumber: data.phoneNumber,
-        medicines: data.medicines.map((m) => ({
+        customerName: validatedData.customerName,
+        phoneNumber: validatedData.phoneNumber,
+        medicines: validatedData.medicines.map((m) => ({
           ...m,
           id: crypto.randomUUID(),
         })),
         status: "pending",
-        notes: data.notes,
+        notes: validatedData.notes,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      return await db.orders.create(newOrder);
+      // التحقق من صحة الطلب الكامل
+      const validatedOrder = OrderSchema.parse(newOrder);
+      return await db.orders.create(validatedOrder);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -48,7 +70,12 @@ export function useCreateOrder() {
     },
     onError: (error) => {
       console.error("Error creating order:", error);
-      toast.error("فشل في إضافة الطلب");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else {
+        toast.error("فشل في إضافة الطلب");
+      }
     },
   });
 }
@@ -59,14 +86,17 @@ export function useUpdateOrder() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: OrderFormData }) => {
+      // التحقق من صحة البيانات المدخلة
+      const validatedData = OrderFormDataSchema.parse(data);
+
       return await db.orders.update(id, {
-        customerName: data.customerName,
-        phoneNumber: data.phoneNumber,
-        medicines: data.medicines.map((m) => ({
+        customerName: validatedData.customerName,
+        phoneNumber: validatedData.phoneNumber,
+        medicines: validatedData.medicines.map((m) => ({
           ...m,
           id: crypto.randomUUID(),
         })),
-        notes: data.notes,
+        notes: validatedData.notes,
       });
     },
     onSuccess: (_, variables) => {
@@ -76,7 +106,12 @@ export function useUpdateOrder() {
     },
     onError: (error) => {
       console.error("Error updating order:", error);
-      toast.error("فشل في تحديث الطلب");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else {
+        toast.error("فشل في تحديث الطلب");
+      }
     },
   });
 }
@@ -87,7 +122,9 @@ export function useUpdateOrderStatus() {
 
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: OrderStatus }) => {
-      return await db.orders.update(id, { status });
+      // التحقق من صحة الحالة
+      const validatedStatus = OrderStatusSchema.parse(status);
+      return await db.orders.update(id, { status: validatedStatus });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -96,7 +133,12 @@ export function useUpdateOrderStatus() {
     },
     onError: (error) => {
       console.error("Error updating order status:", error);
-      toast.error("فشل في تغيير حالة الطلب");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else {
+        toast.error("فشل في تغيير حالة الطلب");
+      }
     },
   });
 }
