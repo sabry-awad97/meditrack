@@ -10,6 +10,8 @@ import {
   Star,
   TrendingUp,
   Users,
+  Database,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,8 @@ import {
   useCreateSupplier,
   useUpdateSupplier,
   useDeleteSupplier,
+  useSeedData,
+  useClearData,
 } from "@/hooks";
 import type { Supplier, SupplierFormData } from "@/lib/types";
 import {
@@ -60,6 +64,8 @@ export const Route = createFileRoute("/suppliers")({
 
 function SuppliersPage() {
   const { data: suppliers = [], isLoading } = useSuppliers();
+  const seedData = useSeedData();
+  const clearData = useClearData();
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -67,6 +73,9 @@ function SuppliersPage() {
     null,
   );
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
+
+  // التحقق من وضع التطوير
+  const isDev = import.meta.env.DEV;
 
   // تصفية الموردين
   const filteredSuppliers = useMemo(() => {
@@ -141,6 +150,32 @@ function SuppliersPage() {
           </PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
+          {isDev && (
+            <>
+              <Button
+                onClick={() => seedData.mutate()}
+                disabled={seedData.isPending}
+                variant="outline"
+                size="lg"
+                className="gap-2"
+              >
+                <Database className="h-5 w-5" />
+                {seedData.isPending ? "جاري الإضافة..." : "بيانات تجريبية"}
+              </Button>
+              {suppliers.length > 0 && (
+                <Button
+                  onClick={() => clearData.mutate()}
+                  disabled={clearData.isPending}
+                  variant="outline"
+                  size="lg"
+                  className="gap-2 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-5 w-5" />
+                  {clearData.isPending ? "جاري الحذف..." : "حذف الكل"}
+                </Button>
+              )}
+            </>
+          )}
           <Button onClick={handleOpenCreateForm} size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
             إضافة مورد جديد

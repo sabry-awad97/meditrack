@@ -8,6 +8,8 @@ import {
   CheckCircle,
   TruckIcon,
   ListOrdered,
+  Database,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +45,8 @@ import {
   useUpdateOrder,
   useUpdateOrderStatus,
   useOrderAlerts,
+  useSeedData,
+  useClearData,
 } from "@/hooks";
 import type { Order, OrderFormData, OrderStatus } from "@/lib/types";
 
@@ -56,9 +60,14 @@ function PharmacyComponent() {
   const createOrder = useCreateOrder();
   const updateOrder = useUpdateOrder();
   const updateOrderStatus = useUpdateOrderStatus();
+  const seedData = useSeedData();
+  const clearData = useClearData();
 
   // تفعيل التنبيهات التلقائية
   useOrderAlerts();
+
+  // التحقق من وضع التطوير
+  const isDev = import.meta.env.DEV;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all" | null>(
@@ -160,6 +169,32 @@ function PharmacyComponent() {
           </PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
+          {isDev && (
+            <>
+              <Button
+                onClick={() => seedData.mutate()}
+                disabled={seedData.isPending}
+                variant="outline"
+                size="lg"
+                className="gap-2"
+              >
+                <Database className="h-5 w-5" />
+                {seedData.isPending ? "جاري الإضافة..." : "بيانات تجريبية"}
+              </Button>
+              {orders.length > 0 && (
+                <Button
+                  onClick={() => clearData.mutate()}
+                  disabled={clearData.isPending}
+                  variant="outline"
+                  size="lg"
+                  className="gap-2 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-5 w-5" />
+                  {clearData.isPending ? "جاري الحذف..." : "حذف الكل"}
+                </Button>
+              )}
+            </>
+          )}
           <Button
             onClick={handleOpenCreateForm}
             size="lg"

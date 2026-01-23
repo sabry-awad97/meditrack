@@ -20,3 +20,6 @@ export {
 
 // Hooks للتنبيهات
 export { useOrderAlerts, useAlertStats } from "./use-order-alerts";
+
+// Hooks للبيانات التجريبية
+export { useSeedData, useClearData } from "./use-seed-data";
