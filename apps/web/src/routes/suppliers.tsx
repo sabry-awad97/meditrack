@@ -39,6 +39,7 @@ import {
   useDeleteSupplier,
   useSeedData,
   useClearData,
+  useSettings,
 } from "@/hooks";
 import type { Supplier, SupplierFormData } from "@/lib/types";
 import {
@@ -66,6 +67,10 @@ function SuppliersPage() {
   const { data: suppliers = [], isLoading } = useSuppliers();
   const seedData = useSeedData();
   const clearData = useClearData();
+
+  // جلب الإعدادات
+  const { data: settings } = useSettings();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -74,8 +79,8 @@ function SuppliersPage() {
   );
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
 
-  // التحقق من وضع التطوير
-  const isDev = import.meta.env.DEV;
+  // التحقق من وضع التطوير (من الإعدادات)
+  const isDev = settings?.enableDevMode ?? import.meta.env.DEV;
 
   // تصفية الموردين
   const filteredSuppliers = useMemo(() => {
@@ -431,6 +436,10 @@ function SupplierFormDialog({
   const createSupplier = useCreateSupplier();
   const updateSupplier = useUpdateSupplier();
 
+  // جلب الإعدادات
+  const { data: settings } = useSettings();
+  const emailRequired = settings?.requireSupplierEmail ?? false;
+
   const [formData, setFormData] = useState<SupplierFormData>({
     name: "",
     phone: "",
@@ -570,7 +579,12 @@ function SupplierFormDialog({
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  البريد الإلكتروني (اختياري)
+                  البريد الإلكتروني{" "}
+                  {emailRequired ? (
+                    <span className="text-destructive">*</span>
+                  ) : (
+                    "(اختياري)"
+                  )}
                 </label>
                 <Input
                   type="email"
@@ -581,6 +595,7 @@ function SupplierFormDialog({
                   placeholder="example@company.com"
                   className="text-right"
                   dir="ltr"
+                  required={emailRequired}
                 />
               </div>
 

@@ -22,6 +22,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { MEDICINE_FORMS } from "@/lib/constants";
+import { useSettings } from "@/hooks";
 import type { Order, OrderFormData } from "@/lib/types";
 
 interface OrderFormProps {
@@ -47,6 +48,9 @@ export function OrderForm({
   initialData,
   mode,
 }: OrderFormProps) {
+  // جلب الإعدادات
+  const { data: settings } = useSettings();
+
   const [customerName, setCustomerName] = useState(
     initialData?.customerName || "",
   );
@@ -71,6 +75,11 @@ export function OrderForm({
       },
     ],
   );
+
+  // الحصول على أشكال الأدوية المسموحة من الإعدادات
+  const allowedForms = settings?.allowedMedicineForms || MEDICINE_FORMS;
+  const phoneRequired = settings?.requireCustomerPhone ?? true;
+  const maxMedicines = settings?.maxMedicinesPerOrder ?? 10;
 
   const handleAddMedicine = () => {
     setMedicines([
@@ -174,7 +183,12 @@ export function OrderForm({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">رقم الهاتف</Label>
+                  <Label htmlFor="phoneNumber">
+                    رقم الهاتف
+                    {phoneRequired && (
+                      <span className="text-destructive mr-1">*</span>
+                    )}
+                  </Label>
                   <Input
                     id="phoneNumber"
                     type="tel"
@@ -183,6 +197,7 @@ export function OrderForm({
                     placeholder="05xxxxxxxx"
                     dir="ltr"
                     className="text-left"
+                    required={phoneRequired}
                   />
                 </div>
               </div>
@@ -198,6 +213,12 @@ export function OrderForm({
                   size="sm"
                   onClick={handleAddMedicine}
                   className="gap-2"
+                  disabled={medicines.length >= maxMedicines}
+                  title={
+                    medicines.length >= maxMedicines
+                      ? `الحد الأقصى ${maxMedicines} أدوية`
+                      : undefined
+                  }
                 >
                   <Plus className="h-4 w-4" />
                   إضافة دواء
@@ -297,7 +318,7 @@ export function OrderForm({
                             <SelectValue placeholder="اختر الشكل الصيدلي" />
                           </SelectTrigger>
                           <SelectContent>
-                            {MEDICINE_FORMS.map((form) => (
+                            {allowedForms.map((form: string) => (
                               <SelectItem key={form} value={form}>
                                 {form}
                               </SelectItem>

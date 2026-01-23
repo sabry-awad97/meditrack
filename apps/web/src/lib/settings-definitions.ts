@@ -326,18 +326,18 @@ export const SETTINGS_CATEGORIES = {
 } as const;
 
 // الحصول على القيمة الافتراضية لإعداد معين
-export function getDefaultValue(key: string): any {
+export function getDefaultValue(key: string): unknown {
   const setting = SETTINGS_DEFINITIONS.find((s) => s.key === key);
   return setting?.defaultValue;
 }
 
 // الحصول على جميع القيم الافتراضية
-export function getAllDefaultValues(): Record<string, any> {
+export function getAllDefaultValues(): Record<string, unknown> {
   return SETTINGS_DEFINITIONS.reduce(
     (acc, setting) => {
       acc[setting.key] = setting.defaultValue;
       return acc;
     },
-    {} as Record<string, any>,
+    {} as Record<string, unknown>,
   );
 }

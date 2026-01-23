@@ -47,6 +47,7 @@ import {
   useOrderAlerts,
   useSeedData,
   useClearData,
+  useSettings,
 } from "@/hooks";
 import type { Order, OrderFormData, OrderStatus } from "@/lib/types";
 
@@ -63,15 +64,18 @@ function PharmacyComponent() {
   const seedData = useSeedData();
   const clearData = useClearData();
 
-  // تفعيل التنبيهات التلقائية
-  useOrderAlerts();
+  // جلب الإعدادات
+  const { data: settings } = useSettings();
 
-  // التحقق من وضع التطوير
-  const isDev = import.meta.env.DEV;
+  // تفعيل التنبيهات التلقائية (حسب الإعدادات)
+  useOrderAlerts(settings?.enableAlerts);
+
+  // التحقق من وضع التطوير (من الإعدادات)
+  const isDev = settings?.enableDevMode ?? import.meta.env.DEV;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all" | null>(
-    null,
+    settings?.defaultOrderStatus || null,
   );
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);

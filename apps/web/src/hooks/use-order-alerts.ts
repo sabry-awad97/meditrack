@@ -6,10 +6,13 @@ import { useOrders } from "./use-orders";
  * Hook للتنبيهات التلقائية للطلبات
  * يفحص الطلبات كل ساعة ويعرض تنبيهات للطلبات التي تحتاج متابعة
  */
-export function useOrderAlerts() {
+export function useOrderAlerts(enabled: boolean = true) {
   const { data: orders = [] } = useOrders();
 
   useEffect(() => {
+    // إذا كانت التنبيهات معطلة، لا تفعل شيء
+    if (!enabled) return;
+
     const checkAlerts = () => {
       const now = new Date();
 
@@ -56,7 +59,7 @@ export function useOrderAlerts() {
     const interval = setInterval(checkAlerts, 60 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [orders]);
+  }, [orders, enabled]);
 }
 
 /**

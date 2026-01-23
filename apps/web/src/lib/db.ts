@@ -172,13 +172,13 @@ export const db = {
     },
 
     // جلب قيمة إعداد واحد
-    async get(key: string): Promise<any | null> {
+    async get(key: string): Promise<unknown | null> {
       const setting = await settingsDB.getItem<Setting>(key);
       return setting?.value ?? null;
     },
 
     // حفظ أو تحديث إعداد
-    async set(key: string, value: any): Promise<Setting> {
+    async set(key: string, value: unknown): Promise<Setting> {
       const setting: Setting = {
         id: key,
         key,
@@ -190,7 +190,7 @@ export const db = {
     },
 
     // حفظ عدة إعدادات دفعة واحدة
-    async setMany(settings: Record<string, any>): Promise<void> {
+    async setMany(settings: Record<string, unknown>): Promise<void> {
       const promises = Object.entries(settings).map(([key, value]) =>
         this.set(key, value),
       );

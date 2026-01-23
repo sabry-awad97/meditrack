@@ -92,7 +92,7 @@ function SettingsPage() {
   const exportSettings = useExportSettings();
   const importSettings = useImportSettings();
 
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [activeTab, setActiveTab] = useState<SettingCategory>("general");
   const [hasChanges, setHasChanges] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
@@ -102,7 +102,7 @@ function SettingsPage() {
     setFormData(settings);
   }
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
   };
@@ -286,8 +286,8 @@ function SettingsPage() {
 // مكون حقل الإعداد
 interface SettingFieldProps {
   setting: SettingDefinition;
-  value: any;
-  onChange: (value: any) => void;
+  value: unknown;
+  onChange: (value: unknown) => void;
 }
 
 function SettingField({ setting, value, onChange }: SettingFieldProps) {
@@ -296,9 +296,13 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
       case "text":
         return (
           <Input
-            value={value || ""}
+            value={typeof value === "string" ? value : ""}
             onChange={(e) => onChange(e.target.value)}
-            placeholder={setting.defaultValue}
+            placeholder={
+              typeof setting.defaultValue === "string"
+                ? setting.defaultValue
+                : ""
+            }
             className="text-right"
             dir="rtl"
           />
@@ -308,7 +312,13 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
         return (
           <Input
             type="number"
-            value={value ?? setting.defaultValue}
+            value={
+              typeof value === "number"
+                ? value
+                : typeof setting.defaultValue === "number"
+                  ? setting.defaultValue
+                  : 0
+            }
             onChange={(e) => onChange(Number(e.target.value))}
             min={setting.min}
             max={setting.max}
@@ -319,7 +329,13 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
       case "boolean":
         return (
           <Switch
-            checked={value ?? setting.defaultValue}
+            checked={
+              typeof value === "boolean"
+                ? value
+                : typeof setting.defaultValue === "boolean"
+                  ? setting.defaultValue
+                  : false
+            }
             onCheckedChange={onChange}
           />
         );
@@ -327,7 +343,13 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
       case "select":
         return (
           <Select
-            value={value || setting.defaultValue}
+            value={
+              typeof value === "string"
+                ? value
+                : typeof setting.defaultValue === "string"
+                  ? setting.defaultValue
+                  : ""
+            }
             onValueChange={onChange}
             items={setting.options || []}
           >

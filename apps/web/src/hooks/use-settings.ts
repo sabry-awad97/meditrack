@@ -1,27 +1,40 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { z } from "zod";
 import db from "@/lib/db";
 import {
   SETTINGS_DEFINITIONS,
   getAllDefaultValues,
 } from "@/lib/settings-definitions";
-import type { SettingsFormData } from "@/lib/types-settings";
+import {
+  SettingsSchema,
+  PartialSettingsSchema,
+  type Settings,
+  type PartialSettings,
+} from "@/lib/types-settings";
 
 // Hook لجلب جميع الإعدادات
 export function useSettings() {
   return useQuery({
     queryKey: ["settings"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Settings> => {
       const settings = await db.settings.getAll();
       const defaults = getAllDefaultValues();
 
       // دمج القيم المحفوظة مع القيم الافتراضية
-      const merged: Record<string, any> = { ...defaults };
+      const merged: Record<string, unknown> = { ...defaults };
       settings.forEach((setting) => {
         merged[setting.key] = setting.value;
       });
 
-      return merged;
+      // التحقق من صحة البيانات باستخدام Zod
+      try {
+        return SettingsSchema.parse(merged);
+      } catch (error) {
+        console.error("Settings validation error:", error);
+        // إرجاع القيم الافتراضية في حالة فشل التحقق
+        return SettingsSchema.parse(defaults);
+      }
     },
   });
 }
@@ -30,7 +43,7 @@ export function useSettings() {
 export function useSetting(key: string) {
   return useQuery({
     queryKey: ["settings", key],
-    queryFn: async () => {
+    queryFn: async (): Promise<unknown> => {
       const value = await db.settings.get(key);
       if (value !== null) return value;
 
@@ -47,7 +60,20 @@ export function useUpdateSetting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ key, value }: { key: string; value: any }) => {
+    mutationFn: async ({ key, value }: { key: string; value: unknown }) => {
+      // التحقق من صحة القيمة حسب نوع الإعداد
+      const definition = SETTINGS_DEFINITIONS.find((s) => s.key === key);
+      if (definition?.validation) {
+        const validationResult = definition.validation(value);
+        if (validationResult !== true) {
+          throw new Error(
+            typeof validationResult === "string"
+              ? validationResult
+              : "قيمة غير صالحة",
+          );
+        }
+      }
+
       return await db.settings.set(key, value);
     },
     onSuccess: (_, variables) => {
@@ -57,7 +83,9 @@ export function useUpdateSetting() {
     },
     onError: (error) => {
       console.error("Error updating setting:", error);
-      toast.error("فشل في حفظ الإعداد");
+      toast.error(
+        error instanceof Error ? error.message : "فشل في حفظ الإعداد",
+      );
     },
   });
 }
@@ -67,9 +95,11 @@ export function useUpdateSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (settings: SettingsFormData) => {
-      await db.settings.setMany(settings);
-      return settings;
+    mutationFn: async (settings: PartialSettings) => {
+      // التحقق من صحة البيانات باستخدام Zod
+      const validated = PartialSettingsSchema.parse(settings);
+      await db.settings.setMany(validated);
+      return validated;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
@@ -77,7 +107,12 @@ export function useUpdateSettings() {
     },
     onError: (error) => {
       console.error("Error updating settings:", error);
-      toast.error("فشل في حفظ الإعدادات");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else {
+        toast.error("فشل في حفظ الإعدادات");
+      }
     },
   });
 }
@@ -87,11 +122,12 @@ export function useResetSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<Settings> => {
       await db.settings.clear();
       const defaults = getAllDefaultValues();
-      await db.settings.setMany(defaults);
-      return defaults;
+      const validated = SettingsSchema.parse(defaults);
+      await db.settings.setMany(validated);
+      return validated;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
@@ -136,19 +172,28 @@ export function useImportSettings() {
   return useMutation({
     mutationFn: async (file: File) => {
       const text = await file.text();
-      const settings = JSON.parse(text);
+      const data = JSON.parse(text);
 
       // التحقق من صحة البيانات
-      if (!Array.isArray(settings)) {
-        throw new Error("Invalid settings format");
+      if (!Array.isArray(data)) {
+        throw new Error("صيغة الملف غير صالحة");
       }
+
+      // تحويل المصفوفة إلى كائن
+      const settingsObj: Record<string, unknown> = {};
+      for (const setting of data) {
+        if (setting.key && setting.value !== undefined) {
+          settingsObj[setting.key] = setting.value;
+        }
+      }
+
+      // التحقق من صحة البيانات باستخدام Zod
+      const validated = PartialSettingsSchema.parse(settingsObj);
 
       // حفظ الإعدادات
-      for (const setting of settings) {
-        await db.settings.set(setting.key, setting.value);
-      }
+      await db.settings.setMany(validated);
 
-      return settings;
+      return validated;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
@@ -156,7 +201,14 @@ export function useImportSettings() {
     },
     onError: (error) => {
       console.error("Error importing settings:", error);
-      toast.error("فشل في استيراد الإعدادات");
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        toast.error(`خطأ في التحقق: ${firstError.message}`);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("فشل في استيراد الإعدادات");
+      }
     },
   });
 }
