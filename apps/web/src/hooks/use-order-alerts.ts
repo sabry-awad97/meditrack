@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useOrders } from "./use-orders";
+import { useOrders } from "./use-orders-db";
+import type { Order } from "@/lib/types";
 
 /**
  * Hook للتنبيهات التلقائية للطلبات
@@ -16,7 +17,7 @@ export function useOrderAlerts(enabled: boolean = true) {
     const checkAlerts = () => {
       const now = new Date();
 
-      orders.forEach((order) => {
+      orders.forEach((order: Order) => {
         const daysSinceCreated =
           (now.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -70,19 +71,19 @@ export function useAlertStats() {
 
   const now = new Date();
 
-  const oldOrders = orders.filter((order) => {
+  const oldOrders = orders.filter((order: Order) => {
     const days =
       (now.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24);
     return days > 7 && order.status === "pending";
   }).length;
 
-  const notPickedUp = orders.filter((order) => {
+  const notPickedUp = orders.filter((order: Order) => {
     const days =
       (now.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24);
     return days > 3 && order.status === "arrived";
   }).length;
 
-  const delayed = orders.filter((order) => {
+  const delayed = orders.filter((order: Order) => {
     const days =
       (now.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24);
     return days > 5 && order.status === "ordered";

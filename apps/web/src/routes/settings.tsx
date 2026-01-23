@@ -67,7 +67,9 @@ import {
 import {
   SETTINGS_DEFINITIONS,
   SETTINGS_CATEGORIES,
+  getAllDefaultValues,
 } from "@/lib/settings-definitions";
+import type { Settings } from "@/lib/types-settings";
 import type { SettingCategory, SettingDefinition } from "@/lib/types-settings";
 
 export const Route = createFileRoute("/settings")({
@@ -117,8 +119,10 @@ function SettingsPage() {
 
   const handleResetConfirm = () => {
     resetSettings.mutate(undefined, {
-      onSuccess: (defaults) => {
-        setFormData(defaults);
+      onSuccess: () => {
+        // Reload settings after reset
+        const defaults = getAllDefaultValues();
+        setFormData(defaults as Settings);
         setHasChanges(false);
         setShowResetDialog(false);
       },
@@ -166,7 +170,6 @@ function SettingsPage() {
             size="lg"
             className="gap-2"
             onClick={handleImport}
-            disabled={importSettings.isPending}
           >
             <Upload className="h-5 w-5" />
             استيراد
@@ -176,7 +179,6 @@ function SettingsPage() {
             size="lg"
             className="gap-2"
             onClick={handleExport}
-            disabled={exportSettings.isPending}
           >
             <Download className="h-5 w-5" />
             تصدير
@@ -186,7 +188,6 @@ function SettingsPage() {
             size="lg"
             className="gap-2 text-destructive hover:text-destructive"
             onClick={() => setShowResetDialog(true)}
-            disabled={resetSettings.isPending}
           >
             <RotateCcw className="h-5 w-5" />
             إعادة تعيين
@@ -195,10 +196,10 @@ function SettingsPage() {
             size="lg"
             className="gap-2"
             onClick={handleSave}
-            disabled={!hasChanges || updateSettings.isPending}
+            disabled={!hasChanges}
           >
             <Save className="h-5 w-5" />
-            {updateSettings.isPending ? "جاري الحفظ..." : "حفظ التغييرات"}
+            حفظ التغييرات
           </Button>
         </PageHeaderActions>
       </PageHeader>

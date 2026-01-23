@@ -41,7 +41,7 @@ describe("useSettings", () => {
 
     const { result } = renderHook(() => useSettings(), { wrapper });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.data?.pharmacyName).toBe("صيدلية الاختبار");
   });
 });

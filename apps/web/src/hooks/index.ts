@@ -1,14 +1,20 @@
-// Hooks للطلبات
+// Hooks للطلبات (TanStack DB)
 export {
   useOrders,
   useOrder,
+  useOrdersByStatus,
+  useActiveOrders,
+  useSearchOrders,
+  useOrderStatistics,
   useCreateOrder,
   useUpdateOrder,
   useUpdateOrderStatus,
   useDeleteOrder,
-} from "./use-orders";
+  ordersCollection,
+  orderKeys,
+} from "./use-orders-db";
 
-// Hooks للموردين
+// Hooks للموردين (TanStack DB)
 export {
   useSuppliers,
   useSupplier,
@@ -16,7 +22,9 @@ export {
   useCreateSupplier,
   useUpdateSupplier,
   useDeleteSupplier,
-} from "./use-suppliers";
+  suppliersCollection,
+  supplierKeys,
+} from "./use-suppliers-db";
 
 // Hooks للتنبيهات
 export { useOrderAlerts, useAlertStats } from "./use-order-alerts";
@@ -33,4 +41,4 @@ export {
   useResetSettings,
   useExportSettings,
   useImportSettings,
-} from "./use-settings";
+} from "./use-settings-db";

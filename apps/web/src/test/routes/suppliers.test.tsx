@@ -3,7 +3,6 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { render } from "@/test/utils";
 import { mockSuppliers, mockSettings } from "@/test/mockData";
-import type { UseQueryResult } from "@tanstack/react-query";
 import type { Supplier } from "@/lib/types";
 import type { Settings } from "@/lib/types-settings";
 
@@ -30,24 +29,23 @@ describe("Suppliers Page", () => {
     vi.mocked(useSettings).mockReturnValue({
       data: mockSettings,
       isLoading: false,
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
     vi.mocked(useSeedData).mockReturnValue({
       mutate: vi.fn(),
-      isPending: false,
     } as any);
 
     vi.mocked(useClearData).mockReturnValue({
       mutate: vi.fn(),
-      isPending: false,
     } as any);
   });
 
   it("should display loading state", () => {
     vi.mocked(useSuppliers).mockReturnValue({
-      data: undefined,
+      data: [] as any,
       isLoading: true,
-    } as unknown as UseQueryResult<Supplier[], Error>);
+      isError: false,
+    });
 
     render(<SuppliersPage />);
 
@@ -58,7 +56,8 @@ describe("Suppliers Page", () => {
     vi.mocked(useSuppliers).mockReturnValue({
       data: mockSuppliers,
       isLoading: false,
-    } as unknown as UseQueryResult<Supplier[], Error>);
+      isError: false,
+    });
 
     render(<SuppliersPage />);
 
@@ -72,7 +71,8 @@ describe("Suppliers Page", () => {
     vi.mocked(useSuppliers).mockReturnValue({
       data: [],
       isLoading: false,
-    } as unknown as UseQueryResult<Supplier[], Error>);
+      isError: false,
+    });
 
     render(<SuppliersPage />);
 
@@ -83,7 +83,8 @@ describe("Suppliers Page", () => {
     vi.mocked(useSuppliers).mockReturnValue({
       data: mockSuppliers,
       isLoading: false,
-    } as unknown as UseQueryResult<Supplier[], Error>);
+      isError: false,
+    });
 
     render(<SuppliersPage />);
 
@@ -99,7 +100,8 @@ describe("Suppliers Page", () => {
     vi.mocked(useSuppliers).mockReturnValue({
       data: mockSuppliers,
       isLoading: false,
-    } as unknown as UseQueryResult<Supplier[], Error>);
+      isError: false,
+    });
 
     render(<SuppliersPage />);
 

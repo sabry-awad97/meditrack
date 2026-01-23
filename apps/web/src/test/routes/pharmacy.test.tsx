@@ -3,8 +3,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { render } from "@/test/utils";
 import { mockOrders, mockSettings } from "@/test/mockData";
-import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import type { Order, OrderFormData } from "@/lib/types";
+import type { Order } from "@/lib/types";
 import type { Settings } from "@/lib/types-settings";
 
 // Mock hooks
@@ -37,18 +36,15 @@ const PharmacyComponent = Route.options.component!;
 describe("Pharmacy Page", () => {
   const mockCreateOrder = {
     mutate: vi.fn(),
-    isPending: false,
-  } as unknown as UseMutationResult<Order, Error, OrderFormData>;
+  };
 
   const mockSeedData = {
     mutate: vi.fn(),
-    isPending: false,
-  } as any;
+  };
 
   const mockClearData = {
     mutate: vi.fn(),
-    isPending: false,
-  } as any;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -59,18 +55,19 @@ describe("Pharmacy Page", () => {
     vi.mocked(useSettings).mockReturnValue({
       data: mockSettings,
       isLoading: false,
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
-    vi.mocked(useCreateOrder).mockReturnValue(mockCreateOrder);
-    vi.mocked(useSeedData).mockReturnValue(mockSeedData);
-    vi.mocked(useClearData).mockReturnValue(mockClearData);
+    vi.mocked(useCreateOrder).mockReturnValue(mockCreateOrder as any);
+    vi.mocked(useSeedData).mockReturnValue(mockSeedData as any);
+    vi.mocked(useClearData).mockReturnValue(mockClearData as any);
   });
 
   it("should display loading state", () => {
     vi.mocked(useOrders).mockReturnValue({
-      data: undefined,
+      data: [] as any,
       isLoading: true,
-    } as unknown as UseQueryResult<Order[], Error>);
+      isError: false,
+    });
 
     render(<PharmacyComponent />);
 
@@ -80,18 +77,15 @@ describe("Pharmacy Page", () => {
   it("should display orders list", async () => {
     // Override settings to not filter by default
     vi.mocked(useSettings).mockReturnValue({
-      data: { ...mockSettings, defaultOrderStatus: null },
+      data: { ...mockSettings, defaultOrderStatus: null as any },
       isLoading: false,
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -104,18 +98,15 @@ describe("Pharmacy Page", () => {
   it("should display empty state when no orders", () => {
     // Override settings to not filter by default
     vi.mocked(useSettings).mockReturnValue({
-      data: { ...mockSettings, defaultOrderStatus: null },
+      data: { ...mockSettings, defaultOrderStatus: null as any },
       isLoading: false,
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
     vi.mocked(useOrders).mockReturnValue({
       data: [],
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -127,11 +118,8 @@ describe("Pharmacy Page", () => {
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -149,11 +137,8 @@ describe("Pharmacy Page", () => {
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -172,11 +157,8 @@ describe("Pharmacy Page", () => {
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -196,18 +178,15 @@ describe("Pharmacy Page", () => {
 
     // Override settings to not filter by default
     vi.mocked(useSettings).mockReturnValue({
-      data: { ...mockSettings, defaultOrderStatus: null },
+      data: { ...mockSettings, defaultOrderStatus: null as any },
       isLoading: false,
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -239,20 +218,13 @@ describe("Pharmacy Page", () => {
     vi.mocked(useSettings).mockReturnValue({
       data: { ...mockSettings, enableDevMode: true },
       isLoading: false,
-      isSuccess: true,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
@@ -264,20 +236,13 @@ describe("Pharmacy Page", () => {
     vi.mocked(useSettings).mockReturnValue({
       data: { ...mockSettings, enableDevMode: false },
       isLoading: false,
-      isSuccess: true,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Settings, Error>);
+    } as any);
 
     vi.mocked(useOrders).mockReturnValue({
       data: mockOrders,
       isLoading: false,
-      isSuccess: true,
       isError: false,
-      error: null,
-      refetch: vi.fn(),
-    } as unknown as UseQueryResult<Order[], Error>);
+    });
 
     render(<PharmacyComponent />);
 
