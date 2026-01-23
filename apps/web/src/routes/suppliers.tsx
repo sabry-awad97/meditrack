@@ -26,16 +26,10 @@ import {
   PageHeaderActions,
   PageContent,
   PageContentInner,
+  PageSection,
 } from "@/components/ui/page";
 import { Loading } from "@/components/ui/loading";
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
-} from "@/components/ui/empty";
+import { StatsCard } from "@/components/pharmacy/stats-card";
 import {
   useSuppliers,
   useCreateSupplier,
@@ -158,59 +152,34 @@ function SuppliersPage() {
         <PageContentInner className="flex-1 flex flex-col min-h-0">
           {/* الإحصائيات */}
           {suppliers.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6 shrink-0">
-              <Card className="border-2 border-dashed hover:border-solid transition-all">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    إجمالي الموردين
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.total}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-dashed hover:border-solid transition-all">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    متوسط التقييم
-                  </CardTitle>
-                  <Star className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {stats.avgRating} / 5
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-dashed hover:border-solid transition-all">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    متوسط التوصيل
-                  </CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {stats.avgDeliveryDays} أيام
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-dashed hover:border-solid transition-all">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    إجمالي الطلبات
-                  </CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalOrders}</div>
-                </CardContent>
-              </Card>
-            </div>
+            <PageSection className="mb-6 border-b-2 border-dashed pb-6 shrink-0">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatsCard
+                  title="إجمالي الموردين"
+                  value={stats.total}
+                  icon={Users}
+                  color="bg-blue-500"
+                />
+                <StatsCard
+                  title="متوسط التقييم"
+                  value={stats.avgRating}
+                  icon={Star}
+                  color="bg-yellow-500"
+                />
+                <StatsCard
+                  title="متوسط التوصيل"
+                  value={stats.avgDeliveryDays}
+                  icon={TrendingUp}
+                  color="bg-green-500"
+                />
+                <StatsCard
+                  title="إجمالي الطلبات"
+                  value={stats.totalOrders}
+                  icon={Package}
+                  color="bg-purple-500"
+                />
+              </div>
+            </PageSection>
           )}
 
           {/* البحث */}
@@ -221,54 +190,50 @@ function SuppliersPage() {
                 placeholder="ابحث باسم المورد أو رقم الهاتف أو الدواء..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10 text-right border-2 border-dashed focus:border-solid"
+                className="pr-10 text-right"
               />
             </div>
           )}
 
           {/* قائمة الموردين */}
-          {filteredSuppliers.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <Empty className="border-2 border-dashed rounded-lg p-8">
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Package className="h-8 w-8" />
-                  </EmptyMedia>
-                  <EmptyTitle>
+          <div className="flex-1 min-h-0">
+            {filteredSuppliers.length === 0 ? (
+              <div className="h-full flex items-center justify-center border border-dashed rounded-lg">
+                <div className="text-center p-12">
+                  <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">
                     {searchQuery
                       ? "لم يتم العثور على موردين"
                       : "لا يوجد موردين"}
-                  </EmptyTitle>
-                  <EmptyDescription>
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
                     {searchQuery
                       ? "جرب البحث بكلمات مختلفة"
-                      : "ابدأ بإضافة مورد جديد لإدارة الطلبات الخاصة"}
-                  </EmptyDescription>
-                </EmptyHeader>
-                {!searchQuery && (
-                  <EmptyContent>
+                      : "ابدأ بإضافة مورد جديد"}
+                  </p>
+                  {!searchQuery && (
                     <Button onClick={handleOpenCreateForm} className="gap-2">
                       <Plus className="h-4 w-4" />
                       إضافة مورد جديد
                     </Button>
-                  </EmptyContent>
-                )}
-              </Empty>
-            </div>
-          ) : (
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 pb-4">
-                {filteredSuppliers.map((supplier) => (
-                  <SupplierCard
-                    key={supplier.id}
-                    supplier={supplier}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleOpenDelete}
-                  />
-                ))}
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="h-full overflow-y-auto pb-6">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredSuppliers.map((supplier) => (
+                    <SupplierCard
+                      key={supplier.id}
+                      supplier={supplier}
+                      onEdit={handleOpenEditForm}
+                      onDelete={handleOpenDelete}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </PageContentInner>
       </PageContent>
 
