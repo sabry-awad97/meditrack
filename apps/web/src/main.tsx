@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { AppProviders } from "./providers";
 import { routeTree } from "./routeTree.gen";
 import { Loading } from "./components/ui/loading";
+import { UpdateDialog } from "./components/update-dialog";
 
 const router = createRouter({
   routeTree,
@@ -29,6 +30,7 @@ if (!rootElement.innerHTML) {
   root.render(
     <AppProviders>
       <RouterProvider router={router} />
+      <UpdateDialog />
     </AppProviders>,
   );
 }

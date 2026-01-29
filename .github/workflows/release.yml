@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install frontend dependencies
+        run: bun install
+
+      - name: Build the app
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: bun run desktop:build
+        working-directory: apps/web
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            apps/web/src-tauri/target/release/bundle/nsis/*.nsis.zip
+            apps/web/src-tauri/target/release/bundle/nsis/*.nsis.zip.sig
+            apps/web/src-tauri/target/release/bundle/macos/*.app.tar.gz
+            apps/web/src-tauri/target/release/bundle/macos/*.app.tar.gz.sig
+            apps/web/src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz
+            apps/web/src-tauri/target/release/bundle/appimage/*.AppImage.tar.gz.sig
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-update-json:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Download release assets
+        uses: robinraju/release-downloader@v1.8
+        with:
+          tag: ${{ github.ref_name }}
+          fileName: "*.sig"
+          out-file-path: "signatures"
+
+      - name: Create latest.json
+        run: |
+          # Read signatures
+          WIN_SIG=$(cat signatures/*x64-setup.nsis.zip.sig 2>/dev/null || echo "")
+          LINUX_SIG=$(cat signatures/*amd64.AppImage.tar.gz.sig 2>/dev/null || echo "")
+          MAC_X64_SIG=$(cat signatures/*x64.app.tar.gz.sig 2>/dev/null || echo "")
+          MAC_ARM_SIG=$(cat signatures/*aarch64.app.tar.gz.sig 2>/dev/null || echo "")
+
+          # Create JSON
+          cat > latest.json << EOF
+          {
+            "version": "${{ steps.version.outputs.VERSION }}",
+            "notes": "Release ${{ steps.version.outputs.VERSION }}",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "windows-x86_64": {
+                "signature": "${WIN_SIG}",
+                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_x64-setup.nsis.zip"
+              },
+              "linux-x86_64": {
+                "signature": "${LINUX_SIG}",
+                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_amd64.AppImage.tar.gz"
+              },
+              "darwin-x86_64": {
+                "signature": "${MAC_X64_SIG}",
+                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_x64.app.tar.gz"
+              },
+              "darwin-aarch64": {
+                "signature": "${MAC_ARM_SIG}",
+                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_aarch64.app.tar.gz"
+              }
+            }
+          }
+          EOF
+
+      - name: Upload latest.json to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: latest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

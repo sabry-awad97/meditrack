@@ -71,6 +71,7 @@ import {
 } from "@/lib/settings-definitions";
 import type { Settings } from "@/lib/types-settings";
 import type { SettingCategory, SettingDefinition } from "@/lib/types-settings";
+import { ManualUpdateCheck } from "@/components/manual-update-check";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -225,7 +226,7 @@ function SettingsPage() {
 
             <div className="flex-1 min-h-0 overflow-y-auto pb-6">
               {Object.entries(SETTINGS_CATEGORIES).map(([key, category]) => (
-                <TabsContent key={key} value={key} className="mt-0">
+                <TabsContent key={key} value={key} className="mt-0 space-y-6">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -252,6 +253,9 @@ function SettingsPage() {
                       ))}
                     </CardContent>
                   </Card>
+
+                  {/* Add update check component in system tab */}
+                  {key === "system" && <ManualUpdateCheck />}
                 </TabsContent>
               ))}
             </div>

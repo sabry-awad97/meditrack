@@ -42,3 +42,6 @@ export {
   useExportSettings,
   useImportSettings,
 } from "./use-settings-db";
+
+// Hooks للتحديثات
+export { useAppUpdater } from "./use-app-updater";
