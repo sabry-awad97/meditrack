@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "notes": "Initial release with auto-updater support\n\n## Features\n- Complete pharmacy order management system\n- Order tracking with multiple status states\n- Supplier management\n- Smart alerts and notifications\n- Statistics dashboard\n- Dark/Light theme support\n- RTL (Arabic) support\n- Automatic updates",
+  "pub_date": "2026-01-29T12:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSWU1pekt4c1Ywc2dtenRwTUVKRWlPSjhXUWNnQ0UxSFZDRmc0V25TN0VSUk1kM2Q5NjlXWVlRL25IOHkxSTIvcXAreHZEQTdqZ2NOVkRmWTA1QWVnenFNKzRwU3Y1YkFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY5NzE2MTc2CWZpbGU6bWVkaS1vcmRlcl8wLjEuMF94NjQtc2V0dXAuZXhlCjBVS2QxM0lWQS84clo4d2xnbXQzUnpnbFpwZnllSlpqUXFtWWVZRUZtTWF3N2l0d0x4M0JIWGhheEpFdXNWbEJpL3l4dUZybnhmVWxtanB5dHJXMENRPT0K",
+      "url": "https://github.com/sabry-awad97/medi-order/releases/download/v0.1.0/medi-order_0.1.0_x64-setup.exe"
+    }
+  }
+}

@@ -40,7 +40,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRCRTQzNEUxREI0NDcxRTMKUldUamNVVGI0VFRrUzRSVk1HamxLWFoxSWU1Z2FFN3RkZWZTSkpCbStOeUUvUXBwd3RpbEpNK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIyNzRDNUM2Q0EyQzMyNTgKUldSWU1pekt4c1Ywc2pDWmsrV1ZZcDhoUnBtSTl0NDBPRGgwb0ppczhSLzUrR25ZNkFxNU5tU0cK",
       "endpoints": [
         "https://github.com/sabry-awad97/medi-order/releases/latest/download/latest.json"
       ],
