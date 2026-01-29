@@ -1,0 +1,44 @@
+{
+  "title": "Suppliers",
+  "createSupplier": "Create Supplier",
+  "editSupplier": "Edit Supplier",
+  "viewSupplier": "View Supplier",
+  "supplierDetails": "Supplier Details",
+  "supplierList": "Supplier List",
+  "noSuppliers": "No suppliers found",
+  "fields": {
+    "name": "Supplier Name",
+    "phone": "Phone Number",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "address": "Address",
+    "commonMedicines": "Common Medicines",
+    "avgDeliveryDays": "Average Delivery Days",
+    "rating": "Rating",
+    "totalOrders": "Total Orders",
+    "notes": "Notes",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
+  },
+  "actions": {
+    "deleteSupplier": "Delete Supplier",
+    "contactSupplier": "Contact Supplier"
+  },
+  "messages": {
+    "supplierCreated": "Supplier created successfully",
+    "supplierUpdated": "Supplier updated successfully",
+    "supplierDeleted": "Supplier deleted successfully",
+    "confirmDelete": "Are you sure you want to delete this supplier?"
+  },
+  "stats": {
+    "totalSuppliers": "Total Suppliers",
+    "activeSuppliers": "Active Suppliers",
+    "topRated": "Top Rated"
+  },
+  "performance": {
+    "excellent": "Excellent",
+    "good": "Good",
+    "average": "Average",
+    "poor": "Poor"
+  }
+}

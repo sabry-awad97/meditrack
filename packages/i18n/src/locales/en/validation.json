@@ -1,0 +1,39 @@
+{
+  "errors": {
+    "required": "{{field}} is required",
+    "email": "Invalid email address",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be at most {{max}} characters",
+    "min": "Must be at least {{min}}",
+    "max": "Must be at most {{max}}",
+    "pattern": "Invalid format",
+    "custom": "Validation failed",
+    "invalid_type": "Invalid type",
+    "invalid_string": "Invalid string",
+    "too_small": "Value is too small",
+    "too_big": "Value is too big",
+    "invalid_enum_value": "Invalid value",
+    "positive": "Must be a positive number",
+    "nonnegative": "Must be a non-negative number",
+    "uuid": "Must be a valid UUID"
+  },
+  "fields": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "phone": "Phone number",
+    "address": "Address",
+    "customerName": "Customer name",
+    "phoneNumber": "Phone number",
+    "medicineName": "Medicine name",
+    "concentration": "Concentration",
+    "form": "Pharmaceutical form",
+    "quantity": "Quantity",
+    "supplierName": "Supplier name",
+    "whatsapp": "WhatsApp",
+    "commonMedicines": "Common medicines",
+    "avgDeliveryDays": "Average delivery days",
+    "rating": "Rating",
+    "notes": "Notes"
+  }
+}

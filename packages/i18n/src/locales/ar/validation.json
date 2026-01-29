@@ -1,0 +1,39 @@
+{
+  "errors": {
+    "required": "{{field}} مطلوب",
+    "email": "البريد الإلكتروني غير صالح",
+    "minLength": "يجب أن يكون {{min}} أحرف على الأقل",
+    "maxLength": "يجب أن يكون {{max}} أحرف على الأكثر",
+    "min": "يجب أن يكون {{min}} على الأقل",
+    "max": "يجب أن يكون {{max}} على الأكثر",
+    "pattern": "تنسيق غير صالح",
+    "custom": "فشل التحقق",
+    "invalid_type": "نوع غير صالح",
+    "invalid_string": "نص غير صالح",
+    "too_small": "القيمة صغيرة جداً",
+    "too_big": "القيمة كبيرة جداً",
+    "invalid_enum_value": "قيمة غير صالحة",
+    "positive": "يجب أن يكون رقماً موجباً",
+    "nonnegative": "يجب أن يكون رقماً غير سالب",
+    "uuid": "يجب أن يكون UUID صالحاً"
+  },
+  "fields": {
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "الاسم",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "customerName": "اسم العميل",
+    "phoneNumber": "رقم الهاتف",
+    "medicineName": "اسم الدواء",
+    "concentration": "التركيز",
+    "form": "الشكل الصيدلي",
+    "quantity": "الكمية",
+    "supplierName": "اسم المورد",
+    "whatsapp": "واتساب",
+    "commonMedicines": "الأدوية الشائعة",
+    "avgDeliveryDays": "متوسط أيام التوصيل",
+    "rating": "التقييم",
+    "notes": "ملاحظات"
+  }
+}

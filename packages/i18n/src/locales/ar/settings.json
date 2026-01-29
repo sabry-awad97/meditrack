@@ -1,0 +1,42 @@
+{
+  "title": "الإعدادات",
+  "general": "الإعدادات العامة",
+  "appearance": "المظهر",
+  "language": "اللغة",
+  "notifications": "الإشعارات",
+  "about": "حول",
+  "fields": {
+    "theme": "السمة",
+    "language": "اللغة",
+    "timezone": "المنطقة الزمنية",
+    "dateFormat": "تنسيق التاريخ",
+    "timeFormat": "تنسيق الوقت",
+    "currency": "العملة"
+  },
+  "theme": {
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "النظام"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية"
+  },
+  "messages": {
+    "settingsSaved": "تم حفظ الإعدادات بنجاح",
+    "settingsReset": "تم إعادة تعيين الإعدادات",
+    "confirmReset": "هل أنت متأكد من إعادة تعيين جميع الإعدادات؟"
+  },
+  "actions": {
+    "saveSettings": "حفظ الإعدادات",
+    "resetSettings": "إعادة تعيين الإعدادات",
+    "exportData": "تصدير البيانات",
+    "importData": "استيراد البيانات"
+  },
+  "about": {
+    "version": "الإصدار",
+    "buildDate": "تاريخ البناء",
+    "license": "الترخيص",
+    "credits": "الشكر والتقدير"
+  }
+}

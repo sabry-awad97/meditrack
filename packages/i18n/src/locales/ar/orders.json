@@ -1,0 +1,52 @@
+{
+  "title": "الطلبات",
+  "createOrder": "إنشاء طلب",
+  "editOrder": "تعديل طلب",
+  "viewOrder": "عرض طلب",
+  "orderDetails": "تفاصيل الطلب",
+  "orderList": "قائمة الطلبات",
+  "noOrders": "لا توجد طلبات",
+  "fields": {
+    "customerName": "اسم العميل",
+    "phoneNumber": "رقم الهاتف",
+    "medicines": "الأدوية",
+    "status": "الحالة",
+    "notes": "ملاحظات",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث"
+  },
+  "status": {
+    "pending": "قيد الانتظار",
+    "ordered": "تم الطلب",
+    "arrived": "وصل",
+    "delivered": "تم التسليم",
+    "cancelled": "ملغي"
+  },
+  "medicine": {
+    "name": "اسم الدواء",
+    "concentration": "التركيز",
+    "form": "الشكل الصيدلي",
+    "quantity": "الكمية",
+    "addMedicine": "إضافة دواء",
+    "removeMedicine": "إزالة دواء",
+    "noMedicines": "لم يتم إضافة أدوية"
+  },
+  "actions": {
+    "changeStatus": "تغيير الحالة",
+    "deleteOrder": "حذف الطلب",
+    "duplicateOrder": "نسخ الطلب"
+  },
+  "messages": {
+    "orderCreated": "تم إنشاء الطلب بنجاح",
+    "orderUpdated": "تم تحديث الطلب بنجاح",
+    "orderDeleted": "تم حذف الطلب بنجاح",
+    "statusChanged": "تم تغيير الحالة بنجاح",
+    "confirmDelete": "هل أنت متأكد من حذف هذا الطلب؟"
+  },
+  "stats": {
+    "totalOrders": "إجمالي الطلبات",
+    "pendingOrders": "الطلبات المعلقة",
+    "completedOrders": "الطلبات المكتملة",
+    "cancelledOrders": "الطلبات الملغاة"
+  }
+}

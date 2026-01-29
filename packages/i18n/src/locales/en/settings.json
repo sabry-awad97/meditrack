@@ -1,0 +1,42 @@
+{
+  "title": "Settings",
+  "general": "General Settings",
+  "appearance": "Appearance",
+  "language": "Language",
+  "notifications": "Notifications",
+  "about": "About",
+  "fields": {
+    "theme": "Theme",
+    "language": "Language",
+    "timezone": "Timezone",
+    "dateFormat": "Date Format",
+    "timeFormat": "Time Format",
+    "currency": "Currency"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "Arabic"
+  },
+  "messages": {
+    "settingsSaved": "Settings saved successfully",
+    "settingsReset": "Settings reset to defaults",
+    "confirmReset": "Are you sure you want to reset all settings?"
+  },
+  "actions": {
+    "saveSettings": "Save Settings",
+    "resetSettings": "Reset Settings",
+    "exportData": "Export Data",
+    "importData": "Import Data"
+  },
+  "about": {
+    "version": "Version",
+    "buildDate": "Build Date",
+    "license": "License",
+    "credits": "Credits"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "الموردين",
+  "createSupplier": "إضافة مورد",
+  "editSupplier": "تعديل مورد",
+  "viewSupplier": "عرض مورد",
+  "supplierDetails": "تفاصيل المورد",
+  "supplierList": "قائمة الموردين",
+  "noSuppliers": "لا يوجد موردين",
+  "fields": {
+    "name": "اسم المورد",
+    "phone": "رقم الهاتف",
+    "whatsapp": "واتساب",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "commonMedicines": "الأدوية الشائعة",
+    "avgDeliveryDays": "متوسط أيام التوصيل",
+    "rating": "التقييم",
+    "totalOrders": "إجمالي الطلبات",
+    "notes": "ملاحظات",
+    "createdAt": "تاريخ الإضافة",
+    "updatedAt": "تاريخ التحديث"
+  },
+  "actions": {
+    "deleteSupplier": "حذف المورد",
+    "contactSupplier": "التواصل مع المورد"
+  },
+  "messages": {
+    "supplierCreated": "تم إضافة المورد بنجاح",
+    "supplierUpdated": "تم تحديث المورد بنجاح",
+    "supplierDeleted": "تم حذف المورد بنجاح",
+    "confirmDelete": "هل أنت متأكد من حذف هذا المورد؟"
+  },
+  "stats": {
+    "totalSuppliers": "إجمالي الموردين",
+    "activeSuppliers": "الموردين النشطين",
+    "topRated": "الأعلى تقييماً"
+  },
+  "performance": {
+    "excellent": "ممتاز",
+    "good": "جيد",
+    "average": "متوسط",
+    "poor": "ضعيف"
+  }
+}

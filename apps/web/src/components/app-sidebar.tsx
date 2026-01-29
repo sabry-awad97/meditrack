@@ -11,6 +11,7 @@ import {
   Bell,
   Moon,
   Sun,
+  Languages,
 } from "lucide-react";
 
 import {
@@ -37,6 +38,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTheme } from "@/components/theme-provider";
 import { useAlertStats } from "@/hooks";
+import { useLocale, LOCALES } from "@medi-order/i18n";
 
 // عناصر القائمة الرئيسية
 const mainMenuItems = [
@@ -83,6 +85,7 @@ export function AppSidebar() {
   const currentPath = routerState.location.pathname;
   const { theme, setTheme } = useTheme();
   const { data: alertStats } = useAlertStats();
+  const { locale, setLocale } = useLocale();
 
   const totalAlerts =
     (alertStats?.oldOrders || 0) +
@@ -191,6 +194,24 @@ export function AppSidebar() {
                   )}
                   <span className="flex-1 text-right">
                     {theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => setLocale(locale === "ar" ? "en" : "ar")}
+                  tooltip={
+                    state === "collapsed"
+                      ? locale === "ar"
+                        ? "English"
+                        : "العربية"
+                      : undefined
+                  }
+                  className="flex items-center gap-2"
+                >
+                  <Languages className="shrink-0 size-4" />
+                  <span className="flex-1 text-right">
+                    {LOCALES[locale === "ar" ? "en" : "ar"].nativeName}
                   </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
