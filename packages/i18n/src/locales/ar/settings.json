@@ -1,42 +1,20 @@
 {
   "title": "الإعدادات",
-  "general": "الإعدادات العامة",
-  "appearance": "المظهر",
-  "language": "اللغة",
-  "notifications": "الإشعارات",
-  "about": "حول",
-  "fields": {
-    "theme": "السمة",
-    "language": "اللغة",
-    "timezone": "المنطقة الزمنية",
-    "dateFormat": "تنسيق التاريخ",
-    "timeFormat": "تنسيق الوقت",
-    "currency": "العملة"
-  },
-  "theme": {
-    "light": "فاتح",
-    "dark": "داكن",
+  "description": "إدارة إعدادات النظام والتفضيلات",
+  "loadingSettings": "جاري تحميل الإعدادات...",
+  "saveChanges": "حفظ التغييرات",
+  "import": "استيراد",
+  "export": "تصدير",
+  "resetTitle": "إعادة تعيين الإعدادات",
+  "resetDescription": "هل أنت متأكد من إعادة تعيين جميع الإعدادات إلى القيم الافتراضية؟ سيتم فقدان جميع التخصيصات الحالية.",
+  "categories": {
+    "general": "عام",
+    "orders": "الطلبات",
+    "suppliers": "الموردين",
+    "alerts": "التنبيهات",
+    "notifications": "الإشعارات",
+    "appearance": "المظهر",
     "system": "النظام"
   },
-  "languages": {
-    "en": "English",
-    "ar": "العربية"
-  },
-  "messages": {
-    "settingsSaved": "تم حفظ الإعدادات بنجاح",
-    "settingsReset": "تم إعادة تعيين الإعدادات",
-    "confirmReset": "هل أنت متأكد من إعادة تعيين جميع الإعدادات؟"
-  },
-  "actions": {
-    "saveSettings": "حفظ الإعدادات",
-    "resetSettings": "إعادة تعيين الإعدادات",
-    "exportData": "تصدير البيانات",
-    "importData": "استيراد البيانات"
-  },
-  "about": {
-    "version": "الإصدار",
-    "buildDate": "تاريخ البناء",
-    "license": "الترخيص",
-    "credits": "الشكر والتقدير"
-  }
+  "multiselect": "متعدد الاختيار (قيد التطوير)"
 }

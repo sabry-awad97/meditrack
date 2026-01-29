@@ -8,6 +8,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { I18nProvider } from "@medi-order/i18n";
 
 // Create a custom render function that includes providers
 function createTestQueryClient() {
@@ -34,7 +35,9 @@ function AllTheProviders({ children, queryClient }: AllTheProvidersProps) {
 
   return (
     <QueryClientProvider client={client}>
-      <SidebarProvider>{children}</SidebarProvider>
+      <I18nProvider>
+        <SidebarProvider>{children}</SidebarProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

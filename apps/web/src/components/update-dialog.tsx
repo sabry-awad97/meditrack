@@ -11,8 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Download, AlertCircle } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 export function UpdateDialog() {
+  const { t } = useTranslation();
   const {
     update,
     checking,
@@ -32,10 +34,10 @@ export function UpdateDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Download className="h-5 w-5" />
-            تحديث متاح
+            {t("update.available")}
           </DialogTitle>
           <DialogDescription>
-            إصدار جديد {update.version} متاح للتنزيل
+            {t("update.newVersion", { version: update.version })}
           </DialogDescription>
         </DialogHeader>
 
@@ -47,7 +49,9 @@ export function UpdateDialog() {
 
         {update.date && (
           <p className="text-xs text-muted-foreground">
-            تاريخ الإصدار: {new Date(update.date).toLocaleDateString("ar-EG")}
+            {t("update.releaseDate", {
+              date: new Date(update.date).toLocaleDateString("ar-EG"),
+            })}
           </p>
         )}
 
@@ -62,7 +66,9 @@ export function UpdateDialog() {
           <div className="space-y-2">
             <Progress value={downloadProgress} />
             <p className="text-sm text-muted-foreground text-center">
-              جاري التنزيل... {Math.round(downloadProgress)}%
+              {t("update.downloadProgress", {
+                progress: Math.round(downloadProgress),
+              })}
             </p>
           </div>
         )}
@@ -73,13 +79,13 @@ export function UpdateDialog() {
             onClick={() => window.location.reload()}
             disabled={downloading || checking}
           >
-            لاحقاً
+            {t("update.later")}
           </Button>
           <Button
             onClick={downloadAndInstall}
             disabled={downloading || checking}
           >
-            {downloading ? "جاري التنزيل..." : "تحديث الآن"}
+            {downloading ? t("update.downloading") : t("update.updateNow")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,44 +1,58 @@
 {
   "title": "الموردين",
-  "createSupplier": "إضافة مورد",
-  "editSupplier": "تعديل مورد",
-  "viewSupplier": "عرض مورد",
-  "supplierDetails": "تفاصيل المورد",
-  "supplierList": "قائمة الموردين",
+  "description": "إدارة قائمة الموردين والتواصل معهم",
+  "addSupplier": "إضافة مورد جديد",
+  "searchPlaceholder": "ابحث باسم المورد أو رقم الهاتف أو الدواء...",
   "noSuppliers": "لا يوجد موردين",
-  "fields": {
-    "name": "اسم المورد",
-    "phone": "رقم الهاتف",
-    "whatsapp": "واتساب",
-    "email": "البريد الإلكتروني",
-    "address": "العنوان",
-    "commonMedicines": "الأدوية الشائعة",
-    "avgDeliveryDays": "متوسط أيام التوصيل",
-    "rating": "التقييم",
-    "totalOrders": "إجمالي الطلبات",
-    "notes": "ملاحظات",
-    "createdAt": "تاريخ الإضافة",
-    "updatedAt": "تاريخ التحديث"
-  },
-  "actions": {
-    "deleteSupplier": "حذف المورد",
-    "contactSupplier": "التواصل مع المورد"
-  },
-  "messages": {
-    "supplierCreated": "تم إضافة المورد بنجاح",
-    "supplierUpdated": "تم تحديث المورد بنجاح",
-    "supplierDeleted": "تم حذف المورد بنجاح",
-    "confirmDelete": "هل أنت متأكد من حذف هذا المورد؟"
-  },
+  "noSuppliersFound": "لم يتم العثور على موردين",
+  "startAdding": "ابدأ بإضافة مورد جديد",
+  "tryDifferentSearch": "جرب البحث بكلمات مختلفة",
+  "loadingSuppliers": "جاري تحميل الموردين...",
+  "testData": "بيانات تجريبية",
+  "deleteAll": "حذف الكل",
   "stats": {
-    "totalSuppliers": "إجمالي الموردين",
-    "activeSuppliers": "الموردين النشطين",
-    "topRated": "الأعلى تقييماً"
+    "total": "إجمالي الموردين",
+    "avgRating": "متوسط التقييم",
+    "avgDelivery": "متوسط التوصيل",
+    "totalOrders": "إجمالي الطلبات"
   },
-  "performance": {
-    "excellent": "ممتاز",
-    "good": "جيد",
-    "average": "متوسط",
-    "poor": "ضعيف"
+  "card": {
+    "call": "اتصال",
+    "whatsapp": "واتساب",
+    "email": "بريد",
+    "avgDeliveryDays": "متوسط التوصيل: {{days}} أيام",
+    "orderCount": "عدد الطلبات: {{count}}",
+    "availableMedicines": "الأدوية المتوفرة:",
+    "notes": "ملاحظات:",
+    "edit": "تعديل",
+    "delete": "حذف"
+  },
+  "form": {
+    "addTitle": "إضافة مورد جديد",
+    "editTitle": "تعديل المورد",
+    "basicInfo": "المعلومات الأساسية",
+    "supplierName": "اسم المورد",
+    "supplierNamePlaceholder": "مثال: شركة الدواء المتحدة",
+    "phone": "رقم الهاتف",
+    "phonePlaceholder": "01xxxxxxxx",
+    "whatsapp": "واتساب (اختياري)",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "example@company.com",
+    "address": "العنوان (اختياري)",
+    "addressPlaceholder": "الرياض، حي النخيل",
+    "availableMedicines": "الأدوية المتوفرة",
+    "medicineName": "اسم الدواء",
+    "addMedicine": "إضافة",
+    "notes": "ملاحظات (اختياري)",
+    "notesPlaceholder": "أي ملاحظات إضافية عن المورد...",
+    "submit": "إضافة المورد",
+    "update": "حفظ التعديلات",
+    "cancel": "إلغاء"
+  },
+  "delete": {
+    "title": "تأكيد حذف المورد",
+    "description": "هل أنت متأكد من حذف المورد \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "cancel": "إلغاء",
+    "confirm": "حذف"
   }
 }

@@ -1,0 +1,48 @@
+{
+  "title": "التقارير والإحصائيات",
+  "description": "تحليل شامل لأداء الطلبات الخاصة",
+  "loadingReports": "جاري تحميل التقارير...",
+  "noData": "لا توجد بيانات للتقارير",
+  "noDataDescription": "ابدأ بإضافة طلبات لعرض التقارير والإحصائيات",
+  "mainStats": {
+    "totalOrders": "إجمالي الطلبات",
+    "totalMedicines": "دواء إجمالاً",
+    "avgDeliveryTime": "متوسط وقت التسليم",
+    "days": "أيام",
+    "forCompleted": "للطلبات المكتملة",
+    "completionRate": "معدل الإنجاز",
+    "of": "من",
+    "order": "طلب",
+    "suppliersCount": "عدد الموردين",
+    "activeSupplier": "مورد نشط"
+  },
+  "topMedicines": {
+    "title": "الأدوية الأكثر طلباً",
+    "order": "طلب"
+  },
+  "ordersByStatus": {
+    "title": "الطلبات حسب الحالة",
+    "pending": "قيد الانتظار",
+    "ordered": "تم الطلب",
+    "arrived": "وصل",
+    "delivered": "تم التسليم",
+    "cancelled": "ملغي"
+  },
+  "ordersByMonth": {
+    "title": "الطلبات حسب الشهر"
+  },
+  "topSuppliers": {
+    "title": "أفضل الموردين",
+    "noSuppliers": "لا يوجد موردين",
+    "order": "طلب"
+  },
+  "performanceSummary": {
+    "title": "ملخص الأداء",
+    "activeOrders": "الطلبات النشطة",
+    "currentlyProcessing": "قيد المعالجة حالياً",
+    "completedOrders": "الطلبات المكتملة",
+    "deliveredSuccessfully": "تم تسليمها بنجاح",
+    "cancelledOrders": "الطلبات الملغاة",
+    "ofTotal": "من الإجمالي"
+  }
+}

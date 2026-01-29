@@ -1,6 +1,7 @@
 import * as React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useDirection } from "@medi-order/i18n";
 
 // Page Root Component
 interface PageProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -8,10 +9,12 @@ interface PageProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 function Page({ className, children, ...props }: PageProps) {
+  const { direction } = useDirection();
+
   return (
     <div
       className={cn("flex flex-col h-full w-full", className)}
-      dir="rtl"
+      dir={direction}
       {...props}
     >
       {children}

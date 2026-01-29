@@ -5,14 +5,18 @@ import { DEFAULT_LOCALE, FALLBACK_LOCALE } from "./locales";
 
 // Import translation files
 import commonEn from "../locales/en/common.json";
+import homeEn from "../locales/en/home.json";
 import ordersEn from "../locales/en/orders.json";
 import suppliersEn from "../locales/en/suppliers.json";
+import reportsEn from "../locales/en/reports.json";
 import settingsEn from "../locales/en/settings.json";
 import validationEn from "../locales/en/validation.json";
 
 import commonAr from "../locales/ar/common.json";
+import homeAr from "../locales/ar/home.json";
 import ordersAr from "../locales/ar/orders.json";
 import suppliersAr from "../locales/ar/suppliers.json";
+import reportsAr from "../locales/ar/reports.json";
 import settingsAr from "../locales/ar/settings.json";
 import validationAr from "../locales/ar/validation.json";
 
@@ -66,15 +70,19 @@ export async function initializeI18n(initialLocale?: Locale) {
     resources: {
       en: {
         common: commonEn,
+        home: homeEn,
         orders: ordersEn,
         suppliers: suppliersEn,
+        reports: reportsEn,
         settings: settingsEn,
         validation: validationEn,
       },
       ar: {
         common: commonAr,
+        home: homeAr,
         orders: ordersAr,
         suppliers: suppliersAr,
+        reports: reportsAr,
         settings: settingsAr,
         validation: validationAr,
       },

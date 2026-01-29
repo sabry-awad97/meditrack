@@ -1,0 +1,24 @@
+{
+  "title": "Home",
+  "subtitle": "Pharmacy Special Orders Management System",
+  "welcome": "Pharmacy Special Orders Management System",
+  "description": "Comprehensive system for managing special medicine orders efficiently and professionally",
+  "enterSystem": "Enter System",
+  "features": {
+    "orders": {
+      "title": "Order Management",
+      "description": "Add, edit, and track all special orders",
+      "details": "Easy and fast system for managing medicine orders with the ability to add multiple medicines per order"
+    },
+    "tracking": {
+      "title": "Status Tracking",
+      "description": "Monitor each order status accurately",
+      "details": "From pending to delivery, complete tracking of the order lifecycle"
+    },
+    "statistics": {
+      "title": "Real-time Statistics",
+      "description": "Clear information about all orders",
+      "details": "Comprehensive dashboard displaying order statistics by status"
+    }
+  }
+}

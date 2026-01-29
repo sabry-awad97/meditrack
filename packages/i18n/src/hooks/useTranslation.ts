@@ -1,11 +1,5 @@
 import { useTranslation as useI18nextTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
-
-export interface UseTranslationReturn {
-  t: TFunction;
-  i18n: ReturnType<typeof useI18nextTranslation>["i18n"];
-  ready: boolean;
-}
+import type { Namespace } from "i18next";
 
 /**
  * Hook for accessing translations in components
@@ -17,16 +11,19 @@ export interface UseTranslationReturn {
  * ```tsx
  * function MyComponent() {
  *   const { t } = useTranslation("orders");
- *   return <h1>{t("title")}</h1>;
+ *   return <h1>{t("page.title")}</h1>;
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * function AnotherComponent() {
+ *   // Uses "common" namespace by default
+ *   const { t } = useTranslation();
+ *   return <h1>{t("appName")}</h1>;
  * }
  * ```
  */
-export function useTranslation(namespace?: string): UseTranslationReturn {
-  const { t, i18n, ready } = useI18nextTranslation(namespace as any);
-
-  return {
-    t,
-    i18n,
-    ready,
-  };
+export function useTranslation<N extends Namespace = "common">(namespace?: N) {
+  return useI18nextTranslation(namespace);
 }

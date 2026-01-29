@@ -6,6 +6,21 @@
   "orderDetails": "تفاصيل الطلب",
   "orderList": "قائمة الطلبات",
   "noOrders": "لا توجد طلبات",
+  "page": {
+    "title": "الطلبات الخاصة",
+    "description": "إدارة طلبات الأدوية الخاصة للصيدلية",
+    "addOrder": "إضافة طلب جديد",
+    "searchPlaceholder": "ابحث باسم العميل أو الدواء...",
+    "filterByStatus": "تصفية حسب الحالة",
+    "allStatuses": "جميع الحالات",
+    "noOrders": "لا توجد طلبات",
+    "noOrdersFound": "لم يتم العثور على طلبات",
+    "startAdding": "ابدأ بإضافة طلب جديد",
+    "tryDifferentSearch": "جرب البحث بكلمات مختلفة",
+    "loadingOrders": "جاري تحميل الطلبات...",
+    "testData": "بيانات تجريبية",
+    "deleteAll": "حذف الكل"
+  },
   "fields": {
     "customerName": "اسم العميل",
     "phoneNumber": "رقم الهاتف",
@@ -16,6 +31,14 @@
     "updatedAt": "تاريخ التحديث"
   },
   "status": {
+    "pending": "قيد الانتظار",
+    "ordered": "تم الطلب",
+    "arrived": "وصل",
+    "delivered": "تم التسليم",
+    "cancelled": "ملغي"
+  },
+  "stats": {
+    "total": "إجمالي الطلبات",
     "pending": "قيد الانتظار",
     "ordered": "تم الطلب",
     "arrived": "وصل",
@@ -43,10 +66,65 @@
     "statusChanged": "تم تغيير الحالة بنجاح",
     "confirmDelete": "هل أنت متأكد من حذف هذا الطلب؟"
   },
-  "stats": {
-    "totalOrders": "إجمالي الطلبات",
-    "pendingOrders": "الطلبات المعلقة",
-    "completedOrders": "الطلبات المكتملة",
-    "cancelledOrders": "الطلبات الملغاة"
+  "form": {
+    "addTitle": "إضافة طلب جديد",
+    "editTitle": "تعديل الطلب",
+    "addDescription": "أدخل بيانات العميل والأدوية المطلوبة",
+    "editDescription": "قم بتعديل بيانات الطلب",
+    "customerInfo": "بيانات العميل",
+    "customerNameLabel": "اسم العميل",
+    "customerNamePlaceholder": "أدخل اسم العميل",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "05xxxxxxxx",
+    "phoneRequired": "مطلوب",
+    "medicinesRequired": "الأدوية المطلوبة",
+    "medicineNumber": "دواء {{number}}",
+    "medicineNameLabel": "اسم الدواء",
+    "medicineNamePlaceholder": "مثال: Panadol Extra",
+    "concentrationLabel": "التركيز",
+    "concentrationPlaceholder": "مثال: 500mg",
+    "quantityLabel": "الكمية",
+    "formLabel": "الشكل الصيدلي",
+    "formPlaceholder": "اختر الشكل الصيدلي",
+    "notesLabel": "ملاحظات الصيدلي",
+    "notesPlaceholder": "أي ملاحظات إضافية...",
+    "maxMedicinesReached": "الحد الأقصى {{max}} أدوية",
+    "saveOrder": "حفظ الطلب",
+    "updateOrder": "تحديث الطلب",
+    "cancel": "إلغاء"
+  },
+  "card": {
+    "requestedMedicines": "الأدوية المطلوبة:",
+    "notes": "ملاحظات:",
+    "view": "عرض",
+    "edit": "تعديل",
+    "status": "الحالة"
+  },
+  "viewDialog": {
+    "title": "تفاصيل الطلب",
+    "description": "معلومات كاملة عن الطلب",
+    "customerInfo": "معلومات العميل",
+    "name": "الاسم:",
+    "phone": "رقم الهاتف:",
+    "status": "الحالة:",
+    "createdDate": "تاريخ الإنشاء:",
+    "requestedMedicines": "الأدوية المطلوبة",
+    "concentration": "التركيز:",
+    "form": "الشكل:",
+    "quantity": "الكمية",
+    "notSpecified": "غير محدد",
+    "pharmacistNotes": "ملاحظات الصيدلي"
+  },
+  "statusDialog": {
+    "title": "تغيير حالة الطلب",
+    "description": "اختر الحالة الجديدة للطلب الخاص بـ {{name}}",
+    "currentStatus": "الحالة الحالية",
+    "statusLabel": "الحالة:",
+    "newStatus": "الحالة الجديدة",
+    "newStatusLabel": "الحالة الجديدة",
+    "newStatusPlaceholder": "اختر الحالة الجديدة",
+    "current": "(الحالية)",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد التغيير"
   }
 }

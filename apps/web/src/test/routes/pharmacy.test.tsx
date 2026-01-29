@@ -29,11 +29,11 @@ import {
 } from "@/hooks";
 
 // Import the component function directly
-import { Route } from "@/routes/pharmacy";
+import { Route } from "@/routes/special-orders";
 
-const PharmacyComponent = Route.options.component!;
+const SpecialOrdersComponent = Route.options.component!;
 
-describe("Pharmacy Page", () => {
+describe("Special Orders Page", () => {
   const mockCreateOrder = {
     mutate: vi.fn(),
   };
@@ -69,7 +69,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     expect(screen.getByText(/جاري تحميل الطلبات/)).toBeInTheDocument();
   });
@@ -87,7 +87,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     await waitFor(() => {
       expect(screen.getByText("أحمد محمد")).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     expect(screen.getByText(/لا توجد طلبات/)).toBeInTheDocument();
     expect(screen.getByText(/ابدأ بإضافة طلب جديد/)).toBeInTheDocument();
@@ -121,7 +121,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     await waitFor(() => {
       expect(screen.getByText("إجمالي الطلبات")).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     const addButton = screen.getByText("إضافة طلب جديد");
     await user.click(addButton);
@@ -160,7 +160,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     const searchInput = screen.getByPlaceholderText(
       /ابحث باسم العميل أو الدواء/,
@@ -188,7 +188,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     // Find the select trigger button
     const selectTrigger = screen.getByText("تصفية حسب الحالة");
@@ -226,7 +226,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     expect(screen.getByText(/بيانات تجريبية/)).toBeInTheDocument();
     expect(screen.getByText(/حذف الكل/)).toBeInTheDocument();
@@ -244,7 +244,7 @@ describe("Pharmacy Page", () => {
       isError: false,
     });
 
-    render(<PharmacyComponent />);
+    render(<SpecialOrdersComponent />);
 
     expect(screen.queryByText(/بيانات تجريبية/)).not.toBeInTheDocument();
   });

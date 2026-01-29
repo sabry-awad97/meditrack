@@ -1,14 +1,35 @@
 {
   "app": {
     "name": "Medi Order",
-    "tagline": "Medical Supply Management"
+    "tagline": "Medical Supply Management",
+    "title": "Special Orders System",
+    "subtitle": "Professional Pharmacy Management"
   },
   "navigation": {
     "home": "Home",
-    "orders": "Orders",
+    "orders": "Special Orders",
     "suppliers": "Suppliers",
+    "reports": "Reports",
     "settings": "Settings",
-    "dashboard": "Dashboard"
+    "help": "Help",
+    "dashboard": "Dashboard",
+    "mainMenu": "Main Menu",
+    "other": "Other",
+    "appearance": "Appearance"
+  },
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "toggle": "Toggle Theme"
+  },
+  "language": {
+    "switch": "Switch Language",
+    "current": "Current Language"
+  },
+  "user": {
+    "pharmacy": "Pharmacy",
+    "pharmacist": "Pharmacist",
+    "notifications": "Notifications"
   },
   "actions": {
     "save": "Save",
@@ -47,6 +68,12 @@
     "unauthorized": "Unauthorized access",
     "serverError": "Server error occurred"
   },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist or has been moved to another location",
+    "backToHome": "Back to Home",
+    "goTo": "Or go to:"
+  },
   "common": {
     "yes": "Yes",
     "no": "No",
@@ -63,6 +90,25 @@
     "name": "Name",
     "phone": "Phone",
     "email": "Email",
-    "address": "Address"
+    "address": "Address",
+    "required": "Required",
+    "optional": "Optional",
+    "days": "days"
+  },
+  "update": {
+    "available": "Update Available",
+    "newVersion": "New version {{version}} is available for download",
+    "releaseDate": "Release date: {{date}}",
+    "downloading": "Downloading...",
+    "downloadProgress": "Downloading... {{progress}}%",
+    "updateNow": "Update Now",
+    "later": "Later",
+    "checkForUpdates": "Check for Updates",
+    "checking": "Checking...",
+    "upToDate": "Application is up to date",
+    "currentVersion": "Current version: {{version}}"
+  },
+  "loading": {
+    "default": "Loading..."
   }
 }

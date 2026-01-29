@@ -2,10 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Package,
   ArrowLeft,
+  ArrowRight,
   CheckCircle,
   BarChart3,
   Users,
 } from "lucide-react";
+import { useTranslation, useDirection } from "@medi-order/i18n";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,15 +33,17 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
+  const { t } = useTranslation("home");
+  const { isRTL } = useDirection();
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+
   return (
     <Page>
       <PageHeader>
         <PageHeaderTrigger />
         <PageHeaderContent>
-          <PageHeaderTitle>الصفحة الرئيسية</PageHeaderTitle>
-          <PageHeaderDescription>
-            نظام إدارة الطلبات الخاصة للصيدلية
-          </PageHeaderDescription>
+          <PageHeaderTitle>{t("title")}</PageHeaderTitle>
+          <PageHeaderDescription>{t("subtitle")}</PageHeaderDescription>
         </PageHeaderContent>
       </PageHeader>
 
@@ -52,16 +56,14 @@ function HomeComponent() {
                   <Package className="h-16 w-16 text-primary" />
                 </div>
               </div>
-              <h2 className="text-4xl font-bold mb-4">
-                نظام إدارة الطلبات الخاصة للصيدلية
-              </h2>
+              <h2 className="text-4xl font-bold mb-4">{t("welcome")}</h2>
               <p className="text-xl text-muted-foreground mb-8">
-                نظام متكامل لإدارة طلبات الأدوية الخاصة بكفاءة واحترافية
+                {t("description")}
               </p>
-              <Link to="/pharmacy">
+              <Link to="/special-orders">
                 <Button size="lg" className="gap-2">
-                  الدخول إلى النظام
-                  <ArrowLeft className="h-5 w-5" />
+                  {t("enterSystem")}
+                  <ArrowIcon className="h-5 w-5" />
                 </Button>
               </Link>
             </div>
@@ -71,16 +73,15 @@ function HomeComponent() {
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <Package className="h-5 w-5 text-primary" />
-                    <CardTitle>إدارة الطلبات</CardTitle>
+                    <CardTitle>{t("features.orders.title")}</CardTitle>
                   </div>
                   <CardDescription>
-                    إضافة وتعديل وتتبع جميع الطلبات الخاصة
+                    {t("features.orders.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    نظام سهل وسريع لإدارة طلبات الأدوية مع إمكانية إضافة عدة
-                    أدوية لكل طلب
+                    {t("features.orders.details")}
                   </p>
                 </CardContent>
               </Card>
@@ -89,13 +90,15 @@ function HomeComponent() {
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-5 w-5 text-primary" />
-                    <CardTitle>تتبع الحالات</CardTitle>
+                    <CardTitle>{t("features.tracking.title")}</CardTitle>
                   </div>
-                  <CardDescription>متابعة حالة كل طلب بدقة</CardDescription>
+                  <CardDescription>
+                    {t("features.tracking.description")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    من قيد الانتظار حتى التسليم، تتبع كامل لدورة حياة الطلب
+                    {t("features.tracking.details")}
                   </p>
                 </CardContent>
               </Card>
@@ -104,15 +107,15 @@ function HomeComponent() {
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <BarChart3 className="h-5 w-5 text-primary" />
-                    <CardTitle>إحصائيات فورية</CardTitle>
+                    <CardTitle>{t("features.statistics.title")}</CardTitle>
                   </div>
                   <CardDescription>
-                    معلومات واضحة عن جميع الطلبات
+                    {t("features.statistics.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    لوحة تحكم شاملة تعرض إحصائيات الطلبات حسب الحالة
+                    {t("features.statistics.details")}
                   </p>
                 </CardContent>
               </Card>

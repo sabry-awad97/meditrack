@@ -38,46 +38,12 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTheme } from "@/components/theme-provider";
 import { useAlertStats } from "@/hooks";
-import { useLocale, LOCALES } from "@medi-order/i18n";
-
-// عناصر القائمة الرئيسية
-const mainMenuItems = [
-  {
-    title: "الصفحة الرئيسية",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "الطلبات الخاصة",
-    url: "/pharmacy",
-    icon: Package,
-    badge: true,
-  },
-  {
-    title: "الموردين",
-    url: "/suppliers",
-    icon: Users,
-  },
-  {
-    title: "التقارير",
-    url: "/reports",
-    icon: BarChart3,
-  },
-];
-
-// عناصر القائمة الثانوية
-const secondaryMenuItems = [
-  {
-    title: "الإعدادات",
-    url: "/settings",
-    icon: Settings,
-  },
-  {
-    title: "المساعدة",
-    url: "/help",
-    icon: HelpCircle,
-  },
-];
+import {
+  useLocale,
+  LOCALES,
+  useTranslation,
+  useDirection,
+} from "@medi-order/i18n";
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -86,6 +52,47 @@ export function AppSidebar() {
   const { theme, setTheme } = useTheme();
   const { data: alertStats } = useAlertStats();
   const { locale, setLocale } = useLocale();
+  const { t } = useTranslation("common");
+  const { isRTL } = useDirection();
+
+  // Main menu items
+  const mainMenuItems = [
+    {
+      title: t("navigation.home"),
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: t("navigation.orders"),
+      url: "/special-orders",
+      icon: Package,
+      badge: true,
+    },
+    {
+      title: t("navigation.suppliers"),
+      url: "/suppliers",
+      icon: Users,
+    },
+    {
+      title: t("navigation.reports"),
+      url: "/reports",
+      icon: BarChart3,
+    },
+  ];
+
+  // Secondary menu items
+  const secondaryMenuItems = [
+    {
+      title: t("navigation.settings"),
+      url: "/settings",
+      icon: Settings,
+    },
+    {
+      title: t("navigation.help"),
+      url: "/help",
+      icon: HelpCircle,
+    },
+  ];
 
   const totalAlerts =
     (alertStats?.oldOrders || 0) +
@@ -93,7 +100,11 @@ export function AppSidebar() {
     (alertStats?.delayed || 0);
 
   return (
-    <Sidebar collapsible="icon" side="right" className="border-l">
+    <Sidebar
+      collapsible="icon"
+      side={isRTL ? "right" : "left"}
+      className={isRTL ? "border-l" : "border-r"}
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -101,12 +112,14 @@ export function AppSidebar() {
               <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg shrink-0">
                 <Pill className="size-4" />
               </div>
-              <div className="grid flex-1 text-right text-sm leading-tight min-w-0 group-data-[collapsible=icon]:hidden">
+              <div
+                className={`grid flex-1 text-sm leading-tight min-w-0 group-data-[collapsible=icon]:hidden ${isRTL ? "text-right" : "text-left"}`}
+              >
                 <span className="truncate font-bold text-base">
-                  نظام الطلبات الخاصة
+                  {t("app.title")}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  إدارة الصيدلية الاحترافية
+                  {t("app.subtitle")}
                 </span>
               </div>
             </div>
@@ -116,7 +129,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>القائمة الرئيسية</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation.mainMenu")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainMenuItems.map((item) => {
@@ -131,7 +144,11 @@ export function AppSidebar() {
                       render={(props) => <Link to={item.url} {...props} />}
                     >
                       <item.icon className="shrink-0 size-4" />
-                      <span className="flex-1 text-right">{item.title}</span>
+                      <span
+                        className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                      >
+                        {item.title}
+                      </span>
                       {showBadge && (
                         <SidebarMenuBadge>{totalAlerts}</SidebarMenuBadge>
                       )}
@@ -146,7 +163,7 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel>أخرى</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation.other")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {secondaryMenuItems.map((item) => {
@@ -160,7 +177,11 @@ export function AppSidebar() {
                       render={(props) => <Link to={item.url} {...props} />}
                     >
                       <item.icon className="shrink-0 size-4" />
-                      <span className="flex-1 text-right">{item.title}</span>
+                      <span
+                        className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                      >
+                        {item.title}
+                      </span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -172,7 +193,7 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel>المظهر</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation.appearance")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -181,8 +202,8 @@ export function AppSidebar() {
                   tooltip={
                     state === "collapsed"
                       ? theme === "dark"
-                        ? "الوضع الفاتح"
-                        : "الوضع الداكن"
+                        ? t("theme.light")
+                        : t("theme.dark")
                       : undefined
                   }
                   className="flex items-center gap-2"
@@ -192,8 +213,10 @@ export function AppSidebar() {
                   ) : (
                     <Moon className="shrink-0 size-4" />
                   )}
-                  <span className="flex-1 text-right">
-                    {theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}
+                  <span
+                    className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                  >
+                    {theme === "dark" ? t("theme.light") : t("theme.dark")}
                   </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -202,15 +225,15 @@ export function AppSidebar() {
                   onClick={() => setLocale(locale === "ar" ? "en" : "ar")}
                   tooltip={
                     state === "collapsed"
-                      ? locale === "ar"
-                        ? "English"
-                        : "العربية"
+                      ? LOCALES[locale === "ar" ? "en" : "ar"].nativeName
                       : undefined
                   }
                   className="flex items-center gap-2"
                 >
                   <Languages className="shrink-0 size-4" />
-                  <span className="flex-1 text-right">
+                  <span
+                    className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                  >
                     {LOCALES[locale === "ar" ? "en" : "ar"].nativeName}
                   </span>
                 </SidebarMenuButton>
@@ -236,16 +259,22 @@ export function AppSidebar() {
                 <div className="flex items-center gap-2 w-full">
                   <Avatar className="h-8 w-8 rounded-lg shrink-0">
                     <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
-                      ص
+                      {t("user.pharmacy").charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-right text-sm leading-tight min-w-0">
-                    <span className="truncate font-semibold">الصيدلية</span>
+                  <div
+                    className={`grid flex-1 text-sm leading-tight min-w-0 ${isRTL ? "text-right" : "text-left"}`}
+                  >
+                    <span className="truncate font-semibold">
+                      {t("user.pharmacy")}
+                    </span>
                     <span className="truncate text-xs text-muted-foreground">
-                      صيدلي
+                      {t("user.pharmacist")}
                     </span>
                   </div>
-                  <ChevronDown className="mr-auto shrink-0 size-4" />
+                  <ChevronDown
+                    className={`shrink-0 size-4 ${isRTL ? "mr-auto" : "ml-auto"}`}
+                  />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -256,15 +285,15 @@ export function AppSidebar() {
               >
                 <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
                   <Settings className="h-4 w-4 shrink-0" />
-                  <span>الإعدادات</span>
+                  <span>{t("navigation.settings")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
                   <Bell className="h-4 w-4 shrink-0" />
-                  <span>الإشعارات</span>
+                  <span>{t("user.notifications")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
                   <HelpCircle className="h-4 w-4 shrink-0" />
-                  <span>المساعدة</span>
+                  <span>{t("navigation.help")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

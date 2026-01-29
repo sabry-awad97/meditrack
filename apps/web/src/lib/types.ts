@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 
 // ========== Order Types ==========
 
@@ -14,18 +14,18 @@ export const OrderStatusSchema = z.enum([
 // Schema للدواء
 export const MedicineSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1, "اسم الدواء مطلوب"),
-  concentration: z.string().min(1, "التركيز مطلوب"),
-  form: z.string().min(1, "الشكل الصيدلي مطلوب"),
-  quantity: z.number().int().positive("الكمية يجب أن تكون أكبر من صفر"),
+  name: z.string().min(1),
+  concentration: z.string().min(1),
+  form: z.string().min(1),
+  quantity: z.number().int().positive(),
 });
 
 // Schema للطلب
 export const OrderSchema = z.object({
   id: z.string().uuid(),
-  customerName: z.string().min(1, "اسم العميل مطلوب"),
-  phoneNumber: z.string().min(1, "رقم الهاتف مطلوب"),
-  medicines: z.array(MedicineSchema).min(1, "يجب إضافة دواء واحد على الأقل"),
+  customerName: z.string().min(1),
+  phoneNumber: z.string().min(1),
+  medicines: z.array(MedicineSchema).min(1),
   status: OrderStatusSchema,
   notes: z.string(),
   createdAt: z.date(),
@@ -36,11 +36,9 @@ export const OrderSchema = z.object({
 export const MedicineFormDataSchema = MedicineSchema.omit({ id: true });
 
 export const OrderFormDataSchema = z.object({
-  customerName: z.string().min(1, "اسم العميل مطلوب"),
+  customerName: z.string().min(1),
   phoneNumber: z.string(),
-  medicines: z
-    .array(MedicineFormDataSchema)
-    .min(1, "يجب إضافة دواء واحد على الأقل"),
+  medicines: z.array(MedicineFormDataSchema).min(1),
   notes: z.string(),
 });
 
@@ -49,14 +47,10 @@ export const OrderFormDataSchema = z.object({
 // Schema للمورد
 export const SupplierSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1, "اسم المورد مطلوب"),
-  phone: z.string().min(1, "رقم الهاتف مطلوب"),
+  name: z.string().min(1),
+  phone: z.string().min(1),
   whatsapp: z.string().optional(),
-  email: z
-    .string()
-    .email("البريد الإلكتروني غير صالح")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().email().optional().or(z.literal("")),
   address: z.string().optional(),
 
   // الأدوية المتوفرة عادة
@@ -76,14 +70,10 @@ export const SupplierSchema = z.object({
 
 // Schema لبيانات نموذج المورد
 export const SupplierFormDataSchema = z.object({
-  name: z.string().min(1, "اسم المورد مطلوب"),
-  phone: z.string().min(1, "رقم الهاتف مطلوب"),
+  name: z.string().min(1),
+  phone: z.string().min(1),
   whatsapp: z.string().optional(),
-  email: z
-    .string()
-    .email("البريد الإلكتروني غير صالح")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().email().optional().or(z.literal("")),
   address: z.string().optional(),
   commonMedicines: z.array(z.string()),
   notes: z.string(),

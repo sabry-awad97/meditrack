@@ -1,14 +1,35 @@
 {
   "app": {
     "name": "ميدي أوردر",
-    "tagline": "نظام الطلبات الخاصة"
+    "tagline": "إدارة المستلزمات الطبية",
+    "title": "نظام الطلبات الخاصة",
+    "subtitle": "إدارة الصيدلية الاحترافية"
   },
   "navigation": {
-    "home": "الرئيسية",
-    "orders": "الطلبات",
+    "home": "الصفحة الرئيسية",
+    "orders": "الطلبات الخاصة",
     "suppliers": "الموردين",
+    "reports": "التقارير",
     "settings": "الإعدادات",
-    "dashboard": "لوحة التحكم"
+    "help": "المساعدة",
+    "dashboard": "لوحة التحكم",
+    "mainMenu": "القائمة الرئيسية",
+    "other": "أخرى",
+    "appearance": "المظهر"
+  },
+  "theme": {
+    "light": "الوضع الفاتح",
+    "dark": "الوضع الداكن",
+    "toggle": "تبديل المظهر"
+  },
+  "language": {
+    "switch": "تبديل اللغة",
+    "current": "اللغة الحالية"
+  },
+  "user": {
+    "pharmacy": "الصيدلية",
+    "pharmacist": "صيدلي",
+    "notifications": "الإشعارات"
   },
   "actions": {
     "save": "حفظ",
@@ -47,6 +68,12 @@
     "unauthorized": "غير مصرح بالوصول",
     "serverError": "حدث خطأ في الخادم"
   },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "description": "عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها إلى موقع آخر",
+    "backToHome": "العودة للرئيسية",
+    "goTo": "أو انتقل إلى:"
+  },
   "common": {
     "yes": "نعم",
     "no": "لا",
@@ -63,6 +90,25 @@
     "name": "الاسم",
     "phone": "الهاتف",
     "email": "البريد الإلكتروني",
-    "address": "العنوان"
+    "address": "العنوان",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "days": "أيام"
+  },
+  "update": {
+    "available": "تحديث متاح",
+    "newVersion": "إصدار جديد {{version}} متاح للتنزيل",
+    "releaseDate": "تاريخ الإصدار: {{date}}",
+    "downloading": "جاري التنزيل...",
+    "downloadProgress": "جاري التنزيل... {{progress}}%",
+    "updateNow": "تحديث الآن",
+    "later": "لاحقاً",
+    "checkForUpdates": "التحقق من التحديثات",
+    "checking": "جاري التحقق...",
+    "upToDate": "التطبيق محدث إلى أحدث إصدار",
+    "currentVersion": "الإصدار الحالي: {{version}}"
+  },
+  "loading": {
+    "default": "جاري التحميل..."
   }
 }

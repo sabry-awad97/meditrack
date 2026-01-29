@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { Phone, Calendar, Package } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import {
   Dialog,
@@ -25,6 +26,8 @@ export function OrderViewDialog({
   onOpenChange,
   order,
 }: OrderViewDialogProps) {
+  const { t } = useTranslation("orders");
+
   if (!order) return null;
 
   return (
@@ -32,8 +35,10 @@ export function OrderViewDialog({
       <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col p-0">
         <div className="p-4 border-b shrink-0">
           <DialogHeader>
-            <DialogTitle className="text-2xl">تفاصيل الطلب</DialogTitle>
-            <DialogDescription>معلومات كاملة عن الطلب</DialogDescription>
+            <DialogTitle className="text-2xl">
+              {t("viewDialog.title")}
+            </DialogTitle>
+            <DialogDescription>{t("viewDialog.description")}</DialogDescription>
           </DialogHeader>
         </div>
 
@@ -42,16 +47,20 @@ export function OrderViewDialog({
           <div className="space-y-3">
             <h3 className="font-semibold text-lg flex items-center gap-2">
               <Package className="h-5 w-5" />
-              معلومات العميل
+              {t("viewDialog.customerInfo")}
             </h3>
             <div className="p-4 rounded-lg bg-muted/50 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">الاسم:</span>
+                <span className="text-muted-foreground">
+                  {t("viewDialog.name")}
+                </span>
                 <span className="font-medium">{order.customerName}</span>
               </div>
               {order.phoneNumber && (
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">رقم الهاتف:</span>
+                  <span className="text-muted-foreground">
+                    {t("viewDialog.phone")}
+                  </span>
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4" />
                     <span dir="ltr" className="font-medium">
@@ -61,11 +70,15 @@ export function OrderViewDialog({
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">الحالة:</span>
+                <span className="text-muted-foreground">
+                  {t("viewDialog.status")}
+                </span>
                 <StatusBadge status={order.status} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">تاريخ الإنشاء:</span>
+                <span className="text-muted-foreground">
+                  {t("viewDialog.createdDate")}
+                </span>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   <span className="font-medium">
@@ -82,7 +95,9 @@ export function OrderViewDialog({
 
           {/* الأدوية */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-lg">الأدوية المطلوبة</h3>
+            <h3 className="font-semibold text-lg">
+              {t("viewDialog.requestedMedicines")}
+            </h3>
             <div className="space-y-2">
               {order.medicines.map((medicine, index) => (
                 <div
@@ -101,10 +116,14 @@ export function OrderViewDialog({
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <span>
-                          التركيز: {medicine.concentration || "غير محدد"}
+                          {t("viewDialog.concentration")}{" "}
+                          {medicine.concentration ||
+                            t("viewDialog.notSpecified")}
                         </span>
                         <span>•</span>
-                        <span>الشكل: {medicine.form}</span>
+                        <span>
+                          {t("viewDialog.form")} {medicine.form}
+                        </span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -112,7 +131,7 @@ export function OrderViewDialog({
                         ×{medicine.quantity}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        الكمية
+                        {t("viewDialog.quantity")}
                       </div>
                     </div>
                   </div>
@@ -126,7 +145,9 @@ export function OrderViewDialog({
             <>
               <Separator />
               <div className="space-y-2">
-                <h3 className="font-semibold text-lg">ملاحظات الصيدلي</h3>
+                <h3 className="font-semibold text-lg">
+                  {t("viewDialog.pharmacistNotes")}
+                </h3>
                 <div className="p-4 rounded-lg bg-muted/50">
                   <p className="text-foreground whitespace-pre-wrap">
                     {order.notes}

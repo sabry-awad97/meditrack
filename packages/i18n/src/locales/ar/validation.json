@@ -15,7 +15,16 @@
     "invalid_enum_value": "قيمة غير صالحة",
     "positive": "يجب أن يكون رقماً موجباً",
     "nonnegative": "يجب أن يكون رقماً غير سالب",
-    "uuid": "يجب أن يكون UUID صالحاً"
+    "uuid": "يجب أن يكون UUID صالحاً",
+    "medicineName": "اسم الدواء مطلوب",
+    "concentration": "التركيز مطلوب",
+    "form": "الشكل الصيدلي مطلوب",
+    "quantity": "الكمية يجب أن تكون أكبر من صفر",
+    "customerName": "اسم العميل مطلوب",
+    "phoneNumber": "رقم الهاتف مطلوب",
+    "medicines": "يجب إضافة دواء واحد على الأقل",
+    "supplierName": "اسم المورد مطلوب",
+    "supplierPhone": "رقم الهاتف مطلوب"
   },
   "fields": {
     "email": "البريد الإلكتروني",
@@ -34,6 +43,7 @@
     "commonMedicines": "الأدوية الشائعة",
     "avgDeliveryDays": "متوسط أيام التوصيل",
     "rating": "التقييم",
-    "notes": "ملاحظات"
+    "notes": "ملاحظات",
+    "medicines": "الأدوية"
   }
 }

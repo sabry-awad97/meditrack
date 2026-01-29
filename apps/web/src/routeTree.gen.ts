@@ -10,15 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as SpecialOrdersRouteImport } from './routes/special-orders'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReportsRouteImport } from './routes/reports'
-import { Route as PharmacyRouteImport } from './routes/pharmacy'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpecialOrdersRoute = SpecialOrdersRouteImport.update({
+  id: '/special-orders',
+  path: '/special-orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -29,11 +34,6 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PharmacyRoute = PharmacyRouteImport.update({
-  id: '/pharmacy',
-  path: '/pharmacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const R404Route = R404RouteImport.update({
@@ -50,26 +50,26 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/pharmacy': typeof PharmacyRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/special-orders': typeof SpecialOrdersRoute
   '/suppliers': typeof SuppliersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/pharmacy': typeof PharmacyRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/special-orders': typeof SpecialOrdersRoute
   '/suppliers': typeof SuppliersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/pharmacy': typeof PharmacyRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/special-orders': typeof SpecialOrdersRoute
   '/suppliers': typeof SuppliersRoute
 }
 export interface FileRouteTypes {
@@ -77,28 +77,28 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/404'
-    | '/pharmacy'
     | '/reports'
     | '/settings'
+    | '/special-orders'
     | '/suppliers'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/404' | '/pharmacy' | '/reports' | '/settings' | '/suppliers'
+  to: '/' | '/404' | '/reports' | '/settings' | '/special-orders' | '/suppliers'
   id:
     | '__root__'
     | '/'
     | '/404'
-    | '/pharmacy'
     | '/reports'
     | '/settings'
+    | '/special-orders'
     | '/suppliers'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R404Route: typeof R404Route
-  PharmacyRoute: typeof PharmacyRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
+  SpecialOrdersRoute: typeof SpecialOrdersRoute
   SuppliersRoute: typeof SuppliersRoute
 }
 
@@ -109,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/special-orders': {
+      id: '/special-orders'
+      path: '/special-orders'
+      fullPath: '/special-orders'
+      preLoaderRoute: typeof SpecialOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -123,13 +130,6 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pharmacy': {
-      id: '/pharmacy'
-      path: '/pharmacy'
-      fullPath: '/pharmacy'
-      preLoaderRoute: typeof PharmacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/404': {
@@ -152,9 +152,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R404Route: R404Route,
-  PharmacyRoute: PharmacyRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
+  SpecialOrdersRoute: SpecialOrdersRoute,
   SuppliersRoute: SuppliersRoute,
 }
 export const routeTree = rootRouteImport

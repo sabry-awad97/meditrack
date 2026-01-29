@@ -1,0 +1,48 @@
+{
+  "title": "Reports and Statistics",
+  "description": "Comprehensive analysis of special orders performance",
+  "loadingReports": "Loading reports...",
+  "noData": "No data for reports",
+  "noDataDescription": "Start by adding orders to view reports and statistics",
+  "mainStats": {
+    "totalOrders": "Total Orders",
+    "totalMedicines": "medicines total",
+    "avgDeliveryTime": "Average Delivery Time",
+    "days": "days",
+    "forCompleted": "for completed orders",
+    "completionRate": "Completion Rate",
+    "of": "of",
+    "order": "order",
+    "suppliersCount": "Suppliers Count",
+    "activeSupplier": "active supplier"
+  },
+  "topMedicines": {
+    "title": "Most Ordered Medicines",
+    "order": "order"
+  },
+  "ordersByStatus": {
+    "title": "Orders by Status",
+    "pending": "Pending",
+    "ordered": "Ordered",
+    "arrived": "Arrived",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "ordersByMonth": {
+    "title": "Orders by Month"
+  },
+  "topSuppliers": {
+    "title": "Top Suppliers",
+    "noSuppliers": "No suppliers",
+    "order": "order"
+  },
+  "performanceSummary": {
+    "title": "Performance Summary",
+    "activeOrders": "Active Orders",
+    "currentlyProcessing": "currently processing",
+    "completedOrders": "Completed Orders",
+    "deliveredSuccessfully": "delivered successfully",
+    "cancelledOrders": "Cancelled Orders",
+    "ofTotal": "of total"
+  }
+}

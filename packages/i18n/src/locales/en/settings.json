@@ -1,42 +1,20 @@
 {
   "title": "Settings",
-  "general": "General Settings",
-  "appearance": "Appearance",
-  "language": "Language",
-  "notifications": "Notifications",
-  "about": "About",
-  "fields": {
-    "theme": "Theme",
-    "language": "Language",
-    "timezone": "Timezone",
-    "dateFormat": "Date Format",
-    "timeFormat": "Time Format",
-    "currency": "Currency"
-  },
-  "theme": {
-    "light": "Light",
-    "dark": "Dark",
+  "description": "Manage system settings and preferences",
+  "loadingSettings": "Loading settings...",
+  "saveChanges": "Save Changes",
+  "import": "Import",
+  "export": "Export",
+  "resetTitle": "Reset Settings",
+  "resetDescription": "Are you sure you want to reset all settings to default values? All current customizations will be lost.",
+  "categories": {
+    "general": "General",
+    "orders": "Orders",
+    "suppliers": "Suppliers",
+    "alerts": "Alerts",
+    "notifications": "Notifications",
+    "appearance": "Appearance",
     "system": "System"
   },
-  "languages": {
-    "en": "English",
-    "ar": "Arabic"
-  },
-  "messages": {
-    "settingsSaved": "Settings saved successfully",
-    "settingsReset": "Settings reset to defaults",
-    "confirmReset": "Are you sure you want to reset all settings?"
-  },
-  "actions": {
-    "saveSettings": "Save Settings",
-    "resetSettings": "Reset Settings",
-    "exportData": "Export Data",
-    "importData": "Import Data"
-  },
-  "about": {
-    "version": "Version",
-    "buildDate": "Build Date",
-    "license": "License",
-    "credits": "Credits"
-  }
+  "multiselect": "Multi-select (under development)"
 }

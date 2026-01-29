@@ -45,3 +45,6 @@ export {
 
 // Hooks للتحديثات
 export { useAppUpdater } from "./use-app-updater";
+
+// Hooks للترجمة
+export { useOrderStatusConfig } from "./use-order-status-config";

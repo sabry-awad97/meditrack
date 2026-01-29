@@ -6,6 +6,21 @@
   "orderDetails": "Order Details",
   "orderList": "Order List",
   "noOrders": "No orders found",
+  "page": {
+    "title": "Special Orders",
+    "description": "Manage special medicine orders for the pharmacy",
+    "addOrder": "Add New Order",
+    "searchPlaceholder": "Search by customer name or medicine...",
+    "filterByStatus": "Filter by Status",
+    "allStatuses": "All Statuses",
+    "noOrders": "No orders",
+    "noOrdersFound": "No orders found",
+    "startAdding": "Start by adding a new order",
+    "tryDifferentSearch": "Try searching with different words",
+    "loadingOrders": "Loading orders...",
+    "testData": "Test Data",
+    "deleteAll": "Delete All"
+  },
   "fields": {
     "customerName": "Customer Name",
     "phoneNumber": "Phone Number",
@@ -16,6 +31,14 @@
     "updatedAt": "Updated At"
   },
   "status": {
+    "pending": "Pending",
+    "ordered": "Ordered",
+    "arrived": "Arrived",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "stats": {
+    "total": "Total Orders",
     "pending": "Pending",
     "ordered": "Ordered",
     "arrived": "Arrived",
@@ -43,10 +66,65 @@
     "statusChanged": "Status changed successfully",
     "confirmDelete": "Are you sure you want to delete this order?"
   },
-  "stats": {
-    "totalOrders": "Total Orders",
-    "pendingOrders": "Pending Orders",
-    "completedOrders": "Completed Orders",
-    "cancelledOrders": "Cancelled Orders"
+  "form": {
+    "addTitle": "Add New Order",
+    "editTitle": "Edit Order",
+    "addDescription": "Enter customer information and required medicines",
+    "editDescription": "Edit order information",
+    "customerInfo": "Customer Information",
+    "customerNameLabel": "Customer Name",
+    "customerNamePlaceholder": "Enter customer name",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "05xxxxxxxx",
+    "phoneRequired": "Required",
+    "medicinesRequired": "Required Medicines",
+    "medicineNumber": "Medicine {{number}}",
+    "medicineNameLabel": "Medicine Name",
+    "medicineNamePlaceholder": "Example: Panadol Extra",
+    "concentrationLabel": "Concentration",
+    "concentrationPlaceholder": "Example: 500mg",
+    "quantityLabel": "Quantity",
+    "formLabel": "Pharmaceutical Form",
+    "formPlaceholder": "Select pharmaceutical form",
+    "notesLabel": "Pharmacist Notes",
+    "notesPlaceholder": "Any additional notes...",
+    "maxMedicinesReached": "Maximum {{max}} medicines",
+    "saveOrder": "Save Order",
+    "updateOrder": "Update Order",
+    "cancel": "Cancel"
+  },
+  "card": {
+    "requestedMedicines": "Requested Medicines:",
+    "notes": "Notes:",
+    "view": "View",
+    "edit": "Edit",
+    "status": "Status"
+  },
+  "viewDialog": {
+    "title": "Order Details",
+    "description": "Complete order information",
+    "customerInfo": "Customer Information",
+    "name": "Name:",
+    "phone": "Phone Number:",
+    "status": "Status:",
+    "createdDate": "Created Date:",
+    "requestedMedicines": "Requested Medicines",
+    "concentration": "Concentration:",
+    "form": "Form:",
+    "quantity": "Quantity",
+    "notSpecified": "Not specified",
+    "pharmacistNotes": "Pharmacist Notes"
+  },
+  "statusDialog": {
+    "title": "Change Order Status",
+    "description": "Select new status for order of {{name}}",
+    "currentStatus": "Current Status",
+    "statusLabel": "Status:",
+    "newStatus": "New Status",
+    "newStatusLabel": "New Status",
+    "newStatusPlaceholder": "Select new status",
+    "current": "(Current)",
+    "cancel": "Cancel",
+    "confirm": "Confirm Change"
   }
 }

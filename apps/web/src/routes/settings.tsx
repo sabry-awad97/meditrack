@@ -14,6 +14,7 @@ import {
   Palette,
   Cog,
 } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,6 +90,7 @@ const categoryIcons: Record<SettingCategory, any> = {
 };
 
 function SettingsPage() {
+  const { t } = useTranslation("settings");
   const { data: settings, isLoading } = useSettings();
   const updateSettings = useUpdateSettings();
   const resetSettings = useResetSettings();
@@ -152,7 +154,9 @@ function SettingsPage() {
   };
 
   if (isLoading) {
-    return <Loading icon={SettingsIcon} message="جاري تحميل الإعدادات..." />;
+    return (
+      <Loading icon={SettingsIcon} message={t("loadingSettings")} />
+    );
   }
 
   return (
@@ -160,9 +164,9 @@ function SettingsPage() {
       <PageHeader>
         <PageHeaderTrigger />
         <PageHeaderContent>
-          <PageHeaderTitle>الإعدادات</PageHeaderTitle>
+          <PageHeaderTitle>{t("title")}</PageHeaderTitle>
           <PageHeaderDescription>
-            إدارة إعدادات النظام والتفضيلات
+            {t("description")}
           </PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
@@ -173,7 +177,7 @@ function SettingsPage() {
             onClick={handleImport}
           >
             <Upload className="h-5 w-5" />
-            استيراد
+            {t("import")}
           </Button>
           <Button
             variant="outline"
@@ -182,7 +186,7 @@ function SettingsPage() {
             onClick={handleExport}
           >
             <Download className="h-5 w-5" />
-            تصدير
+            {t("export")}
           </Button>
           <Button
             variant="outline"
@@ -191,7 +195,7 @@ function SettingsPage() {
             onClick={() => setShowResetDialog(true)}
           >
             <RotateCcw className="h-5 w-5" />
-            إعادة تعيين
+            {t("reset")}
           </Button>
           <Button
             size="lg"
@@ -200,7 +204,7 @@ function SettingsPage() {
             disabled={!hasChanges}
           >
             <Save className="h-5 w-5" />
-            حفظ التغييرات
+            {t("saveChanges")}
           </Button>
         </PageHeaderActions>
       </PageHeader>
@@ -267,19 +271,18 @@ function SettingsPage() {
       <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
         <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>إعادة تعيين الإعدادات</AlertDialogTitle>
+            <AlertDialogTitle>{t("resetTitle")}</AlertDialogTitle>
             <AlertDialogDescription className="text-right">
-              هل أنت متأكد من إعادة تعيين جميع الإعدادات إلى القيم الافتراضية؟
-              سيتم فقدان جميع التخصيصات الحالية.
+              {t("resetDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleResetConfirm}
               className="bg-destructive hover:bg-destructive/90"
             >
-              إعادة تعيين
+              {t("actions.reset")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -296,6 +299,8 @@ interface SettingFieldProps {
 }
 
 function SettingField({ setting, value, onChange }: SettingFieldProps) {
+  const { t } = useTranslation("settings");
+
   const renderField = () => {
     switch (setting.type) {
       case "text":
@@ -375,7 +380,7 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
         // Multiselect component - قيد التطوير
         return (
           <div className="text-sm text-muted-foreground">
-            متعدد الاختيار (قيد التطوير)
+            {t("settings.multiselect")}
           </div>
         );
 

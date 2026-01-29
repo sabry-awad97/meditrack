@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { Eye, Pencil, RefreshCw, Phone } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,8 @@ export function OrderCard({
   onEdit,
   onStatusChange,
 }: OrderCardProps) {
+  const { t } = useTranslation("orders");
+
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-3">
@@ -49,7 +52,7 @@ export function OrderCard({
       <CardContent className="pb-3">
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-muted-foreground mb-3">
-            الأدوية المطلوبة:
+            {t("card.requestedMedicines")}
           </h4>
           <div className="space-y-2">
             {order.medicines.map((medicine) => (
@@ -76,7 +79,7 @@ export function OrderCard({
             <Separator className="my-3" />
             <div className="text-sm">
               <span className="font-medium text-muted-foreground">
-                ملاحظات:{" "}
+                {t("card.notes")}{" "}
               </span>
               <span className="text-foreground">{order.notes}</span>
             </div>
@@ -96,7 +99,7 @@ export function OrderCard({
             className="gap-2"
           >
             <Eye className="h-4 w-4" />
-            عرض
+            {t("card.view")}
           </Button>
           <Button
             variant="outline"
@@ -105,7 +108,7 @@ export function OrderCard({
             className="gap-2"
           >
             <Pencil className="h-4 w-4" />
-            تعديل
+            {t("card.edit")}
           </Button>
           <Button
             variant="outline"
@@ -114,7 +117,7 @@ export function OrderCard({
             className="gap-2"
           >
             <RefreshCw className="h-4 w-4" />
-            الحالة
+            {t("card.status")}
           </Button>
         </div>
       </CardFooter>

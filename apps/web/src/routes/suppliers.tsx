@@ -13,6 +13,7 @@ import {
   Database,
   Trash2,
 } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,6 +65,7 @@ export const Route = createFileRoute("/suppliers")({
 });
 
 function SuppliersPage() {
+  const { t } = useTranslation("suppliers");
   const { data: suppliers = [], isLoading } = useSuppliers();
   const seedData = useSeedData();
   const clearData = useClearData();
@@ -141,7 +143,7 @@ function SuppliersPage() {
   };
 
   if (isLoading) {
-    return <Loading icon={Users} message="جاري تحميل الموردين..." />;
+    return <Loading icon={Users} message={t("loadingSuppliers")} />;
   }
 
   return (
@@ -149,10 +151,8 @@ function SuppliersPage() {
       <PageHeader>
         <PageHeaderTrigger />
         <PageHeaderContent>
-          <PageHeaderTitle>الموردين</PageHeaderTitle>
-          <PageHeaderDescription>
-            إدارة قائمة الموردين والتواصل معهم
-          </PageHeaderDescription>
+          <PageHeaderTitle>{t("title")}</PageHeaderTitle>
+          <PageHeaderDescription>{t("description")}</PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
           {isDev && (
@@ -164,7 +164,7 @@ function SuppliersPage() {
                 className="gap-2"
               >
                 <Database className="h-5 w-5" />
-                بيانات تجريبية
+                {t("testData")}
               </Button>
               {suppliers.length > 0 && (
                 <Button
@@ -174,14 +174,14 @@ function SuppliersPage() {
                   className="gap-2 text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-5 w-5" />
-                  حذف الكل
+                  {t("deleteAll")}
                 </Button>
               )}
             </>
           )}
           <Button onClick={handleOpenCreateForm} size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
-            إضافة مورد جديد
+            {t("addSupplier")}
           </Button>
         </PageHeaderActions>
       </PageHeader>
@@ -193,25 +193,25 @@ function SuppliersPage() {
             <PageSection className="mb-6 border-b-2 border-dashed pb-6 shrink-0">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
-                  title="إجمالي الموردين"
+                  title={t("stats.total")}
                   value={stats.total}
                   icon={Users}
                   color="bg-blue-500"
                 />
                 <StatsCard
-                  title="متوسط التقييم"
+                  title={t("stats.avgRating")}
                   value={stats.avgRating}
                   icon={Star}
                   color="bg-yellow-500"
                 />
                 <StatsCard
-                  title="متوسط التوصيل"
+                  title={t("stats.avgDelivery")}
                   value={stats.avgDeliveryDays}
                   icon={TrendingUp}
                   color="bg-green-500"
                 />
                 <StatsCard
-                  title="إجمالي الطلبات"
+                  title={t("stats.totalOrders")}
                   value={stats.totalOrders}
                   icon={Package}
                   color="bg-purple-500"
@@ -225,7 +225,7 @@ function SuppliersPage() {
             <div className="relative w-full sm:w-80 mb-6 shrink-0">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="ابحث باسم المورد أو رقم الهاتف أو الدواء..."
+                placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-10 text-right"
@@ -240,19 +240,15 @@ function SuppliersPage() {
                 <div className="text-center p-12">
                   <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-xl font-semibold mb-2">
-                    {searchQuery
-                      ? "لم يتم العثور على موردين"
-                      : "لا يوجد موردين"}
+                    {searchQuery ? t("noSuppliersFound") : t("noSuppliers")}
                   </h3>
                   <p className="text-muted-foreground mb-6">
-                    {searchQuery
-                      ? "جرب البحث بكلمات مختلفة"
-                      : "ابدأ بإضافة مورد جديد"}
+                    {searchQuery ? t("tryDifferentSearch") : t("startAdding")}
                   </p>
                   {!searchQuery && (
                     <Button onClick={handleOpenCreateForm} className="gap-2">
                       <Plus className="h-4 w-4" />
-                      إضافة مورد جديد
+                      {t("addSupplier")}
                     </Button>
                   )}
                 </div>
@@ -301,6 +297,8 @@ interface SupplierCardProps {
 }
 
 function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
+  const { t } = useTranslation("suppliers");
+
   return (
     <Card className="border border-dashed hover:border-solid hover:shadow-lg transition-all">
       <CardHeader className="border-b-2 border-dashed">
@@ -322,7 +320,7 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
             onClick={() => window.open(`tel:${supplier.phone}`)}
           >
             <Phone className="h-4 w-4" />
-            اتصال
+            {t("card.call")}
           </Button>
           {supplier.whatsapp && (
             <Button
@@ -336,7 +334,7 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
               }
             >
               <MessageCircle className="h-4 w-4" />
-              واتساب
+              {t("card.whatsapp")}
             </Button>
           )}
           {supplier.email && (
@@ -347,7 +345,7 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
               onClick={() => window.open(`mailto:${supplier.email}`)}
             >
               <Mail className="h-4 w-4" />
-              بريد
+              {t("card.email")}
             </Button>
           )}
         </div>
@@ -355,14 +353,21 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
         {/* معلومات الأداء */}
         <div className="text-sm space-y-1 text-muted-foreground border border-dashed rounded-lg p-3">
           <p>📞 {supplier.phone}</p>
-          <p>🚚 متوسط التوصيل: {supplier.avgDeliveryDays} أيام</p>
-          <p>📦 عدد الطلبات: {supplier.totalOrders}</p>
+          <p>
+            🚚{" "}
+            {t("card.avgDeliveryDays", {
+              days: supplier.avgDeliveryDays,
+            })}
+          </p>
+          <p>📦 {t("card.orderCount", { count: supplier.totalOrders })}</p>
         </div>
 
         {/* الأدوية المتوفرة */}
         {supplier.commonMedicines.length > 0 && (
           <div className="border border-dashed rounded-lg p-3">
-            <p className="text-sm font-medium mb-2">الأدوية المتوفرة:</p>
+            <p className="text-sm font-medium mb-2">
+              {t("card.availableMedicines")}
+            </p>
             <div className="flex flex-wrap gap-1">
               {supplier.commonMedicines.slice(0, 3).map((med, i) => (
                 <Badge
@@ -388,7 +393,7 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
         {/* ملاحظات */}
         {supplier.notes && (
           <div className="text-sm text-muted-foreground border-t border-dashed pt-3">
-            <p className="font-medium mb-1">ملاحظات:</p>
+            <p className="font-medium mb-1">{t("card.notes")}</p>
             <p className="line-clamp-2">{supplier.notes}</p>
           </div>
         )}
@@ -401,7 +406,7 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
             className="flex-1"
             onClick={() => onEdit(supplier)}
           >
-            تعديل
+            {t("card.edit")}
           </Button>
           <Button
             size="sm"
@@ -409,7 +414,7 @@ function SupplierCard({ supplier, onEdit, onDelete }: SupplierCardProps) {
             className="flex-1 text-destructive hover:text-destructive"
             onClick={() => onDelete(supplier)}
           >
-            حذف
+            {t("card.delete")}
           </Button>
         </div>
       </CardContent>
@@ -431,6 +436,7 @@ function SupplierFormDialog({
   supplier,
   mode,
 }: SupplierFormDialogProps) {
+  const { t } = useTranslation("suppliers");
   const createSupplier = useCreateSupplier();
   const updateSupplier = useUpdateSupplier();
 
@@ -514,7 +520,7 @@ function SupplierFormDialog({
         <div className="p-4 border-b shrink-0">
           <DialogHeader>
             <DialogTitle className="text-2xl">
-              {mode === "create" ? "إضافة مورد جديد" : "تعديل المورد"}
+              {mode === "create" ? t("form.addTitle") : t("form.editTitle")}
             </DialogTitle>
           </DialogHeader>
         </div>
@@ -523,11 +529,12 @@ function SupplierFormDialog({
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* معلومات أساسية */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">المعلومات الأساسية</h3>
+              <h3 className="font-semibold text-lg">{t("form.basicInfo")}</h3>
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  اسم المورد <span className="text-destructive">*</span>
+                  {t("form.supplierName")}{" "}
+                  <span className="text-destructive">*</span>
                 </label>
                 <Input
                   required
@@ -535,7 +542,7 @@ function SupplierFormDialog({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="مثال: شركة الدواء المتحدة"
+                  placeholder={t("form.supplierNamePlaceholder")}
                   className="text-right"
                 />
               </div>
@@ -543,7 +550,8 @@ function SupplierFormDialog({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    رقم الهاتف <span className="text-destructive">*</span>
+                    {t("form.phone")}{" "}
+                    <span className="text-destructive">*</span>
                   </label>
                   <Input
                     required
@@ -552,7 +560,7 @@ function SupplierFormDialog({
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
                     }
-                    placeholder="05xxxxxxxx"
+                    placeholder={t("form.phonePlaceholder")}
                     className="text-right"
                     dir="ltr"
                   />
@@ -560,7 +568,7 @@ function SupplierFormDialog({
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    واتساب (اختياري)
+                    {t("form.whatsapp")}
                   </label>
                   <Input
                     type="tel"
@@ -568,7 +576,7 @@ function SupplierFormDialog({
                     onChange={(e) =>
                       setFormData({ ...formData, whatsapp: e.target.value })
                     }
-                    placeholder="05xxxxxxxx"
+                    placeholder={t("form.phonePlaceholder")}
                     className="text-right"
                     dir="ltr"
                   />
@@ -577,11 +585,11 @@ function SupplierFormDialog({
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  البريد الإلكتروني{" "}
+                  {t("form.email")}{" "}
                   {emailRequired ? (
                     <span className="text-destructive">*</span>
                   ) : (
-                    "(اختياري)"
+                    ""
                   )}
                 </label>
                 <Input
@@ -590,7 +598,7 @@ function SupplierFormDialog({
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  placeholder="example@company.com"
+                  placeholder={t("form.emailPlaceholder")}
                   className="text-right"
                   dir="ltr"
                   required={emailRequired}
@@ -599,14 +607,14 @@ function SupplierFormDialog({
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  العنوان (اختياري)
+                  {t("form.address")}
                 </label>
                 <Input
                   value={formData.address}
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  placeholder="الرياض، حي النخيل"
+                  placeholder={t("form.addressPlaceholder")}
                   className="text-right"
                 />
               </div>
@@ -614,7 +622,9 @@ function SupplierFormDialog({
 
             {/* الأدوية المتوفرة */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">الأدوية المتوفرة</h3>
+              <h3 className="font-semibold text-lg">
+                {t("form.availableMedicines")}
+              </h3>
 
               <div className="flex gap-2">
                 <Input
@@ -626,7 +636,7 @@ function SupplierFormDialog({
                       handleAddMedicine();
                     }
                   }}
-                  placeholder="اسم الدواء"
+                  placeholder={t("form.medicineName")}
                   className="text-right flex-1"
                 />
                 <Button
@@ -658,14 +668,14 @@ function SupplierFormDialog({
             {/* ملاحظات */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                ملاحظات (اختياري)
+                {t("form.notes")}
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) =>
                   setFormData({ ...formData, notes: e.target.value })
                 }
-                placeholder="أي ملاحظات إضافية عن المورد..."
+                placeholder={t("form.notesPlaceholder")}
                 className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background text-right resize-none"
                 dir="rtl"
               />
@@ -676,7 +686,7 @@ function SupplierFormDialog({
           <div className="p-4 border-t shrink-0">
             <div className="flex gap-3">
               <Button type="submit" className="flex-1">
-                {mode === "create" ? "إضافة المورد" : "حفظ التعديلات"}
+                {mode === "create" ? t("form.submit") : t("form.update")}
               </Button>
               <Button
                 type="button"
@@ -684,7 +694,7 @@ function SupplierFormDialog({
                 onClick={() => onOpenChange(false)}
                 className="flex-1"
               >
-                إلغاء
+                {t("form.cancel")}
               </Button>
             </div>
           </div>
@@ -706,6 +716,7 @@ function DeleteSupplierDialog({
   onOpenChange,
   supplier,
 }: DeleteSupplierDialogProps) {
+  const { t } = useTranslation("suppliers");
   const deleteSupplier = useDeleteSupplier();
 
   const handleDelete = () => {
@@ -719,19 +730,18 @@ function DeleteSupplierDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent dir="rtl">
         <AlertDialogHeader>
-          <AlertDialogTitle>تأكيد حذف المورد</AlertDialogTitle>
+          <AlertDialogTitle>{t("delete.title")}</AlertDialogTitle>
           <AlertDialogDescription className="text-right">
-            هل أنت متأكد من حذف المورد "{supplier?.name}"؟ لا يمكن التراجع عن
-            هذا الإجراء.
+            {t("delete.description", { name: supplier?.name || "" })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
-          <AlertDialogCancel>إلغاء</AlertDialogCancel>
+          <AlertDialogCancel>{t("delete.cancel")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90"
           >
-            حذف
+            {t("delete.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -10,6 +10,7 @@ import {
   Calendar,
   Award,
 } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/reports")({
 });
 
 function ReportsPage() {
+  const { t } = useTranslation("reports");
   const { data: orders = [], isLoading: ordersLoading } = useOrders();
   const { data: suppliers = [], isLoading: suppliersLoading } = useSuppliers();
 
@@ -139,7 +141,7 @@ function ReportsPage() {
   }, [orders, suppliers]);
 
   if (ordersLoading || suppliersLoading) {
-    return <Loading icon={BarChart3} message="جاري تحميل التقارير..." />;
+    return <Loading icon={BarChart3} message={t("loadingReports")} />;
   }
 
   if (orders.length === 0) {
@@ -148,9 +150,9 @@ function ReportsPage() {
         <PageHeader>
           <PageHeaderTrigger />
           <PageHeaderContent>
-            <PageHeaderTitle>التقارير والإحصائيات</PageHeaderTitle>
+            <PageHeaderTitle>{t("title")}</PageHeaderTitle>
             <PageHeaderDescription>
-              تحليل شامل لأداء الطلبات الخاصة
+              {t("description")}
             </PageHeaderDescription>
           </PageHeaderContent>
         </PageHeader>
@@ -161,9 +163,9 @@ function ReportsPage() {
                 <EmptyMedia variant="icon">
                   <BarChart3 className="h-8 w-8" />
                 </EmptyMedia>
-                <EmptyTitle>لا توجد بيانات للتقارير</EmptyTitle>
+                <EmptyTitle>{t("noData")}</EmptyTitle>
                 <EmptyDescription>
-                  ابدأ بإضافة طلبات لعرض التقارير والإحصائيات
+                  {t("noDataDescription")}
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
@@ -178,9 +180,9 @@ function ReportsPage() {
       <PageHeader>
         <PageHeaderTrigger />
         <PageHeaderContent>
-          <PageHeaderTitle>التقارير والإحصائيات</PageHeaderTitle>
+          <PageHeaderTitle>{t("title")}</PageHeaderTitle>
           <PageHeaderDescription>
-            تحليل شامل لأداء الطلبات الخاصة
+            {t("description")}
           </PageHeaderDescription>
         </PageHeaderContent>
       </PageHeader>
@@ -193,14 +195,15 @@ function ReportsPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">
-                    إجمالي الطلبات
+                    {t("mainStats.totalOrders")}
                   </CardTitle>
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{orders.length}</div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {stats.totalMedicines} دواء إجمالاً
+                    {stats.totalMedicines}{" "}
+                    {t("mainStats.totalMedicines")}
                   </p>
                 </CardContent>
               </Card>
@@ -208,16 +211,16 @@ function ReportsPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">
-                    متوسط وقت التسليم
+                    {t("mainStats.avgDeliveryTime")}
                   </CardTitle>
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {stats.avgDeliveryTime} أيام
+                    {stats.avgDeliveryTime} {t("mainStats.days")}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    للطلبات المكتملة
+                    {t("mainStats.forCompleted")}
                   </p>
                 </CardContent>
               </Card>
@@ -225,7 +228,7 @@ function ReportsPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">
-                    معدل الإنجاز
+                    {t("mainStats.completionRate")}
                   </CardTitle>
                   <CheckCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
@@ -234,7 +237,8 @@ function ReportsPage() {
                     {stats.completionRate}%
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {stats.ordersByStatus.delivered} من {orders.length} طلب
+                    {stats.ordersByStatus.delivered} {t("mainStats.of")}{" "}
+                    {orders.length} {t("mainStats.order")}
                   </p>
                 </CardContent>
               </Card>
@@ -242,13 +246,15 @@ function ReportsPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">
-                    عدد الموردين
+                    {t("mainStats.suppliersCount")}
                   </CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{suppliers.length}</div>
-                  <p className="text-xs text-muted-foreground mt-1">مورد نشط</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t("mainStats.activeSupplier")}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -259,13 +265,13 @@ function ReportsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
-                    الأدوية الأكثر طلباً
+                    {t("topMedicines.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {stats.topMedicines.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      لا توجد بيانات
+                      {t("messages.noData")}
                     </p>
                   ) : (
                     <div className="space-y-4">
@@ -286,7 +292,7 @@ function ReportsPage() {
                             </div>
                           </div>
                           <div className="shrink-0 text-sm font-medium">
-                            {med.count} طلب
+                            {med.count} {t("topMedicines.order")}
                           </div>
                         </div>
                       ))}
@@ -300,37 +306,37 @@ function ReportsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5" />
-                    الطلبات حسب الحالة
+                    {t("ordersByStatus.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <StatusBar
-                      label="قيد الانتظار"
+                      label={t("ordersByStatus.pending")}
                       count={stats.ordersByStatus.pending}
                       total={orders.length}
                       color="bg-yellow-500"
                     />
                     <StatusBar
-                      label="تم الطلب"
+                      label={t("ordersByStatus.ordered")}
                       count={stats.ordersByStatus.ordered}
                       total={orders.length}
                       color="bg-purple-500"
                     />
                     <StatusBar
-                      label="وصل"
+                      label={t("ordersByStatus.arrived")}
                       count={stats.ordersByStatus.arrived}
                       total={orders.length}
                       color="bg-green-500"
                     />
                     <StatusBar
-                      label="تم التسليم"
+                      label={t("ordersByStatus.delivered")}
                       count={stats.ordersByStatus.delivered}
                       total={orders.length}
                       color="bg-blue-500"
                     />
                     <StatusBar
-                      label="ملغي"
+                      label={t("ordersByStatus.cancelled")}
                       count={stats.ordersByStatus.cancelled}
                       total={orders.length}
                       color="bg-gray-500"
@@ -346,13 +352,13 @@ function ReportsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-5 w-5" />
-                    الطلبات حسب الشهر
+                    {t("ordersByMonth.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {Object.keys(stats.ordersByMonth).length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      لا توجد بيانات
+                      {t("messages.noData")}
                     </p>
                   ) : (
                     <div className="space-y-3">
@@ -390,13 +396,13 @@ function ReportsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="h-5 w-5" />
-                    أفضل الموردين
+                    {t("topSuppliers.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {stats.topSuppliers.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      لا يوجد موردين
+                      {t("topSuppliers.noSuppliers")}
                     </p>
                   ) : (
                     <div className="space-y-4">
@@ -417,12 +423,13 @@ function ReportsPage() {
                                 ⭐ {supplier.rating}
                               </Badge>
                               <span className="text-xs text-muted-foreground">
-                                {supplier.avgDeliveryDays} أيام
+                                {supplier.avgDeliveryDays} {t("common.days")}
                               </span>
                             </div>
                           </div>
                           <div className="shrink-0 text-sm text-muted-foreground">
-                            {supplier.totalOrders} طلب
+                            {supplier.totalOrders}{" "}
+                            {t("topSuppliers.order")}
                           </div>
                         </div>
                       ))}
@@ -435,13 +442,13 @@ function ReportsPage() {
             {/* إحصائيات إضافية */}
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>ملخص الأداء</CardTitle>
+                <CardTitle>{t("performanceSummary.title")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      الطلبات النشطة
+                      {t("performanceSummary.activeOrders")}
                     </p>
                     <p className="text-2xl font-bold">
                       {stats.ordersByStatus.pending +
@@ -449,25 +456,25 @@ function ReportsPage() {
                         stats.ordersByStatus.arrived}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      قيد المعالجة حالياً
+                      {t("performanceSummary.currentlyProcessing")}
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      الطلبات المكتملة
+                      {t("performanceSummary.completedOrders")}
                     </p>
                     <p className="text-2xl font-bold">
                       {stats.ordersByStatus.delivered}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      تم تسليمها بنجاح
+                      {t("performanceSummary.deliveredSuccessfully")}
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      الطلبات الملغاة
+                      {t("performanceSummary.cancelledOrders")}
                     </p>
                     <p className="text-2xl font-bold">
                       {stats.ordersByStatus.cancelled}
@@ -479,7 +486,7 @@ function ReportsPage() {
                               100,
                           )
                         : 0}
-                      % من الإجمالي
+                      % {t("performanceSummary.ofTotal")}
                     </p>
                   </div>
                 </div>

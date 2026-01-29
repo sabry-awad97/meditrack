@@ -1,44 +1,58 @@
 {
   "title": "Suppliers",
-  "createSupplier": "Create Supplier",
-  "editSupplier": "Edit Supplier",
-  "viewSupplier": "View Supplier",
-  "supplierDetails": "Supplier Details",
-  "supplierList": "Supplier List",
-  "noSuppliers": "No suppliers found",
-  "fields": {
-    "name": "Supplier Name",
-    "phone": "Phone Number",
+  "description": "Manage supplier list and communicate with them",
+  "addSupplier": "Add New Supplier",
+  "searchPlaceholder": "Search by supplier name, phone, or medicine...",
+  "noSuppliers": "No suppliers",
+  "noSuppliersFound": "No suppliers found",
+  "startAdding": "Start by adding a new supplier",
+  "tryDifferentSearch": "Try searching with different words",
+  "loadingSuppliers": "Loading suppliers...",
+  "testData": "Test Data",
+  "deleteAll": "Delete All",
+  "stats": {
+    "total": "Total Suppliers",
+    "avgRating": "Average Rating",
+    "avgDelivery": "Average Delivery",
+    "totalOrders": "Total Orders"
+  },
+  "card": {
+    "call": "Call",
     "whatsapp": "WhatsApp",
     "email": "Email",
-    "address": "Address",
-    "commonMedicines": "Common Medicines",
-    "avgDeliveryDays": "Average Delivery Days",
-    "rating": "Rating",
-    "totalOrders": "Total Orders",
-    "notes": "Notes",
-    "createdAt": "Created At",
-    "updatedAt": "Updated At"
+    "avgDeliveryDays": "Avg delivery: {{days}} days",
+    "orderCount": "Orders: {{count}}",
+    "availableMedicines": "Available Medicines:",
+    "notes": "Notes:",
+    "edit": "Edit",
+    "delete": "Delete"
   },
-  "actions": {
-    "deleteSupplier": "Delete Supplier",
-    "contactSupplier": "Contact Supplier"
+  "form": {
+    "addTitle": "Add New Supplier",
+    "editTitle": "Edit Supplier",
+    "basicInfo": "Basic Information",
+    "supplierName": "Supplier Name",
+    "supplierNamePlaceholder": "Example: United Pharmaceutical Company",
+    "phone": "Phone Number",
+    "phonePlaceholder": "01xxxxxxxx",
+    "whatsapp": "WhatsApp (optional)",
+    "email": "Email",
+    "emailPlaceholder": "example@company.com",
+    "address": "Address (optional)",
+    "addressPlaceholder": "Riyadh, Al Nakheel District",
+    "availableMedicines": "Available Medicines",
+    "medicineName": "Medicine Name",
+    "addMedicine": "Add",
+    "notes": "Notes (optional)",
+    "notesPlaceholder": "Any additional notes about the supplier...",
+    "submit": "Add Supplier",
+    "update": "Save Changes",
+    "cancel": "Cancel"
   },
-  "messages": {
-    "supplierCreated": "Supplier created successfully",
-    "supplierUpdated": "Supplier updated successfully",
-    "supplierDeleted": "Supplier deleted successfully",
-    "confirmDelete": "Are you sure you want to delete this supplier?"
-  },
-  "stats": {
-    "totalSuppliers": "Total Suppliers",
-    "activeSuppliers": "Active Suppliers",
-    "topRated": "Top Rated"
-  },
-  "performance": {
-    "excellent": "Excellent",
-    "good": "Good",
-    "average": "Average",
-    "poor": "Poor"
+  "delete": {
+    "title": "Confirm Supplier Deletion",
+    "description": "Are you sure you want to delete supplier \"{{name}}\"? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
   }
 }

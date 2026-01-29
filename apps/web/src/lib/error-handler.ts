@@ -36,11 +36,11 @@ export function handleError(
   }
 
   // تحديد رسالة الخطأ
-  let message = toastMessage || "حدث خطأ غير متوقع";
+  let message = toastMessage || "An unexpected error occurred";
 
   if (error instanceof z.ZodError) {
     const firstError = error.issues[0];
-    message = `خطأ في التحقق: ${firstError.message}`;
+    message = `Validation error: ${firstError.message}`;
   } else if (error instanceof Error) {
     message = error.message;
   }

@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Download, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 export function ManualUpdateCheck() {
+  const { t } = useTranslation();
   const { update, checking, error, checkForUpdates } = useAppUpdater();
 
   return (
@@ -18,9 +20,9 @@ export function ManualUpdateCheck() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
-          التحديثات
+          {t("update.available")}
         </CardTitle>
-        <CardDescription>تحقق من وجود تحديثات جديدة للتطبيق</CardDescription>
+        <CardDescription>{t("update.checkForUpdates")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {error && (
@@ -33,7 +35,11 @@ export function ManualUpdateCheck() {
         {!update && !error && !checking && (
           <Alert>
             <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription>التطبيق محدث إلى أحدث إصدار</AlertDescription>
+            <AlertDescription>
+              {t("update.upToDate", {
+                defaultValue: "Application is up to date",
+              })}
+            </AlertDescription>
           </Alert>
         )}
 
@@ -41,7 +47,7 @@ export function ManualUpdateCheck() {
           <Alert>
             <Download className="h-4 w-4" />
             <AlertDescription>
-              تحديث متاح: الإصدار {update.version}
+              {t("update.newVersion", { version: update.version })}
             </AlertDescription>
           </Alert>
         )}
@@ -53,11 +59,14 @@ export function ManualUpdateCheck() {
             variant="outline"
           >
             {checking && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-            {checking ? "جاري التحقق..." : "التحقق من التحديثات"}
+            {checking ? t("update.checking") : t("update.checkForUpdates")}
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            الإصدار الحالي: {import.meta.env.VITE_APP_VERSION || "0.1.0"}
+            {t("update.currentVersion", {
+              version: import.meta.env.VITE_APP_VERSION || "0.1.0",
+              defaultValue: `Current version: ${import.meta.env.VITE_APP_VERSION || "0.1.0"}`,
+            })}
           </p>
         </div>
       </CardContent>

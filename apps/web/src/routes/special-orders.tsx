@@ -11,6 +11,7 @@ import {
   Database,
   Trash2,
 } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,11 +52,13 @@ import {
 } from "@/hooks";
 import type { Order, OrderFormData, OrderStatus } from "@/lib/types";
 
-export const Route = createFileRoute("/pharmacy")({
-  component: PharmacyComponent,
+export const Route = createFileRoute("/special-orders")({
+  component: SpecialOrdersComponent,
 });
 
-function PharmacyComponent() {
+function SpecialOrdersComponent() {
+  const { t } = useTranslation("orders");
+
   // استخدام TanStack Query بدلاً من useState
   const { data: orders = [], isLoading } = useOrders();
   const createOrder = useCreateOrder();
@@ -159,7 +162,7 @@ function PharmacyComponent() {
 
   // عرض loader أثناء التحميل
   if (isLoading) {
-    return <Loading icon={Package} message="جاري تحميل الطلبات..." />;
+    return <Loading icon={Package} message={t("page.loadingOrders")} />;
   }
 
   return (
@@ -167,10 +170,8 @@ function PharmacyComponent() {
       <PageHeader>
         <PageHeaderTrigger />
         <PageHeaderContent>
-          <PageHeaderTitle>الطلبات الخاصة</PageHeaderTitle>
-          <PageHeaderDescription>
-            إدارة طلبات الأدوية الخاصة للصيدلية
-          </PageHeaderDescription>
+          <PageHeaderTitle>{t("page.title")}</PageHeaderTitle>
+          <PageHeaderDescription>{t("page.description")}</PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
           {isDev && (
@@ -182,7 +183,7 @@ function PharmacyComponent() {
                 className="gap-2"
               >
                 <Database className="h-5 w-5" />
-                بيانات تجريبية
+                {t("page.testData")}
               </Button>
               {orders.length > 0 && (
                 <Button
@@ -192,7 +193,7 @@ function PharmacyComponent() {
                   className="gap-2 text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-5 w-5" />
-                  حذف الكل
+                  {t("page.deleteAll")}
                 </Button>
               )}
             </>
@@ -203,7 +204,7 @@ function PharmacyComponent() {
             className="gap-2 rounded-md"
           >
             <Plus className="h-5 w-5" />
-            إضافة طلب جديد
+            {t("page.addOrder")}
           </Button>
         </PageHeaderActions>
       </PageHeader>
@@ -215,31 +216,31 @@ function PharmacyComponent() {
             <PageSection className="mb-6 border-b-2 border-dashed pb-6 shrink-0">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <StatsCard
-                  title="إجمالي الطلبات"
+                  title={t("stats.total")}
                   value={stats.total}
                   icon={ListOrdered}
                   color="bg-blue-500"
                 />
                 <StatsCard
-                  title="قيد الانتظار"
+                  title={t("stats.pending")}
                   value={stats.pending}
                   icon={Clock}
                   color="bg-yellow-500"
                 />
                 <StatsCard
-                  title="تم الطلب"
+                  title={t("stats.ordered")}
                   value={stats.ordered}
                   icon={Package}
                   color="bg-purple-500"
                 />
                 <StatsCard
-                  title="وصل"
+                  title={t("stats.arrived")}
                   value={stats.arrived}
                   icon={TruckIcon}
                   color="bg-green-500"
                 />
                 <StatsCard
-                  title="تم التسليم"
+                  title={t("stats.delivered")}
                   value={stats.delivered}
                   icon={CheckCircle}
                   color="bg-gray-500"
@@ -254,7 +255,7 @@ function PharmacyComponent() {
               <div className="relative w-full sm:w-80">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="ابحث باسم العميل أو الدواء..."
+                  placeholder={t("page.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-10 text-right"
@@ -262,27 +263,31 @@ function PharmacyComponent() {
               </div>
               <Select
                 items={[
-                  { value: null, label: "تصفية حسب الحالة" },
-                  { value: "all", label: "جميع الحالات" },
-                  { value: "pending", label: "قيد الانتظار" },
-                  { value: "ordered", label: "تم الطلب" },
-                  { value: "arrived", label: "وصل" },
-                  { value: "delivered", label: "تم التسليم" },
-                  { value: "cancelled", label: "ملغي" },
+                  { value: null, label: t("page.filterByStatus") },
+                  { value: "all", label: t("page.allStatuses") },
+                  { value: "pending", label: t("stats.pending") },
+                  { value: "ordered", label: t("stats.ordered") },
+                  { value: "arrived", label: t("stats.arrived") },
+                  { value: "delivered", label: t("stats.delivered") },
+                  { value: "cancelled", label: t("stats.cancelled") },
                 ]}
                 value={statusFilter}
                 onValueChange={setStatusFilter}
               >
                 <SelectTrigger className="w-full sm:w-[200px] text-right">
-                  <SelectValue placeholder="تصفية حسب الحالة" />
+                  <SelectValue placeholder={t("page.filterByStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">جميع الحالات</SelectItem>
-                  <SelectItem value="pending">قيد الانتظار</SelectItem>
-                  <SelectItem value="ordered">تم الطلب</SelectItem>
-                  <SelectItem value="arrived">وصل</SelectItem>
-                  <SelectItem value="delivered">تم التسليم</SelectItem>
-                  <SelectItem value="cancelled">ملغي</SelectItem>
+                  <SelectItem value="all">{t("page.allStatuses")}</SelectItem>
+                  <SelectItem value="pending">{t("stats.pending")}</SelectItem>
+                  <SelectItem value="ordered">{t("stats.ordered")}</SelectItem>
+                  <SelectItem value="arrived">{t("stats.arrived")}</SelectItem>
+                  <SelectItem value="delivered">
+                    {t("stats.delivered")}
+                  </SelectItem>
+                  <SelectItem value="cancelled">
+                    {t("stats.cancelled")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -296,18 +301,18 @@ function PharmacyComponent() {
                   <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-xl font-semibold mb-2">
                     {searchQuery || statusFilter
-                      ? "لم يتم العثور على طلبات"
-                      : "لا توجد طلبات"}
+                      ? t("page.noOrdersFound")
+                      : t("page.noOrders")}
                   </h3>
                   <p className="text-muted-foreground mb-6">
                     {searchQuery || statusFilter
-                      ? "جرب البحث بكلمات مختلفة"
-                      : "ابدأ بإضافة طلب جديد"}
+                      ? t("page.tryDifferentSearch")
+                      : t("page.startAdding")}
                   </p>
                   {!searchQuery && !statusFilter && (
                     <Button onClick={handleOpenCreateForm} className="gap-2">
                       <Plus className="h-4 w-4" />
-                      إضافة طلب جديد
+                      {t("page.addOrder")}
                     </Button>
                   )}
                 </div>

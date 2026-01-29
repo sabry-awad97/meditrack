@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,7 +49,7 @@ export function OrderForm({
   initialData,
   mode,
 }: OrderFormProps) {
-  // جلب الإعدادات
+  const { t } = useTranslation("orders");
   const { data: settings } = useSettings();
 
   const [customerName, setCustomerName] = useState(
@@ -155,12 +156,12 @@ export function OrderForm({
         <div className="p-4 border-b shrink-0">
           <DialogHeader>
             <DialogTitle className="text-2xl">
-              {mode === "create" ? "إضافة طلب جديد" : "تعديل الطلب"}
+              {mode === "create" ? t("form.addTitle") : t("form.editTitle")}
             </DialogTitle>
             <DialogDescription>
               {mode === "create"
-                ? "أدخل بيانات العميل والأدوية المطلوبة"
-                : "قم بتعديل بيانات الطلب"}
+                ? t("form.addDescription")
+                : t("form.editDescription")}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -169,22 +170,26 @@ export function OrderForm({
           <div className="flex-1 min-h-0 flex flex-col px-4 py-6 space-y-6">
             {/* بيانات العميل */}
             <div className="space-y-4 p-4 rounded-lg bg-muted/50 shrink-0">
-              <h3 className="font-semibold text-lg">بيانات العميل</h3>
+              <h3 className="font-semibold text-lg">
+                {t("form.customerInfo")}
+              </h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="customerName">اسم العميل *</Label>
+                  <Label htmlFor="customerName">
+                    {t("form.customerNameLabel")} *
+                  </Label>
                   <Input
                     id="customerName"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="أدخل اسم العميل"
+                    placeholder={t("form.customerNamePlaceholder")}
                     required
                     className="text-right"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">
-                    رقم الهاتف
+                    {t("form.phoneLabel")}
                     {phoneRequired && (
                       <span className="text-destructive mr-1">*</span>
                     )}
@@ -194,7 +199,7 @@ export function OrderForm({
                     type="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="05xxxxxxxx"
+                    placeholder={t("form.phonePlaceholder")}
                     dir="ltr"
                     className="text-left"
                     required={phoneRequired}
@@ -206,7 +211,9 @@ export function OrderForm({
             {/* الأدوية المطلوبة */}
             <div className="flex flex-col flex-1 min-h-0 space-y-4">
               <div className="flex items-center justify-between shrink-0">
-                <h3 className="font-semibold text-lg">الأدوية المطلوبة</h3>
+                <h3 className="font-semibold text-lg">
+                  {t("form.medicinesRequired")}
+                </h3>
                 <Button
                   type="button"
                   variant="outline"
@@ -216,12 +223,12 @@ export function OrderForm({
                   disabled={medicines.length >= maxMedicines}
                   title={
                     medicines.length >= maxMedicines
-                      ? `الحد الأقصى ${maxMedicines} أدوية`
+                      ? t("form.maxMedicinesReached", { max: maxMedicines })
                       : undefined
                   }
                 >
                   <Plus className="h-4 w-4" />
-                  إضافة دواء
+                  {t("medicine.addMedicine")}
                 </Button>
               </div>
 
@@ -234,7 +241,7 @@ export function OrderForm({
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-muted-foreground">
-                          دواء {index + 1}
+                          {t("form.medicineNumber", { number: index + 1 })}
                         </span>
                         {medicines.length > 1 && (
                           <Button
@@ -253,7 +260,7 @@ export function OrderForm({
 
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         <div className="space-y-2 sm:col-span-2">
-                          <Label>اسم الدواء *</Label>
+                          <Label>{t("form.medicineNameLabel")} *</Label>
                           <Input
                             value={medicine.name}
                             onChange={(e) =>
@@ -263,13 +270,13 @@ export function OrderForm({
                                 e.target.value,
                               )
                             }
-                            placeholder="مثال: Panadol Extra"
+                            placeholder={t("form.medicineNamePlaceholder")}
                             required
                             className="text-right"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>التركيز</Label>
+                          <Label>{t("form.concentrationLabel")}</Label>
                           <Input
                             value={medicine.concentration}
                             onChange={(e) =>
@@ -279,12 +286,12 @@ export function OrderForm({
                                 e.target.value,
                               )
                             }
-                            placeholder="مثال: 500mg"
+                            placeholder={t("form.concentrationPlaceholder")}
                             className="text-right"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>الكمية *</Label>
+                          <Label>{t("form.quantityLabel")} *</Label>
                           <Input
                             type="number"
                             min="1"
@@ -303,7 +310,7 @@ export function OrderForm({
                       </div>
 
                       <div className="space-y-2">
-                        <Label>الشكل الصيدلي *</Label>
+                        <Label>{t("form.formLabel")} *</Label>
                         <Select
                           value={medicine.form || undefined}
                           onValueChange={(value) =>
@@ -315,7 +322,9 @@ export function OrderForm({
                           }
                         >
                           <SelectTrigger className="text-right">
-                            <SelectValue placeholder="اختر الشكل الصيدلي" />
+                            <SelectValue
+                              placeholder={t("form.formPlaceholder")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {allowedForms.map((form: string) => (
@@ -334,12 +343,12 @@ export function OrderForm({
 
             {/* ملاحظات */}
             <div className="space-y-2 shrink-0">
-              <Label htmlFor="notes">ملاحظات الصيدلي</Label>
+              <Label htmlFor="notes">{t("form.notesLabel")}</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="أي ملاحظات إضافية..."
+                placeholder={t("form.notesPlaceholder")}
                 rows={3}
                 className="text-right resize-none"
               />
@@ -350,10 +359,10 @@ export function OrderForm({
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={handleClose}>
                 <X className="h-4 w-4 ml-2" />
-                إلغاء
+                {t("form.cancel")}
               </Button>
               <Button type="submit">
-                {mode === "create" ? "حفظ الطلب" : "تحديث الطلب"}
+                {mode === "create" ? t("form.saveOrder") : t("form.updateOrder")}
               </Button>
             </DialogFooter>
           </div>

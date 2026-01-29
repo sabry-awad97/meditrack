@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { ORDER_STATUS_CONFIG } from "@/lib/constants";
+import { useOrderStatusConfig } from "@/hooks";
 import type { OrderStatus } from "@/lib/types";
 
 interface StatusBadgeProps {
@@ -8,6 +8,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+  const ORDER_STATUS_CONFIG = useOrderStatusConfig();
   const config = ORDER_STATUS_CONFIG[status];
 
   return (

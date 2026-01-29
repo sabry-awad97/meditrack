@@ -15,7 +15,16 @@
     "invalid_enum_value": "Invalid value",
     "positive": "Must be a positive number",
     "nonnegative": "Must be a non-negative number",
-    "uuid": "Must be a valid UUID"
+    "uuid": "Must be a valid UUID",
+    "medicineName": "Medicine name is required",
+    "concentration": "Concentration is required",
+    "form": "Pharmaceutical form is required",
+    "quantity": "Quantity must be greater than zero",
+    "customerName": "Customer name is required",
+    "phoneNumber": "Phone number is required",
+    "medicines": "At least one medicine must be added",
+    "supplierName": "Supplier name is required",
+    "supplierPhone": "Phone number is required"
   },
   "fields": {
     "email": "Email",
@@ -34,6 +43,7 @@
     "commonMedicines": "Common medicines",
     "avgDeliveryDays": "Average delivery days",
     "rating": "Rating",
-    "notes": "Notes"
+    "notes": "Notes",
+    "medicines": "Medicines"
   }
 }

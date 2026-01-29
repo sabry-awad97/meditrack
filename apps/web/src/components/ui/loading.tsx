@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "@medi-order/i18n";
 
 interface LoadingProps extends React.HTMLAttributes<HTMLDivElement> {
   icon?: LucideIcon;
@@ -10,9 +11,12 @@ interface LoadingProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Loading({
   className,
   icon: Icon,
-  message = "جاري التحميل...",
+  message,
   ...props
 }: LoadingProps) {
+  const { t } = useTranslation();
+  const displayMessage = message || t("loading.default");
+
   return (
     <div
       className={cn(
@@ -25,7 +29,7 @@ export function Loading({
         {Icon && (
           <Icon className="h-16 w-16 mx-auto text-muted-foreground mb-4 animate-pulse" />
         )}
-        <p className="text-muted-foreground">{message}</p>
+        <p className="text-muted-foreground">{displayMessage}</p>
       </div>
     </div>
   );
