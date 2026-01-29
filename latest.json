@@ -1,11 +1,11 @@
 {
-  "version": "0.1.0",
-  "notes": "Initial release with auto-updater support\n\n## Features\n- Complete pharmacy order management system\n- Order tracking with multiple status states\n- Supplier management\n- Smart alerts and notifications\n- Statistics dashboard\n- Dark/Light theme support\n- RTL (Arabic) support\n- Automatic updates",
-  "pub_date": "2026-01-29T12:00:00Z",
+  "version": "0.2.0",
+  "notes": "Release v0.2.0 - Internationalization Improvements\n\n## 🌍 Internationalization Enhancements\n\n### New Features\n- **Dedicated Translation Namespaces**: Refactored i18n structure to use dedicated namespaces for better organization\n- **Type-Safe useTranslation Hook**: Enhanced with optional namespace parameter and full TypeScript type safety\n- **Direction-Aware Icons**: Arrow icons now automatically adjust based on text direction (RTL/LTR)\n\n### Improvements\n- Route Renaming: Renamed \"pharmacy\" route to \"special-orders\" for better clarity\n- Translation Key Cleanup: Removed redundant namespace prefixes\n- Better Organization: Separated route-specific translations from common translations\n- Enhanced Type Definitions: Updated TypeScript definitions for full i18n type safety\n\n### Bug Fixes\n- Fixed suppliers page translation keys\n- Updated test files to reference new route names\n- Corrected translation namespace usage across all components",
+  "pub_date": "2026-01-30T12:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSWU1pekt4c1Ywc2dtenRwTUVKRWlPSjhXUWNnQ0UxSFZDRmc0V25TN0VSUk1kM2Q5NjlXWVlRL25IOHkxSTIvcXAreHZEQTdqZ2NOVkRmWTA1QWVnenFNKzRwU3Y1YkFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY5NzE2MTc2CWZpbGU6bWVkaS1vcmRlcl8wLjEuMF94NjQtc2V0dXAuZXhlCjBVS2QxM0lWQS84clo4d2xnbXQzUnpnbFpwZnllSlpqUXFtWWVZRUZtTWF3N2l0d0x4M0JIWGhheEpFdXNWbEJpL3l4dUZybnhmVWxtanB5dHJXMENRPT0K",
-      "url": "https://github.com/sabry-awad97/medi-order/releases/download/v0.1.0/medi-order_0.1.0_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSWU1pekt4c1Ywc3IvVitkMnlma3V3b2ZveTQrVGVmU0hSb1MxZW44RHQ1STVnUFJpTjYvZkFhR2lsY2xPcE01WHlham1kdzNNajQ5NXVYTUN2REVaNnZXcWJCazVjYXdrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY5NzI2NjQwCWZpbGU6bWVkaS1vcmRlcl8wLjIuMF94NjQtc2V0dXAuZXhlCkRRYi9UbDk2QzFCSk0yR2FMWWQwc1dNb1pXNVA1WlUrS1VlL3RkdnJNZjJ5U2pEMmVld1RqY1E0Z21PK1dIb0hXbmtla3hqUWtaRDQzRnZCUStjYUNRPT0K",
+      "url": "https://github.com/sabry-awad97/medi-order/releases/download/v0.2.0/medi-order_0.2.0_x64-setup.exe"
     }
   }
 }
