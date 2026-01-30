@@ -7,6 +7,7 @@ import { getDirection } from "./config/locales";
 export interface I18nProviderProps {
   children: React.ReactNode;
   defaultLocale?: Locale;
+  initialLocale?: Locale;
   fallbackLocale?: Locale;
   availableLocales?: Locale[];
   debug?: boolean;
@@ -90,12 +91,16 @@ function updateDocumentAttributes(locale: Locale) {
   document.documentElement.lang = locale;
 }
 
-export function I18nProvider({ children, defaultLocale }: I18nProviderProps) {
+export function I18nProvider({
+  children,
+  defaultLocale,
+  initialLocale,
+}: I18nProviderProps) {
   const [error, setError] = useState<Error | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    initializeI18n(defaultLocale)
+    initializeI18n(initialLocale || defaultLocale)
       .then(() => {
         updateDocumentAttributes(i18n.language as Locale);
         setIsReady(true);
@@ -104,7 +109,7 @@ export function I18nProvider({ children, defaultLocale }: I18nProviderProps) {
         console.error("Failed to initialize i18n:", err);
         setError(err instanceof Error ? err : new Error(String(err)));
       });
-  }, [defaultLocale]);
+  }, [defaultLocale, initialLocale]);
 
   // Listen for language changes and update document attributes
   useEffect(() => {
