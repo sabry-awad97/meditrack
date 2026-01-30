@@ -26,6 +26,52 @@ export {
   supplierKeys,
 } from "./use-suppliers-db";
 
+// Hooks للمستخدمين (TanStack Query)
+export {
+  // Query Hooks
+  useUser,
+  useUserWithStaff,
+  useUserByUsername,
+  useUserByStaffId,
+  useUsers,
+  useActiveUsers,
+  useUserStatistics,
+  // Mutation Hooks
+  useCreateUser,
+  useUpdateUser,
+  useDeleteUser,
+  useRestoreUser,
+  useDeleteUserPermanently,
+  // Auth Hooks
+  useLogin,
+  useChangePassword,
+  useResetPassword,
+  // Utility Hooks
+  usePrefetchUser,
+  useInvalidateUsers,
+  // Query Keys
+  userKeys,
+} from "./use-users";
+
+// Hooks للمستخدمين (TanStack DB)
+export {
+  useUsers as useUsersDB,
+  useUser as useUserDB,
+  useUsersByStatus,
+  useActiveUsers as useActiveUsersDB,
+  useSearchUsers,
+  useUserStatistics as useUserStatisticsDB,
+  useCreateUser as useCreateUserDB,
+  useUpdateUser as useUpdateUserDB,
+  useUpdateUserStatus,
+  useToggleUserActive,
+  useDeleteUser as useDeleteUserDB,
+  useRefreshUsers,
+  useUserByUsername as useUserByUsernameDB,
+  usersCollection,
+  userKeys as userKeysDB,
+} from "./use-users-db";
+
 // Hooks للتنبيهات
 export { useOrderAlerts, useAlertStats } from "./use-order-alerts";
 
