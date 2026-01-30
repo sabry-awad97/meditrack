@@ -2,6 +2,8 @@ use clap::Parser;
 use tauri::Manager;
 
 mod error;
+/// IPC command handlers
+pub mod ipc;
 mod state;
 
 /// MediTrack - Pharmacy Management System
@@ -57,7 +59,28 @@ pub async fn run() {
             Ok(())
         });
 
-    let builder = builder.invoke_handler(tauri::generate_handler![]);
+    let builder = builder.invoke_handler(tauri::generate_handler![
+        // User CRUD operations
+        ipc::commands::user::create_user,
+        ipc::commands::user::get_user,
+        ipc::commands::user::update_user,
+        ipc::commands::user::delete_user,
+        ipc::commands::user::list_users,
+        // Authentication & Security
+        ipc::commands::user::login_user,
+        ipc::commands::user::change_password,
+        ipc::commands::user::reset_password,
+        // User Retrieval
+        ipc::commands::user::get_user_by_username,
+        ipc::commands::user::get_user_by_staff_id,
+        ipc::commands::user::get_user_with_staff,
+        ipc::commands::user::get_active_users,
+        // User Management
+        ipc::commands::user::restore_user,
+        ipc::commands::user::delete_user_permanently,
+        // Statistics
+        ipc::commands::user::get_user_statistics,
+    ]);
 
     builder
         .run(tauri::generate_context!())

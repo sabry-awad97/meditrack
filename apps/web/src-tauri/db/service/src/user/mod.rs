@@ -8,14 +8,18 @@ use db_entity::id::Id;
 use db_entity::staff::Entity as Staff;
 use db_entity::user::dto::{
     ChangePasswordDto, CreateUserDto, DeleteUserDto, LoginDto, LoginResponseDto, ResetPasswordDto,
-    UpdateUserDto, UserListDto, UserQueryDto, UserResponseDto, UserWithStaffDto,
+    UpdateUserDto, UserQueryDto, UserResponseDto, UserWithStaffDto,
 };
 use db_entity::user::{self, Entity as User};
 use sea_orm::*;
+use tap::{Pipe, Tap, TapFallible};
 
-use crate::error::{ServiceError, ServiceResult};
 use crate::jwt::JwtService;
 use crate::staff::StaffService;
+use crate::{
+    PaginationParams, PaginationResult,
+    error::{ServiceError, ServiceResult},
+};
 
 /// User service for managing user accounts and authentication
 pub struct UserService {
@@ -113,10 +117,10 @@ impl UserService {
         };
 
         let result = user.insert(&*self.db).await?;
-        let response = UserResponseDto::from(result);
 
-        tracing::info!("Created user account: {}", response.username);
-        Ok(response)
+        UserResponseDto::from(result)
+            .tap(|response| tracing::info!("Created user account: {}", response.username))
+            .pipe(Ok)
     }
 
     /// Get user by ID
@@ -348,9 +352,8 @@ impl UserService {
     pub async fn list(
         &self,
         query: UserQueryDto,
-        page: u64,
-        page_size: u64,
-    ) -> ServiceResult<UserListDto> {
+        pagination: Option<PaginationParams>,
+    ) -> ServiceResult<PaginationResult<UserResponseDto>> {
         let mut select = User::find();
 
         // Apply filters
@@ -387,21 +390,35 @@ impl UserService {
         // Get total count
         let total = select.clone().count(&*self.db).await?;
 
-        // Apply pagination
-        let paginator = select
-            .order_by_asc(user::Column::Username)
-            .paginate(&*self.db, page_size);
+        // Handle pagination
+        let (response_items, page, page_size) = if let Some(pagination) = pagination {
+            // Extract values before consuming
+            let page = pagination.page();
+            let page_size = pagination.page_size();
 
-        let items = paginator.fetch_page(page - 1).await?;
+            // Apply pagination
+            let paginator = select
+                .order_by_asc(user::Column::Username)
+                .paginate(&*self.db, page_size);
+            let items = paginator.fetch_page(page - 1).await?;
+            let response_items = items.into_iter().map(UserResponseDto::from).collect();
+            (response_items, page, page_size)
+        } else {
+            // No pagination - return all results
+            let items = select
+                .order_by_asc(user::Column::Username)
+                .all(&*self.db)
+                .await?;
+            let response_items = items.into_iter().map(UserResponseDto::from).collect();
+            (response_items, 1u64, total)
+        };
 
-        let response_items = items.into_iter().map(UserResponseDto::from).collect();
-
-        Ok(UserListDto {
-            items: response_items,
+        Ok(PaginationResult::new(
+            response_items,
             total,
             page,
             page_size,
-        })
+        ))
     }
 
     /// Get all active users
@@ -455,14 +472,15 @@ impl UserService {
                 user_with_staff.email.clone(),
                 user_with_staff.role_id.to_string(), // TODO: Get actual role name from role service
             )
+            .tap_err(|e| tracing::error!("Failed to generate JWT token: {}", e))
             .map_err(|e| ServiceError::Internal(format!("Failed to generate token: {}", e)))?;
 
-        tracing::info!("User logged in: {}", dto.username);
-
-        Ok(LoginResponseDto {
+        LoginResponseDto {
             user: user_with_staff,
             token: Some(token),
-        })
+        }
+        .tap(|_| tracing::info!("User logged in: {}", dto.username))
+        .pipe(Ok)
     }
 
     /// Change user password (requires current password)

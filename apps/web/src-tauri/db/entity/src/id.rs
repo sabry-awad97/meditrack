@@ -15,6 +15,9 @@ use uuid::Uuid;
 pub struct Id(Uuid);
 
 impl Id {
+    /// The nil UUID (all zeros)
+    pub const NIL: Self = Self(Uuid::nil());
+
     /// Generate a new UUID v7 ID
     pub fn new() -> Self {
         Self(Uuid::now_v7())

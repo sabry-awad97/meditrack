@@ -15,6 +15,9 @@ pub use error::{ServiceError, ServiceResult};
 mod jwt;
 pub use jwt::{Claims, JwtError, JwtService};
 
+mod pagination;
+pub use pagination::{PaginationParams, PaginationResult};
+
 // Export Staff service
 pub use staff::{StaffService, StaffStatistics};
 
@@ -47,11 +50,11 @@ pub struct ServiceManager {
 
     /// Staff service
     #[builder(setter(into))]
-    staff: StaffService,
+    staff: Arc<StaffService>,
 
     /// User service
     #[builder(setter(into))]
-    user: UserService,
+    user: Arc<UserService>,
 }
 
 impl ServiceManager {

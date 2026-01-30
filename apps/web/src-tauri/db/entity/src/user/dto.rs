@@ -112,15 +112,6 @@ pub struct UserWithStaffDto {
     pub staff_employment_status: String,
 }
 
-/// DTO for user list with pagination
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UserListDto {
-    pub items: Vec<UserResponseDto>,
-    pub total: u64,
-    pub page: u64,
-    pub page_size: u64,
-}
-
 /// DTO for user login
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoginDto {
