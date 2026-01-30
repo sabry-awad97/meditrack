@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { useDirection } from "@medi-order/i18n";
+import { useDirection } from "@meditrack/i18n";
 
 // Page Root Component
 interface PageProps extends React.HTMLAttributes<HTMLDivElement> {

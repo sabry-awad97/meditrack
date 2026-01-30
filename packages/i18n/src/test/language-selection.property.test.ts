@@ -194,7 +194,7 @@ describe("Property Test: Language Selection and Persistence", () => {
           .filter((s) => s !== "en" && s !== "ar"),
         async (invalidLocale) => {
           // Store an invalid locale
-          localStorage.setItem("medi-order-locale", invalidLocale);
+          localStorage.setItem("meditrack-locale", invalidLocale);
 
           // getStoredLocale should return null for invalid values
           const stored = getStoredLocale();

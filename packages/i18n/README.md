@@ -1,4 +1,4 @@
-# @medi-order/i18n
+# @meditrack/i18n
 
 Type-safe internationalization (i18n) package for React applications with full TypeScript support, RTL/LTR layouts, and seamless integration with Zod validation and TanStack Router.
 
@@ -16,7 +16,7 @@ Type-safe internationalization (i18n) package for React applications with full T
 ## Installation
 
 ```bash
-bun add @medi-order/i18n
+bun add @meditrack/i18n
 ```
 
 ## Quick Start
@@ -24,7 +24,7 @@ bun add @medi-order/i18n
 ### 1. Wrap your app with I18nProvider
 
 ```tsx
-import { I18nProvider } from "@medi-order/i18n";
+import { I18nProvider } from "@meditrack/i18n";
 
 function App() {
   return (
@@ -38,7 +38,7 @@ function App() {
 ### 2. Use translations in components
 
 ```tsx
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 function MyComponent() {
   const { t } = useTranslation("common");
@@ -55,7 +55,7 @@ function MyComponent() {
 ### 3. Switch languages
 
 ```tsx
-import { LanguageSwitcher } from "@medi-order/i18n";
+import { LanguageSwitcher } from "@meditrack/i18n";
 
 function Header() {
   return (
@@ -141,7 +141,7 @@ UI component for switching languages.
 #### Formatting
 
 ```tsx
-import { formatDate, formatNumber, formatCurrency } from "@medi-order/i18n";
+import { formatDate, formatNumber, formatCurrency } from "@meditrack/i18n";
 
 // Format date
 formatDate(new Date(), "ar"); // "١٥ يناير ٢٠٢٦"
@@ -156,8 +156,8 @@ formatCurrency(99.99, "en", "USD"); // "$99.99"
 #### Zod Integration
 
 ```tsx
-import { useTranslation } from "@medi-order/i18n";
-import { createZodErrorMap } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
+import { createZodErrorMap } from "@meditrack/i18n";
 import { z } from "zod";
 
 function MyForm() {
@@ -178,7 +178,7 @@ function MyForm() {
 #### Router Integration
 
 ```tsx
-import { getLocaleFromPath, localizedPath } from "@medi-order/i18n";
+import { getLocaleFromPath, localizedPath } from "@meditrack/i18n";
 
 // Extract locale from URL
 const locale = getLocaleFromPath("/en/dashboard"); // "en"
@@ -212,8 +212,8 @@ locales/
 ```json
 {
   "app": {
-    "name": "Medi Order",
-    "tagline": "Medical Supply Management"
+    "name": "MediTrack",
+    "tagline": "Comprehensive Pharmacy Management"
   },
   "navigation": {
     "home": "Home",
@@ -245,7 +245,7 @@ Generates TypeScript definitions from translation files for autocomplete support
 In development mode, missing translations are logged to the console and collected in a registry.
 
 ```tsx
-import { missingTranslations } from "@medi-order/i18n";
+import { missingTranslations } from "@meditrack/i18n";
 
 // View missing translations
 console.log(Array.from(missingTranslations));
@@ -281,7 +281,7 @@ const schema = z.object({
 });
 
 // After
-import { createZodErrorMap } from "@medi-order/i18n";
+import { createZodErrorMap } from "@meditrack/i18n";
 
 const { t } = useTranslation("validation");
 z.setErrorMap(createZodErrorMap(t));

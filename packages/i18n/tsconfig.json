@@ -1,5 +1,5 @@
 {
-  "extends": "@medi-order/config/tsconfig.base.json",
+  "extends": "@meditrack/config/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
-import { I18nProvider, useTranslation } from "@medi-order/i18n";
+import { I18nProvider, useTranslation } from "@meditrack/i18n";
 import { ZodProvider } from "@/providers/zod-provider";
 import { z } from "zod";
 import { useState } from "react";

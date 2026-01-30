@@ -5,12 +5,12 @@
     "": {
       "name": "medi-order",
       "dependencies": {
-        "@medi-order/env": "workspace:*",
+        "@meditrack/env": "workspace:*",
         "dotenv": "^17.2.3",
         "zod": "^4.3.6",
       },
       "devDependencies": {
-        "@medi-order/config": "workspace:*",
+        "@meditrack/config": "workspace:*",
         "turbo": "^2.8.0",
         "typescript": "^5.9.3",
       },
@@ -21,8 +21,8 @@
       "dependencies": {
         "@base-ui/react": "^1.1.0",
         "@hookform/resolvers": "^5.2.2",
-        "@medi-order/env": "workspace:*",
-        "@medi-order/i18n": "workspace:*",
+        "@meditrack/env": "workspace:*",
+        "@meditrack/i18n": "workspace:*",
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/query-db-collection": "^1.0.22",
         "@tanstack/react-db": "^0.1.69",
@@ -54,7 +54,7 @@
         "zod": "^4.3.6",
       },
       "devDependencies": {
-        "@medi-order/config": "workspace:*",
+        "@meditrack/config": "workspace:*",
         "@tanstack/react-query-devtools": "^5.91.2",
         "@tanstack/react-router-devtools": "^1.157.16",
         "@tanstack/router-plugin": "^1.157.16",
@@ -77,11 +77,11 @@
       },
     },
     "packages/config": {
-      "name": "@medi-order/config",
+      "name": "@meditrack/config",
       "version": "0.0.0",
     },
     "packages/env": {
-      "name": "@medi-order/env",
+      "name": "@meditrack/env",
       "version": "0.0.0",
       "dependencies": {
         "@t3-oss/env-core": "^0.13.1",
@@ -89,19 +89,19 @@
         "zod": "catalog:",
       },
       "devDependencies": {
-        "@medi-order/config": "workspace:*",
+        "@meditrack/config": "workspace:*",
         "typescript": "catalog:",
       },
     },
     "packages/i18n": {
-      "name": "@medi-order/i18n",
+      "name": "@meditrack/i18n",
       "version": "0.1.0",
       "dependencies": {
         "i18next": "^25.8.0",
         "react-i18next": "^16.5.4",
       },
       "devDependencies": {
-        "@medi-order/config": "workspace:*",
+        "@meditrack/config": "workspace:*",
         "@testing-library/react": "^16.3.2",
         "@testing-library/react-hooks": "^8.0.1",
         "@types/react": "^19.2.10",
@@ -315,11 +315,11 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@medi-order/config": ["@medi-order/config@workspace:packages/config"],
+    "@meditrack/config": ["@meditrack/config@workspace:packages/config"],
 
-    "@medi-order/env": ["@medi-order/env@workspace:packages/env"],
+    "@meditrack/env": ["@meditrack/env@workspace:packages/env"],
 
-    "@medi-order/i18n": ["@medi-order/i18n@workspace:packages/i18n"],
+    "@meditrack/i18n": ["@meditrack/i18n@workspace:packages/i18n"],
 
     "@modelcontextprotocol/sdk": ["@modelcontextprotocol/sdk@1.25.3", "", { "dependencies": { "@hono/node-server": "^1.19.9", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "content-type": "^1.0.5", "cors": "^2.8.5", "cross-spawn": "^7.0.5", "eventsource": "^3.0.2", "eventsource-parser": "^3.0.0", "express": "^5.0.1", "express-rate-limit": "^7.5.0", "jose": "^6.1.1", "json-schema-typed": "^8.0.2", "pkce-challenge": "^5.0.0", "raw-body": "^3.0.0", "zod": "^3.25 || ^4.0", "zod-to-json-schema": "^3.25.0" }, "peerDependencies": { "@cfworker/json-schema": "^4.1.1" }, "optionalPeers": ["@cfworker/json-schema"] }, "sha512-vsAMBMERybvYgKbg/l4L1rhS7VXV1c0CtyJg72vwxONVX0l4ZfKVAnZEWTQixJGTzKnELjQ59e4NbdFDALRiAQ=="],
 

@@ -28,8 +28,8 @@ describe("Property Test: Nested Translation Key Resolution", () => {
 
     // Define known valid nested keys from our translation files
     const validNestedKeys = [
-      { key: "app.name", expected: "Medi Order" },
-      { key: "app.tagline", expected: "Medical Supply Management" },
+      { key: "app.name", expected: "MediTrack" },
+      { key: "app.tagline", expected: "Comprehensive Pharmacy Management" },
       { key: "navigation.home", expected: "Home" },
       { key: "navigation.orders", expected: "Special Orders" },
       { key: "theme.light", expected: "Light Mode" },
@@ -152,8 +152,11 @@ describe("Property Test: Nested Translation Key Resolution", () => {
 
     // Test keys with explicit namespace prefix
     const namespacedKeys = [
-      { key: "common:app.name", expected: "Medi Order" },
-      { key: "common:navigation.home", expected: "Home" },
+      { key: "common:app.name", expected: "MediTrack" },
+      {
+        key: "common:app.tagline",
+        expected: "Comprehensive Pharmacy Management",
+      },
       { key: "common:actions.save", expected: "Save" },
     ];
 

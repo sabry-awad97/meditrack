@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Download, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 export function ManualUpdateCheck() {
   const { t } = useTranslation();

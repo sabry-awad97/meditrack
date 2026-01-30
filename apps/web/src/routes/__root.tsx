@@ -13,7 +13,7 @@ import {
   Search,
   FileQuestion,
 } from "lucide-react";
-import { useDirection, useTranslation } from "@medi-order/i18n";
+import { useDirection, useTranslation } from "@meditrack/i18n";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -40,11 +40,12 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
       {
-        title: "Special Orders Management System - Medi Order",
+        title: "MediTrack - Professional Pharmacy Management System with AI",
       },
       {
         name: "description",
-        content: "Professional pharmacy special orders management system",
+        content:
+          "Professional pharmacy management system for everything with AI",
       },
     ],
     links: [

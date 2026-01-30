@@ -7,7 +7,7 @@ The `useTranslation` hook now supports optional namespace parameter with full ty
 ### With Namespace (Type-Safe)
 
 ```tsx
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 function OrdersPage() {
   // TypeScript knows this is the "orders" namespace
@@ -24,7 +24,7 @@ function OrdersPage() {
 ### Without Namespace (Defaults to "common")
 
 ```tsx
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 function Header() {
   // Defaults to "common" namespace
@@ -41,7 +41,7 @@ function Header() {
 ### Multiple Namespaces
 
 ```tsx
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 function MyComponent() {
   const { t: tCommon } = useTranslation("common");

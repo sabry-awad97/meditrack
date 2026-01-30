@@ -20,7 +20,7 @@ import reportsAr from "../locales/ar/reports.json";
 import settingsAr from "../locales/ar/settings.json";
 import validationAr from "../locales/ar/validation.json";
 
-const STORAGE_KEY = "medi-order-locale";
+const STORAGE_KEY = "meditrack-locale";
 
 // Missing translations registry for development
 export const missingTranslations = new Set<string>();

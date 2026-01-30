@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Download, AlertCircle } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 export function UpdateDialog() {
   const { t } = useTranslation();

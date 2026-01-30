@@ -26,18 +26,18 @@ After build completes, find these files:
 
 ### Windows
 
-- `src-tauri/target/release/bundle/nsis/medi-order_0.1.0_x64-setup.nsis.zip`
-- `src-tauri/target/release/bundle/nsis/medi-order_0.1.0_x64-setup.nsis.zip.sig`
+- `src-tauri/target/release/bundle/nsis/meditrack_0.1.0_x64-setup.nsis.zip`
+- `src-tauri/target/release/bundle/nsis/meditrack_0.1.0_x64-setup.nsis.zip.sig`
 
 ### macOS (if building on Mac)
 
-- `src-tauri/target/release/bundle/macos/medi-order_0.1.0_x64.app.tar.gz`
-- `src-tauri/target/release/bundle/macos/medi-order_0.1.0_x64.app.tar.gz.sig`
+- `src-tauri/target/release/bundle/macos/meditrack_0.1.0_x64.app.tar.gz`
+- `src-tauri/target/release/bundle/macos/meditrack_0.1.0_x64.app.tar.gz.sig`
 
 ### Linux (if building on Linux)
 
-- `src-tauri/target/release/bundle/appimage/medi-order_0.1.0_amd64.AppImage.tar.gz`
-- `src-tauri/target/release/bundle/appimage/medi-order_0.1.0_amd64.AppImage.tar.gz.sig`
+- `src-tauri/target/release/bundle/appimage/meditrack_0.1.0_amd64.AppImage.tar.gz`
+- `src-tauri/target/release/bundle/appimage/meditrack_0.1.0_amd64.AppImage.tar.gz.sig`
 
 ## Step 3: Create latest.json
 
@@ -51,7 +51,7 @@ Create a file named `latest.json` with this content:
   "platforms": {
     "windows-x86_64": {
       "signature": "PASTE_SIGNATURE_FROM_.SIG_FILE",
-      "url": "https://github.com/sabry-awad97/medi-order/releases/download/v0.1.0/medi-order_0.1.0_x64-setup.nsis.zip"
+      "url": "https://github.com/sabry-awad97/meditrack/releases/download/v0.1.0/meditrack_0.1.0_x64-setup.nsis.zip"
     }
   }
 }
@@ -60,14 +60,14 @@ Create a file named `latest.json` with this content:
 **Get the signature:**
 
 ```bash
-cat src-tauri/target/release/bundle/nsis/medi-order_0.1.0_x64-setup.nsis.zip.sig
+cat src-tauri/target/release/bundle/nsis/meditrack_0.1.0_x64-setup.nsis.zip.sig
 ```
 
 Copy the entire output and paste it into the `signature` field.
 
 ## Step 4: Create GitHub Release Manually
 
-1. Go to: https://github.com/sabry-awad97/medi-order/releases/new
+1. Go to: https://github.com/sabry-awad97/meditrack/releases/new
 
 2. Fill in:
    - **Tag**: `v0.1.0` (select existing tag)

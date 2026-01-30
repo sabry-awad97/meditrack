@@ -94,19 +94,19 @@ jobs:
             "platforms": {
               "windows-x86_64": {
                 "signature": "${WIN_SIG}",
-                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_x64-setup.nsis.zip"
+                "url": "https://github.com/sabry-awad97/meditrack/releases/download/${{ github.ref_name }}/meditrack_${{ steps.version.outputs.VERSION }}_x64-setup.nsis.zip"
               },
               "linux-x86_64": {
                 "signature": "${LINUX_SIG}",
-                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_amd64.AppImage.tar.gz"
+                "url": "https://github.com/sabry-awad97/meditrack/releases/download/${{ github.ref_name }}/meditrack_${{ steps.version.outputs.VERSION }}_amd64.AppImage.tar.gz"
               },
               "darwin-x86_64": {
                 "signature": "${MAC_X64_SIG}",
-                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_x64.app.tar.gz"
+                "url": "https://github.com/sabry-awad97/meditrack/releases/download/${{ github.ref_name }}/meditrack_${{ steps.version.outputs.VERSION }}_x64.app.tar.gz"
               },
               "darwin-aarch64": {
                 "signature": "${MAC_ARM_SIG}",
-                "url": "https://github.com/sabry-awad97/medi-order/releases/download/${{ github.ref_name }}/medi-order_${{ steps.version.outputs.VERSION }}_aarch64.app.tar.gz"
+                "url": "https://github.com/sabry-awad97/meditrack/releases/download/${{ github.ref_name }}/meditrack_${{ steps.version.outputs.VERSION }}_aarch64.app.tar.gz"
               }
             }
           }

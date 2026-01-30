@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { Phone, Calendar, Package } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 import {
   Dialog,

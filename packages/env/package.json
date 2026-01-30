@@ -1,5 +1,5 @@
 {
-  "name": "@medi-order/env",
+  "name": "@meditrack/env",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@medi-order/config": "workspace:*",
+    "@meditrack/config": "workspace:*",
     "typescript": "catalog:"
   }
 }

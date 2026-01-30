@@ -10,7 +10,7 @@ import {
   Calendar,
   Award,
 } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -151,9 +151,7 @@ function ReportsPage() {
           <PageHeaderTrigger />
           <PageHeaderContent>
             <PageHeaderTitle>{t("title")}</PageHeaderTitle>
-            <PageHeaderDescription>
-              {t("description")}
-            </PageHeaderDescription>
+            <PageHeaderDescription>{t("description")}</PageHeaderDescription>
           </PageHeaderContent>
         </PageHeader>
         <PageContent>
@@ -164,9 +162,7 @@ function ReportsPage() {
                   <BarChart3 className="h-8 w-8" />
                 </EmptyMedia>
                 <EmptyTitle>{t("noData")}</EmptyTitle>
-                <EmptyDescription>
-                  {t("noDataDescription")}
-                </EmptyDescription>
+                <EmptyDescription>{t("noDataDescription")}</EmptyDescription>
               </EmptyHeader>
             </Empty>
           </PageContentInner>
@@ -181,9 +177,7 @@ function ReportsPage() {
         <PageHeaderTrigger />
         <PageHeaderContent>
           <PageHeaderTitle>{t("title")}</PageHeaderTitle>
-          <PageHeaderDescription>
-            {t("description")}
-          </PageHeaderDescription>
+          <PageHeaderDescription>{t("description")}</PageHeaderDescription>
         </PageHeaderContent>
       </PageHeader>
 
@@ -202,8 +196,7 @@ function ReportsPage() {
                 <CardContent>
                   <div className="text-2xl font-bold">{orders.length}</div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {stats.totalMedicines}{" "}
-                    {t("mainStats.totalMedicines")}
+                    {stats.totalMedicines} {t("mainStats.totalMedicines")}
                   </p>
                 </CardContent>
               </Card>
@@ -428,8 +421,7 @@ function ReportsPage() {
                             </div>
                           </div>
                           <div className="shrink-0 text-sm text-muted-foreground">
-                            {supplier.totalOrders}{" "}
-                            {t("topSuppliers.order")}
+                            {supplier.totalOrders} {t("topSuppliers.order")}
                           </div>
                         </div>
                       ))}

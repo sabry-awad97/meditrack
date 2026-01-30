@@ -7,7 +7,7 @@ import {
   BarChart3,
   Users,
 } from "lucide-react";
-import { useTranslation, useDirection } from "@medi-order/i18n";
+import { useTranslation, useDirection } from "@meditrack/i18n";
 
 import { Button } from "@/components/ui/button";
 import {

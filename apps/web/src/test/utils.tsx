@@ -8,7 +8,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { I18nProvider } from "@medi-order/i18n";
+import { I18nProvider } from "@meditrack/i18n";
 
 // Create a custom render function that includes providers
 function createTestQueryClient() {

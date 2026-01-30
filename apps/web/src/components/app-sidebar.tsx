@@ -43,7 +43,7 @@ import {
   LOCALES,
   useTranslation,
   useDirection,
-} from "@medi-order/i18n";
+} from "@meditrack/i18n";
 
 export function AppSidebar() {
   const { state } = useSidebar();

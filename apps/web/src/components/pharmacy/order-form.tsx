@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -362,7 +362,9 @@ export function OrderForm({
                 {t("form.cancel")}
               </Button>
               <Button type="submit">
-                {mode === "create" ? t("form.saveOrder") : t("form.updateOrder")}
+                {mode === "create"
+                  ? t("form.saveOrder")
+                  : t("form.updateOrder")}
               </Button>
             </DialogFooter>
           </div>

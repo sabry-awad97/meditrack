@@ -14,7 +14,7 @@ import {
   Palette,
   Cog,
 } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,9 +154,7 @@ function SettingsPage() {
   };
 
   if (isLoading) {
-    return (
-      <Loading icon={SettingsIcon} message={t("loadingSettings")} />
-    );
+    return <Loading icon={SettingsIcon} message={t("loadingSettings")} />;
   }
 
   return (
@@ -165,9 +163,7 @@ function SettingsPage() {
         <PageHeaderTrigger />
         <PageHeaderContent>
           <PageHeaderTitle>{t("title")}</PageHeaderTitle>
-          <PageHeaderDescription>
-            {t("description")}
-          </PageHeaderDescription>
+          <PageHeaderDescription>{t("description")}</PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
           <Button

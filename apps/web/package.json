@@ -20,8 +20,8 @@
   "dependencies": {
     "@base-ui/react": "^1.1.0",
     "@hookform/resolvers": "^5.2.2",
-    "@medi-order/env": "workspace:*",
-    "@medi-order/i18n": "workspace:*",
+    "@meditrack/env": "workspace:*",
+    "@meditrack/i18n": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/query-db-collection": "^1.0.22",
     "@tanstack/react-db": "^0.1.69",
@@ -53,7 +53,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@medi-order/config": "workspace:*",
+    "@meditrack/config": "workspace:*",
     "@tanstack/react-query-devtools": "^5.91.2",
     "@tanstack/react-router-devtools": "^1.157.16",
     "@tanstack/router-plugin": "^1.157.16",

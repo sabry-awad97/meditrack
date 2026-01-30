@@ -1,5 +1,5 @@
 {
-  "name": "medi-order",
+  "name": "meditrack",
   "private": true,
   "workspaces": {
     "packages": [
@@ -25,12 +25,12 @@
     "dev:web": "turbo -F web dev"
   },
   "dependencies": {
-    "@medi-order/env": "workspace:*",
+    "@meditrack/env": "workspace:*",
     "dotenv": "^17.2.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@medi-order/config": "workspace:*",
+    "@meditrack/config": "workspace:*",
     "turbo": "^2.8.0",
     "typescript": "^5.9.3"
   },

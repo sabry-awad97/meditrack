@@ -1,5 +1,5 @@
-import { createZodErrorMap } from "@medi-order/i18n";
-import { useTranslation } from "@medi-order/i18n";
+import { createZodErrorMap } from "@meditrack/i18n";
+import { useTranslation } from "@meditrack/i18n";
 import { useEffect } from "react";
 import { z } from "zod/v3";
 

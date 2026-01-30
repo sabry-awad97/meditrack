@@ -190,8 +190,12 @@ describe("Property Test: Namespace Isolation", () => {
 
     // Nested keys in different namespaces
     const nestedKeys = [
-      { ns: "common", key: "app.name", expected: "Medi Order" },
-      { ns: "orders", key: "form.addTitle", expected: "Add New Order" },
+      { ns: "common", key: "app.name", expected: "MediTrack" },
+      {
+        ns: "common",
+        key: "app.tagline",
+        expected: "Comprehensive Pharmacy Management",
+      },
       { ns: "suppliers", key: "form.addTitle", expected: "Add New Supplier" },
       { ns: "settings", key: "categories.general", expected: "General" },
     ];

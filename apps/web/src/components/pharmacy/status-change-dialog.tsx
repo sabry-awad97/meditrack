@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { useTranslation } from "@medi-order/i18n";
+import { useTranslation } from "@meditrack/i18n";
 
 import { Button } from "@/components/ui/button";
 import {

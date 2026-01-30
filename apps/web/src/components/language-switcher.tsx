@@ -1,5 +1,5 @@
-import { useLocale, LOCALES } from "@medi-order/i18n";
-import type { Locale } from "@medi-order/i18n";
+import { useLocale, LOCALES } from "@meditrack/i18n";
+import type { Locale } from "@meditrack/i18n";
 import { Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
