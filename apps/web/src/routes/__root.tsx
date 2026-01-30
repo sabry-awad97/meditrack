@@ -7,7 +7,14 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { createContext, useContext, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  lazy,
+  Suspense,
+  type ReactNode,
+} from "react";
 import {
   Home,
   ArrowRight,
@@ -17,13 +24,17 @@ import {
 } from "lucide-react";
 import { useDirection, useTranslation } from "@meditrack/i18n";
 
-import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Page, PageContent, PageContentInner } from "@/components/ui/page";
 import { useCheckFirstRun } from "@/hooks/use-onboarding-db";
 import { Loading } from "@/components/ui/loading";
 import "../index.css";
+
+// Lazy load AppSidebar (only needed for authenticated routes)
+const AppSidebar = lazy(() =>
+  import("@/components/app-sidebar").then((m) => ({ default: m.AppSidebar })),
+);
 
 export interface RouterAppContext {}
 
@@ -110,7 +121,9 @@ function RootComponent() {
       <HeadContent />
       <SidebarProvider defaultOpen={true}>
         <div className="flex h-screen w-full overflow-hidden" dir={direction}>
-          <AppSidebar />
+          <Suspense fallback={<Loading />}>
+            <AppSidebar />
+          </Suspense>
           <SidebarInset className="flex flex-col flex-1 min-w-0">
             <main className="flex-1 overflow-y-auto overflow-x-hidden">
               <Outlet />

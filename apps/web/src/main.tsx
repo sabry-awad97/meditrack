@@ -1,10 +1,17 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
+import { lazy, Suspense } from "react";
 
 import { AppProviders } from "./providers";
 import { routeTree } from "./routeTree.gen";
 import { Loading } from "./components/ui/loading";
-import { UpdateDialog } from "./components/update-dialog";
+
+// Lazy load UpdateDialog
+const UpdateDialog = lazy(() =>
+  import("./components/update-dialog").then((m) => ({
+    default: m.UpdateDialog,
+  })),
+);
 
 const router = createRouter({
   routeTree,
@@ -30,7 +37,9 @@ if (!rootElement.innerHTML) {
   root.render(
     <AppProviders>
       <RouterProvider router={router} />
-      <UpdateDialog />
+      <Suspense fallback={null}>
+        <UpdateDialog />
+      </Suspense>
     </AppProviders>,
   );
 }

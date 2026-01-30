@@ -14,8 +14,8 @@ interface AppProvidersProps {
 
 // Helper to get stored language from IndexedDB
 async function getStoredLanguage(): Promise<Locale> {
-  console.log("🔍 Getting stored language...");
   try {
+    // Lazy load localforage only when needed
     const { default: localforage } = await import("localforage");
     const settingsDB = localforage.createInstance({
       name: "pharmacy-special-orders",
@@ -23,9 +23,7 @@ async function getStoredLanguage(): Promise<Locale> {
     });
 
     const language = await settingsDB.getItem<string>("defaultLanguage");
-    console.log("📦 IndexedDB language:", language);
     if (language === "en" || language === "ar") {
-      console.log("✅ Using language from IndexedDB:", language);
       return language;
     }
   } catch (error) {
@@ -35,22 +33,20 @@ async function getStoredLanguage(): Promise<Locale> {
   // Fallback to localStorage (i18n's own storage)
   try {
     const stored = localStorage.getItem("meditrack-locale");
-    console.log("📦 localStorage language:", stored);
     if (stored === "en" || stored === "ar") {
-      console.log("✅ Using language from localStorage:", stored);
       return stored;
     }
   } catch (error) {
     console.warn("⚠️ Failed to read language from localStorage:", error);
   }
 
-  console.log("✅ Using default language: en");
   return "en"; // Default to English
 }
 
 // Helper to get stored theme from IndexedDB
 async function getStoredTheme(): Promise<"light" | "dark" | "system"> {
   try {
+    // Lazy load localforage only when needed
     const { default: localforage } = await import("localforage");
     const settingsDB = localforage.createInstance({
       name: "pharmacy-special-orders",
