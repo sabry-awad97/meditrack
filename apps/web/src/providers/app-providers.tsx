@@ -118,23 +118,16 @@ function AppContent({ children }: { children: React.ReactNode }) {
 }
 
 export function AppProviders({ children }: AppProvidersProps) {
-  const [initialLocale, setInitialLocale] = useState<Locale | undefined>();
+  const [initialLocale, setInitialLocale] = useState<Locale>("en"); // Start with default immediately
 
   useEffect(() => {
-    console.log("🚀 AppProviders mounting, loading initial locale...");
+    // Load stored locale in background and update if different
     getStoredLanguage().then((locale) => {
-      console.log("✅ Initial locale loaded:", locale);
-      setInitialLocale(locale);
+      if (locale !== initialLocale) {
+        setInitialLocale(locale);
+      }
     });
   }, []);
-
-  // Wait for initial locale to be loaded
-  if (initialLocale === undefined) {
-    console.log("⏳ Waiting for initial locale...");
-    return null; // Or a loading spinner
-  }
-
-  console.log("🎨 Rendering AppProviders with locale:", initialLocale);
 
   return (
     <I18nProvider initialLocale={initialLocale}>

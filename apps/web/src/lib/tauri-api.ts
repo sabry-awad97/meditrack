@@ -41,7 +41,7 @@ export function isBrowserEnvironment(): boolean {
  * Get the current Tauri window instance
  * Returns null if not in Tauri environment
  */
-async function getTauriWindow() {
+export async function getTauriWindow() {
   if (!isTauriEnvironment()) {
     return null;
   }

@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   Home,
   Package,
@@ -12,6 +12,7 @@ import {
   Moon,
   Sun,
   Languages,
+  LogOut,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -34,6 +35,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -45,6 +47,7 @@ import {
   useTranslation,
   useDirection,
 } from "@meditrack/i18n";
+import { useAuth } from "@/hooks/use-auth";
 
 export function AppSidebar() {
   const { state, open, setOpen } = useSidebar();
@@ -57,6 +60,14 @@ export function AppSidebar() {
   const { locale, setLocale } = useLocale();
   const { t } = useTranslation("common");
   const { isRTL } = useDirection();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle logout with navigation
+  const handleLogout = async () => {
+    await logout();
+    navigate({ to: "/login" });
+  };
 
   // Main menu items
   const mainMenuItems = [
@@ -314,17 +325,20 @@ export function AppSidebar() {
                 <div className="flex items-center gap-2 w-full">
                   <Avatar className="h-8 w-8 rounded-lg shrink-0">
                     <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
-                      {t("user.pharmacy").charAt(0)}
+                      {user?.first_name?.charAt(0) || "U"}
+                      {user?.last_name?.charAt(0) || ""}
                     </AvatarFallback>
                   </Avatar>
                   <div
                     className={`grid flex-1 text-sm leading-tight min-w-0 ${isRTL ? "text-right" : "text-left"}`}
                   >
                     <span className="truncate font-semibold">
-                      {t("user.pharmacy")}
+                      {user?.display_name ||
+                        `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
+                        t("user.pharmacy")}
                     </span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {t("user.pharmacist")}
+                      {user?.email || t("user.pharmacist")}
                     </span>
                   </div>
                   <ChevronDown
@@ -349,6 +363,14 @@ export function AppSidebar() {
                 <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
                   <HelpCircle className="h-4 w-4 shrink-0" />
                   <span>{t("navigation.help")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="cursor-pointer flex items-center gap-2 text-destructive focus:text-destructive"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span>{t("auth.logout")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -31,6 +31,11 @@
     "pharmacist": "Pharmacist",
     "notifications": "Notifications"
   },
+  "auth": {
+    "logout": "Logout",
+    "login": "Login",
+    "loggingOut": "Logging out..."
+  },
   "actions": {
     "save": "Save",
     "cancel": "Cancel",

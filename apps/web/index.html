@@ -1,15 +1,36 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ميدي تراك - نظام إدارة الصيدلية الشامل</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <style>
+      /* Prevent white flash - apply dark background immediately */
+      html,
+      body {
+        background-color: #09090b;
+        color: #fafafa;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      #app {
+        min-height: 100vh;
+      }
+    </style>
   </head>
 
   <body>

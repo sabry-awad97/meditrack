@@ -70,21 +70,17 @@ function RootComponent() {
   const { data: isFirstRun, isLoading: isCheckingFirstRun } =
     useCheckFirstRun();
 
-  // Redirect to onboarding if first run
+  // Redirect to onboarding if first run (non-blocking)
   useEffect(() => {
     if (
       !isCheckingFirstRun &&
       isFirstRun &&
-      router.location.pathname !== "/onboarding"
+      router.location.pathname !== "/onboarding" &&
+      router.location.pathname !== "/login"
     ) {
       navigate({ to: "/onboarding" });
     }
   }, [isFirstRun, isCheckingFirstRun, router.location.pathname, navigate]);
-
-  // Show loading while checking first run
-  if (isCheckingFirstRun) {
-    return <Loading />;
-  }
 
   // Check if current route is login or onboarding (no sidebar/layout)
   const noLayoutRoutes = ["/login", "/onboarding"];
@@ -101,6 +97,11 @@ function RootComponent() {
         )}
       </>
     );
+  }
+
+  // Show loading only if we're checking first run AND not on a no-layout route
+  if (isCheckingFirstRun && !isNoLayoutRoute) {
+    return <Loading />;
   }
 
   // Regular layout with sidebar for authenticated routes

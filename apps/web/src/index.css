@@ -119,10 +119,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply font-sans bg-background text-foreground;
+  }
   body {
     @apply font-sans bg-background text-foreground;
   }
-  html {
-    @apply font-sans;
+  
+  /* Prevent white flash on load */
+  html,
+  body,
+  #app {
+    @apply bg-background;
+    min-height: 100vh;
   }
 }
