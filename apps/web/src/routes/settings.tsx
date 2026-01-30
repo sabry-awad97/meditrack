@@ -181,25 +181,40 @@ function SettingsPage() {
     }
   }, [settings, formData]);
 
-  // Sync language setting with i18n
+  // Sync language setting with i18n ONLY on initial load
+  const hasInitializedLanguage = React.useRef(false);
   useEffect(() => {
-    if (settings?.defaultLanguage && settings.defaultLanguage !== locale) {
-      setLocale(settings.defaultLanguage as "en" | "ar");
+    if (settings?.defaultLanguage && !hasInitializedLanguage.current) {
+      if (settings.defaultLanguage !== locale) {
+        console.log(
+          "🔄 Settings page: Syncing language from DB:",
+          settings.defaultLanguage,
+        );
+        setLocale(settings.defaultLanguage as "en" | "ar");
+      }
+      hasInitializedLanguage.current = true;
     }
-  }, [settings?.defaultLanguage, locale, setLocale]);
+  }, [settings?.defaultLanguage]);
 
-  // Sync theme setting with ThemeProvider
+  // Sync theme setting with ThemeProvider ONLY on initial load
+  const hasInitializedTheme = React.useRef(false);
   useEffect(() => {
-    if (
-      settings?.defaultTheme &&
-      settings.defaultTheme !== theme &&
-      (settings.defaultTheme === "light" ||
-        settings.defaultTheme === "dark" ||
-        settings.defaultTheme === "system")
-    ) {
-      setTheme(settings.defaultTheme);
+    if (settings?.defaultTheme && !hasInitializedTheme.current) {
+      if (
+        settings.defaultTheme !== theme &&
+        (settings.defaultTheme === "light" ||
+          settings.defaultTheme === "dark" ||
+          settings.defaultTheme === "system")
+      ) {
+        console.log(
+          "🔄 Settings page: Syncing theme from DB:",
+          settings.defaultTheme,
+        );
+        setTheme(settings.defaultTheme);
+      }
+      hasInitializedTheme.current = true;
     }
-  }, [settings?.defaultTheme, theme, setTheme]);
+  }, [settings?.defaultTheme]);
 
   const handleChange = (key: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [key]: value }));

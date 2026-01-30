@@ -266,8 +266,13 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   onClick={() => {
                     const newLocale = locale === "ar" ? "en" : "ar";
+                    console.log("🌍 Sidebar language change:", {
+                      from: locale,
+                      to: newLocale,
+                    });
                     setLocale(newLocale);
                     // Save to database
+                    console.log("💾 Saving language to database...");
                     updateSetting.mutate({
                       key: "defaultLanguage",
                       value: newLocale,
