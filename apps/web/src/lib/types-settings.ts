@@ -92,6 +92,7 @@ export const NotificationsSettingsSchema = z.object({
 // Schema لإعدادات المظهر
 export const AppearanceSettingsSchema = z.object({
   defaultTheme: z.enum(["light", "dark", "system"]),
+  defaultLanguage: z.enum(["en", "ar"]),
   sidebarDefaultState: z.enum(["open", "collapsed"]),
   itemsPerPage: z.number().int().min(10).max(100),
 });
@@ -139,6 +140,7 @@ export const SettingsSchema = z.object({
 
   // Appearance
   defaultTheme: z.enum(["light", "dark", "system"]),
+  defaultLanguage: z.enum(["en", "ar"]),
   sidebarDefaultState: z.enum(["open", "collapsed"]),
   itemsPerPage: z.number().int().min(10).max(100),
 

@@ -236,6 +236,19 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     ],
   },
   {
+    id: "default-language",
+    category: "appearance",
+    key: "defaultLanguage",
+    label: "fields.defaultLanguage.label",
+    description: "fields.defaultLanguage.description",
+    type: "select",
+    defaultValue: "en",
+    options: [
+      { value: "en", label: "fields.defaultLanguage.options.en" },
+      { value: "ar", label: "fields.defaultLanguage.options.ar" },
+    ],
+  },
+  {
     id: "sidebar-default-state",
     category: "appearance",
     key: "sidebarDefaultState",

@@ -137,6 +137,14 @@
         "system": "System"
       }
     },
+    "defaultLanguage": {
+      "label": "Default Language",
+      "description": "Application display language",
+      "options": {
+        "en": "English",
+        "ar": "العربية (Arabic)"
+      }
+    },
     "sidebarDefaultState": {
       "label": "Default Sidebar State",
       "description": "Whether sidebar is open or collapsed on startup",

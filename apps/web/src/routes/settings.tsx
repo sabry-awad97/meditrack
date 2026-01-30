@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -13,8 +13,13 @@ import {
   MessageSquare,
   Palette,
   Cog,
+  Check,
+  Search,
+  X,
 } from "lucide-react";
 import { useTranslation } from "@meditrack/i18n";
+import { useLocale } from "@meditrack/i18n";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +51,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
@@ -58,6 +63,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 import {
   useSettings,
   useUpdateSettings,
@@ -78,7 +84,23 @@ export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
-// أيقونات الفئات
+// CVA variants for setting rows
+const settingRowVariants = cva(
+  "flex items-center justify-between gap-3 py-2.5 px-3 rounded-md transition-colors",
+  {
+    variants: {
+      variant: {
+        default: "hover:bg-muted/50",
+        focused: "bg-muted",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+);
+
+// Category icons
 const categoryIcons: Record<SettingCategory, any> = {
   general: SettingsIcon,
   orders: Package,
@@ -91,6 +113,7 @@ const categoryIcons: Record<SettingCategory, any> = {
 
 function SettingsPage() {
   const { t } = useTranslation("settings");
+  const { locale, setLocale } = useLocale();
   const { data: settings, isLoading } = useSettings();
   const updateSettings = useUpdateSettings();
   const resetSettings = useResetSettings();
@@ -98,33 +121,42 @@ function SettingsPage() {
   const importSettings = useImportSettings();
 
   const [formData, setFormData] = useState<Record<string, unknown>>({});
-  const [activeTab, setActiveTab] = useState<SettingCategory>("general");
   const [hasChanges, setHasChanges] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Debug: Log i18n status
-  React.useEffect(() => {
-    console.log("🔍 Settings i18n debug:");
-    console.log("- Namespace: settings");
-    console.log("- Sample translation test:", t("title"));
-    console.log("- Category test:", t("categories.general.label"));
-    console.log("- Field test:", t("fields.pharmacyName.label"));
-  }, [t]);
+  // Update formData when settings load
+  useEffect(() => {
+    if (settings && Object.keys(formData).length === 0) {
+      setFormData(settings);
+    }
+  }, [settings, formData]);
 
-  // تحديث formData عند تحميل الإعدادات
-  if (settings && Object.keys(formData).length === 0) {
-    setFormData(settings);
-  }
+  // Sync language setting with i18n
+  useEffect(() => {
+    if (settings?.defaultLanguage && settings.defaultLanguage !== locale) {
+      setLocale(settings.defaultLanguage as "en" | "ar");
+    }
+  }, [settings?.defaultLanguage, locale, setLocale]);
 
   const handleChange = (key: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
+    setSaveSuccess(false);
+
+    // If language is changed, update i18n immediately for better UX
+    if (key === "defaultLanguage" && (value === "en" || value === "ar")) {
+      setLocale(value);
+    }
   };
 
   const handleSave = () => {
     updateSettings.mutate(formData, {
       onSuccess: () => {
         setHasChanges(false);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
       },
     });
   };
@@ -132,7 +164,6 @@ function SettingsPage() {
   const handleResetConfirm = () => {
     resetSettings.mutate(undefined, {
       onSuccess: () => {
-        // Reload settings after reset
         const defaults = getAllDefaultValues();
         setFormData(defaults as Settings);
         setHasChanges(false);
@@ -162,6 +193,55 @@ function SettingsPage() {
     input.click();
   };
 
+  // Filter settings based on search
+  const filteredCategories = React.useMemo(() => {
+    if (!searchQuery.trim()) {
+      return Object.keys(SETTINGS_CATEGORIES) as SettingCategory[];
+    }
+
+    const query = searchQuery.toLowerCase();
+    return (Object.keys(SETTINGS_CATEGORIES) as SettingCategory[]).filter(
+      (category) => {
+        const categoryLabel = t(
+          SETTINGS_CATEGORIES[category].label,
+        ).toLowerCase();
+        const categoryDesc = t(
+          SETTINGS_CATEGORIES[category].description,
+        ).toLowerCase();
+        const hasMatchingSettings = SETTINGS_DEFINITIONS.filter(
+          (s) => s.category === category,
+        ).some((setting) => {
+          const label = t(setting.label).toLowerCase();
+          const desc = t(setting.description).toLowerCase();
+          return label.includes(query) || desc.includes(query);
+        });
+
+        return (
+          categoryLabel.includes(query) ||
+          categoryDesc.includes(query) ||
+          hasMatchingSettings
+        );
+      },
+    );
+  }, [searchQuery, t]);
+
+  const getFilteredSettings = (category: SettingCategory) => {
+    const settings = SETTINGS_DEFINITIONS.filter(
+      (s) => s.category === category,
+    );
+
+    if (!searchQuery.trim()) {
+      return settings;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return settings.filter((setting) => {
+      const label = t(setting.label).toLowerCase();
+      const desc = t(setting.description).toLowerCase();
+      return label.includes(query) || desc.includes(query);
+    });
+  };
+
   if (isLoading) {
     return <Loading icon={SettingsIcon} message={t("loadingSettings")} />;
   }
@@ -175,115 +255,146 @@ function SettingsPage() {
           <PageHeaderDescription>{t("description")}</PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2"
-            onClick={handleImport}
-          >
-            <Upload className="h-5 w-5" />
-            {t("import")}
+          <Button variant="outline" size="lg" onClick={handleImport}>
+            <Upload className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("import")}</span>
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2"
-            onClick={handleExport}
-          >
-            <Download className="h-5 w-5" />
-            {t("export")}
+
+          <Button variant="outline" size="lg" onClick={handleExport}>
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("export")}</span>
           </Button>
+
           <Button
             variant="outline"
             size="lg"
-            className="gap-2 text-destructive hover:text-destructive"
             onClick={() => setShowResetDialog(true)}
           >
-            <RotateCcw className="h-5 w-5" />
-            {t("reset")}
+            <RotateCcw className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("reset")}</span>
           </Button>
+
           <Button
             size="lg"
-            className="gap-2"
             onClick={handleSave}
             disabled={!hasChanges}
+            className={cn(saveSuccess && "bg-green-600 hover:bg-green-700")}
           >
-            <Save className="h-5 w-5" />
-            {t("saveChanges")}
+            {saveSuccess ? (
+              <>
+                <Check className="h-4 w-4" />
+                <span>Saved!</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>{t("saveChanges")}</span>
+              </>
+            )}
           </Button>
         </PageHeaderActions>
       </PageHeader>
 
       <PageContent>
-        <PageContentInner className="flex-1 flex flex-col min-h-0">
-          <Tabs
-            value={activeTab}
-            onValueChange={(v) => setActiveTab(v as SettingCategory)}
-            className="flex-1 flex flex-col min-h-0"
-          >
-            <TabsList className="w-full justify-start mb-6 shrink-0">
-              {Object.entries(SETTINGS_CATEGORIES).map(([key, category]) => {
-                const Icon = categoryIcons[key as SettingCategory];
-                const translatedLabel = t(category.label);
+        <PageContentInner>
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search settings..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-9"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
 
-                // Debug: Warn if translation is missing
-                if (translatedLabel === category.label) {
-                  console.warn(
-                    `⚠️ Translation missing for category: ${category.label}`,
-                  );
-                }
+          {/* Settings Grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredCategories.map((categoryKey) => {
+              const category = SETTINGS_CATEGORIES[categoryKey];
+              const Icon = categoryIcons[categoryKey];
+              const settings = getFilteredSettings(categoryKey);
 
-                return (
-                  <TabsTrigger key={key} value={key} className="gap-2">
-                    <Icon className="h-4 w-4" />
-                    {translatedLabel}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+              if (settings.length === 0) return null;
 
-            <div className="flex-1 min-h-0 overflow-y-auto pb-6">
-              {Object.entries(SETTINGS_CATEGORIES).map(([key, category]) => (
-                <TabsContent key={key} value={key} className="mt-0 space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        {React.createElement(
-                          categoryIcons[key as SettingCategory],
-                          {
-                            className: "h-5 w-5",
-                          },
-                        )}
-                        {t(category.label)}
-                      </CardTitle>
-                      <CardDescription>
-                        {t(category.description)}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      {SETTINGS_DEFINITIONS.filter(
-                        (s) => s.category === key,
-                      ).map((setting) => (
+              return (
+                <Card key={categoryKey} className="flex flex-col h-full">
+                  <CardHeader className="space-y-3 pb-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="p-2.5 rounded-lg bg-primary/10 shrink-0">
+                          <Icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base leading-tight">
+                            {t(category.label)}
+                          </CardTitle>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="text-xs shrink-0">
+                        {settings.length}
+                      </Badge>
+                    </div>
+                    <CardDescription className="text-xs leading-relaxed">
+                      {t(category.description)}
+                    </CardDescription>
+                  </CardHeader>
+                  <Separator />
+                  <CardContent className="flex-1 p-0">
+                    <div className="divide-y">
+                      {settings.map((setting) => (
                         <SettingField
                           key={setting.id}
                           setting={setting}
                           value={formData[setting.key]}
                           onChange={(value) => handleChange(setting.key, value)}
+                          searchQuery={searchQuery}
                         />
                       ))}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </CardContent>
 
-                  {/* Add update check component in system tab */}
-                  {key === "system" && <ManualUpdateCheck />}
-                </TabsContent>
-              ))}
-            </div>
-          </Tabs>
+                  {/* System-specific components */}
+                  {categoryKey === "system" && (
+                    <div className="p-4 pt-0 mt-auto">
+                      <Separator className="mb-4" />
+                      <ManualUpdateCheck />
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+
+          {filteredCategories.length === 0 && (
+            <Card className="p-12">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <div className="p-3 rounded-full bg-muted">
+                  <Search className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">No results found</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Try adjusting your search query
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
         </PageContentInner>
       </PageContent>
 
-      {/* نافذة تأكيد إعادة التعيين */}
+      {/* Reset Confirmation Dialog */}
       <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -292,12 +403,9 @@ function SettingsPage() {
               {t("resetDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
+          <AlertDialogFooter>
             <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleResetConfirm}
-              className="bg-destructive hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={handleResetConfirm}>
               {t("actions.reset")}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -307,30 +415,44 @@ function SettingsPage() {
   );
 }
 
-// مكون حقل الإعداد
-interface SettingFieldProps {
+// Setting Field Component
+interface SettingFieldProps extends VariantProps<typeof settingRowVariants> {
   setting: SettingDefinition;
   value: unknown;
   onChange: (value: unknown) => void;
+  searchQuery?: string;
 }
 
-function SettingField({ setting, value, onChange }: SettingFieldProps) {
+function SettingField({
+  setting,
+  value,
+  onChange,
+  searchQuery,
+}: SettingFieldProps) {
   const { t } = useTranslation("settings");
+  const [isFocused, setIsFocused] = useState(false);
 
-  // Debug: Log translation attempts
-  React.useEffect(() => {
-    const label = t(setting.label);
-    const description = t(setting.description);
+  const label = t(setting.label);
+  const description = t(setting.description);
 
-    if (label === setting.label) {
-      console.warn(`⚠️ Translation missing for label: ${setting.label}`);
-    }
-    if (description === setting.description) {
-      console.warn(
-        `⚠️ Translation missing for description: ${setting.description}`,
-      );
-    }
-  }, [setting.label, setting.description, t]);
+  // Highlight matching text
+  const highlightText = (text: string) => {
+    if (!searchQuery?.trim()) return text;
+
+    const parts = text.split(new RegExp(`(${searchQuery})`, "gi"));
+    return parts.map((part, i) =>
+      part.toLowerCase() === searchQuery.toLowerCase() ? (
+        <mark
+          key={i}
+          className="bg-primary/20 text-primary-foreground rounded px-0.5"
+        >
+          {part}
+        </mark>
+      ) : (
+        part
+      ),
+    );
+  };
 
   const renderField = () => {
     switch (setting.type) {
@@ -344,24 +466,41 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
                 ? setting.defaultValue
                 : ""
             }
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className="h-8 text-sm"
           />
         );
 
       case "number":
         return (
-          <Input
-            type="number"
-            value={
-              typeof value === "number"
-                ? value
-                : typeof setting.defaultValue === "number"
-                  ? setting.defaultValue
-                  : 0
-            }
-            onChange={(e) => onChange(Number(e.target.value))}
-            min={setting.min}
-            max={setting.max}
-          />
+          <div className="flex items-center gap-1.5">
+            <Input
+              type="number"
+              value={
+                typeof value === "number"
+                  ? value
+                  : typeof setting.defaultValue === "number"
+                    ? setting.defaultValue
+                    : 0
+              }
+              onChange={(e) => onChange(Number(e.target.value))}
+              min={setting.min}
+              max={setting.max}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              className="h-8 w-16 text-sm"
+            />
+            {(setting.min !== undefined || setting.max !== undefined) && (
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                {setting.min !== undefined && setting.max !== undefined
+                  ? `${setting.min}-${setting.max}`
+                  : setting.min !== undefined
+                    ? `≥${setting.min}`
+                    : `≤${setting.max}`}
+              </span>
+            )}
+          </div>
         );
 
       case "boolean":
@@ -389,9 +528,8 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
                   : ""
             }
             onValueChange={onChange}
-            items={setting.options || []}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-8 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -405,11 +543,10 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
         );
 
       case "multiselect":
-        // Multiselect component - قيد التطوير
         return (
-          <div className="text-sm text-muted-foreground">
+          <Badge variant="outline" className="text-[10px]">
             {t("multiselect")}
-          </div>
+          </Badge>
         );
 
       default:
@@ -418,25 +555,30 @@ function SettingField({ setting, value, onChange }: SettingFieldProps) {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label className="text-base font-medium">
-            {t(setting.label)}
-            {setting.required && (
-              <span className="text-destructive mr-1">*</span>
-            )}
+    <div
+      className={cn(
+        settingRowVariants({ variant: isFocused ? "focused" : "default" }),
+      )}
+    >
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex items-center gap-1.5">
+          <Label className="text-sm font-medium cursor-pointer leading-none">
+            {highlightText(label)}
           </Label>
-          <p className="text-sm text-muted-foreground">
-            {t(setting.description)}
-          </p>
+          {setting.required && (
+            <Badge
+              variant="destructive"
+              className="text-[10px] h-4 px-1 leading-none"
+            >
+              *
+            </Badge>
+          )}
         </div>
-        {setting.type !== "boolean" && (
-          <div className="w-64">{renderField()}</div>
-        )}
-        {setting.type === "boolean" && renderField()}
+        <p className="text-[11px] text-muted-foreground leading-snug">
+          {highlightText(description)}
+        </p>
       </div>
-      <Separator />
+      <div className="shrink-0 min-w-0">{renderField()}</div>
     </div>
   );
 }

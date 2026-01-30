@@ -76,6 +76,7 @@ export function detectLocale(): Locale {
 
 export async function initializeI18n(initialLocale?: Locale) {
   const locale = initialLocale || detectLocale();
+  console.log("🌍 Initializing i18n with locale:", locale);
 
   try {
     await i18n.use(initReactI18next).init({
@@ -137,14 +138,19 @@ export async function initializeI18n(initialLocale?: Locale) {
       },
     });
 
+    console.log(
+      "✅ i18n initialized successfully with language:",
+      i18n.language,
+    );
+
     // Store the selected locale
     setStoredLocale(locale);
 
     return i18n;
   } catch (error) {
-    console.error("Failed to initialize i18n:", error);
+    console.error("❌ Failed to initialize i18n:", error);
     // Continue with minimal configuration
-    console.warn("Continuing with fallback configuration");
+    console.warn("⚠️ Continuing with fallback configuration");
 
     // Try to initialize with minimal config
     try {
@@ -166,7 +172,7 @@ export async function initializeI18n(initialLocale?: Locale) {
       });
     } catch (fallbackError) {
       console.error(
-        "Failed to initialize i18n with fallback config:",
+        "❌ Failed to initialize i18n with fallback config:",
         fallbackError,
       );
     }
