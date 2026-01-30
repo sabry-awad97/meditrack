@@ -22,6 +22,7 @@ import {
   type PartialSettings,
 } from "@/lib/types-settings";
 import { logger } from "@/lib/logger";
+import { useTranslation } from "@meditrack/i18n";
 
 // ============================================================================
 // TYPES
@@ -190,6 +191,8 @@ export function useSetting(key: string) {
  * Hook لتحديث إعداد واحد
  */
 export function useUpdateSetting() {
+  const { t } = useTranslation("common");
+
   return {
     mutate: (
       { key, value }: { key: string; value: unknown },
@@ -204,7 +207,7 @@ export function useUpdateSetting() {
             throw new Error(
               typeof validationResult === "string"
                 ? validationResult
-                : "قيمة غير صالحة",
+                : t("toast.validationError", { message: "Invalid value" }),
             );
           }
         }
@@ -219,12 +222,12 @@ export function useUpdateSetting() {
           settingsCollection.insert({ key, value });
         }
 
-        toast.success("تم حفظ الإعداد بنجاح");
+        toast.success(t("toast.settingSaved"));
         options?.onSuccess?.();
       } catch (error) {
         logger.error("Error updating setting:", error);
         toast.error(
-          error instanceof Error ? error.message : "فشل في حفظ الإعداد",
+          error instanceof Error ? error.message : t("toast.settingFailed"),
         );
         options?.onError?.(error as Error);
       }
@@ -236,6 +239,8 @@ export function useUpdateSetting() {
  * Hook لتحديث عدة إعدادات دفعة واحدة
  */
 export function useUpdateSettings() {
+  const { t } = useTranslation("common");
+
   return {
     mutate: (
       settings: PartialSettings,
@@ -257,15 +262,17 @@ export function useUpdateSettings() {
           }
         });
 
-        toast.success("تم حفظ الإعدادات بنجاح");
+        toast.success(t("toast.settingsSaved"));
         options?.onSuccess?.();
       } catch (error) {
         logger.error("Error updating settings:", error);
         if (error instanceof z.ZodError) {
           const firstError = error.issues[0];
-          toast.error(`خطأ في التحقق: ${firstError.message}`);
+          toast.error(
+            t("toast.validationError", { message: firstError.message }),
+          );
         } else {
-          toast.error("فشل في حفظ الإعدادات");
+          toast.error(t("toast.settingsFailed"));
         }
         options?.onError?.(error as Error);
       }
@@ -277,6 +284,8 @@ export function useUpdateSettings() {
  * Hook لإعادة تعيين الإعدادات إلى القيم الافتراضية
  */
 export function useResetSettings() {
+  const { t } = useTranslation("common");
+
   return {
     mutate: async (
       _?: void,
@@ -300,11 +309,11 @@ export function useResetSettings() {
           }
         });
 
-        toast.success("تم إعادة تعيين الإعدادات إلى القيم الافتراضية");
+        toast.success(t("toast.settingsReset"));
         options?.onSuccess?.();
       } catch (error) {
         logger.error("Error resetting settings:", error);
-        toast.error("فشل في إعادة تعيين الإعدادات");
+        toast.error(t("toast.settingsResetFailed"));
         options?.onError?.(error as Error);
       }
     },
@@ -315,6 +324,8 @@ export function useResetSettings() {
  * Hook لتصدير الإعدادات
  */
 export function useExportSettings() {
+  const { t } = useTranslation("common");
+
   return {
     mutate: async (
       _?: void,
@@ -331,11 +342,11 @@ export function useExportSettings() {
         link.click();
         URL.revokeObjectURL(url);
 
-        toast.success("تم تصدير الإعدادات بنجاح");
+        toast.success(t("toast.settingsExported"));
         options?.onSuccess?.();
       } catch (error) {
         logger.error("Error exporting settings:", error);
-        toast.error("فشل في تصدير الإعدادات");
+        toast.error(t("toast.settingsExportFailed"));
         options?.onError?.(error as Error);
       }
     },
@@ -346,6 +357,8 @@ export function useExportSettings() {
  * Hook لاستيراد الإعدادات
  */
 export function useImportSettings() {
+  const { t } = useTranslation("common");
+
   return {
     mutate: async (
       file: File,
@@ -357,7 +370,7 @@ export function useImportSettings() {
 
         // التحقق من صحة البيانات
         if (!Array.isArray(data)) {
-          throw new Error("صيغة الملف غير صالحة");
+          throw new Error(t("toast.invalidFileFormat"));
         }
 
         // تحويل المصفوفة إلى كائن
@@ -382,17 +395,19 @@ export function useImportSettings() {
           }
         });
 
-        toast.success("تم استيراد الإعدادات بنجاح");
+        toast.success(t("toast.settingsImported"));
         options?.onSuccess?.();
       } catch (error) {
         logger.error("Error importing settings:", error);
         if (error instanceof z.ZodError) {
           const firstError = error.issues[0];
-          toast.error(`خطأ في التحقق: ${firstError.message}`);
+          toast.error(
+            t("toast.validationError", { message: firstError.message }),
+          );
         } else if (error instanceof Error) {
           toast.error(error.message);
         } else {
-          toast.error("فشل في استيراد الإعدادات");
+          toast.error(t("toast.settingsImportFailed"));
         }
         options?.onError?.(error as Error);
       }

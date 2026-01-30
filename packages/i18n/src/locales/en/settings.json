@@ -9,6 +9,9 @@
   "resetTitle": "Reset Settings",
   "resetDescription": "Are you sure you want to reset all settings to default values? All current customizations will be lost.",
   "multiselect": "Multi-select (under development)",
+  "searchPlaceholder": "Search settings...",
+  "noResults": "No results found",
+  "noResultsDescription": "Try adjusting your search query",
   "actions": {
     "cancel": "Cancel",
     "reset": "Reset"

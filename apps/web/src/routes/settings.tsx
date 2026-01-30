@@ -386,7 +386,7 @@ function SettingsPage() {
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search settings..."
+                placeholder={t("searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 pr-9"
@@ -475,9 +475,9 @@ function SettingsPage() {
                   <Search className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">No results found</h3>
+                  <h3 className="font-semibold">{t("noResults")}</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Try adjusting your search query
+                    {t("noResultsDescription")}
                   </p>
                 </div>
               </div>
