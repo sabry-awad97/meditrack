@@ -149,6 +149,15 @@ function SettingsPage() {
     if (key === "defaultLanguage" && (value === "en" || value === "ar")) {
       setLocale(value);
     }
+
+    // If theme is changed, update theme immediately for better UX
+    if (
+      key === "defaultTheme" &&
+      (value === "light" || value === "dark" || value === "system")
+    ) {
+      // We'll need to import useTheme hook
+      // For now, we'll let the save button handle it
+    }
   };
 
   const handleSave = () => {

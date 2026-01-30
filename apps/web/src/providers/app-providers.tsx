@@ -46,15 +46,52 @@ async function getStoredLanguage(): Promise<Locale> {
   return "en"; // Default to English
 }
 
+// Helper to get stored theme from IndexedDB
+async function getStoredTheme(): Promise<"light" | "dark" | "system"> {
+  try {
+    const { default: localforage } = await import("localforage");
+    const settingsDB = localforage.createInstance({
+      name: "pharmacy-special-orders",
+      storeName: "settings",
+    });
+
+    const theme = await settingsDB.getItem<string>("defaultTheme");
+    if (theme === "light" || theme === "dark" || theme === "system") {
+      return theme;
+    }
+  } catch (error) {
+    console.warn("⚠️ Failed to read theme from settings:", error);
+  }
+
+  // Fallback to localStorage (ThemeProvider's own storage)
+  try {
+    const stored = localStorage.getItem("pharmacy-theme");
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      return stored as "light" | "dark" | "system";
+    }
+  } catch (error) {
+    console.warn("⚠️ Failed to read theme from localStorage:", error);
+  }
+
+  return "system"; // Default to system
+}
+
 function AppContent({ children }: { children: React.ReactNode }) {
   const direction = useDirection();
+  const [defaultTheme, setDefaultTheme] = useState<"light" | "dark" | "system">(
+    "system",
+  );
+
+  useEffect(() => {
+    getStoredTheme().then(setDefaultTheme);
+  }, []);
 
   return (
     <ZodProvider>
       <QueryProvider>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme={defaultTheme}
           disableTransitionOnChange
           storageKey="pharmacy-theme"
         >

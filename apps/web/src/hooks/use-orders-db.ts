@@ -18,6 +18,7 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import { useSettings } from "./use-settings-db";
 
 // ============================================================================
 // API FUNCTIONS
@@ -266,8 +267,13 @@ export function useOrderStatistics() {
  * Hook لإضافة طلب
  */
 export function useCreateOrder() {
+  // Get settings to use defaultOrderStatus
+  const { data: settings } = useSettings();
+
   const createNewOrder = (data: OrderFormData): Order => {
     const validatedData = OrderFormDataSchema.parse(data);
+    const defaultStatus =
+      (settings?.defaultOrderStatus as OrderStatus) ?? "pending";
 
     return {
       id: crypto.randomUUID(),
@@ -277,7 +283,7 @@ export function useCreateOrder() {
         ...m,
         id: crypto.randomUUID(),
       })),
-      status: "pending",
+      status: defaultStatus,
       notes: validatedData.notes,
       createdAt: new Date(),
       updatedAt: new Date(),
