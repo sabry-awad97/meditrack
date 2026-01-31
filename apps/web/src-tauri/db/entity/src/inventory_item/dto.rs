@@ -1,6 +1,22 @@
+use super::super::inventory_item_barcode::dto::InventoryItemBarcodeResponse;
 use super::Id;
 use super::Model;
 use serde::{Deserialize, Serialize};
+
+/// DTO for creating a new barcode with item
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateBarcodeInput {
+    pub barcode: String,
+    pub barcode_type: Option<String>,
+    pub is_primary: bool,
+    pub description: Option<String>,
+}
+
+/// DTO for setting primary barcode
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SetPrimaryBarcode {
+    pub barcode_id: Id,
+}
 
 /// DTO for creating a new inventory item (catalog only)
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10,11 +26,12 @@ pub struct CreateInventoryItem {
     pub concentration: String,
     pub form: String,
     pub manufacturer: Option<String>,
-    pub barcode: Option<String>,
     pub requires_prescription: bool,
     pub is_controlled: bool,
     pub storage_instructions: Option<String>,
     pub notes: Option<String>,
+    #[serde(default)]
+    pub barcodes: Vec<CreateBarcodeInput>,
 }
 
 /// DTO for creating inventory item with stock (combines both tables)
@@ -26,11 +43,12 @@ pub struct CreateInventoryItemWithStock {
     pub concentration: String,
     pub form: String,
     pub manufacturer: Option<String>,
-    pub barcode: Option<String>,
     pub requires_prescription: bool,
     pub is_controlled: bool,
     pub storage_instructions: Option<String>,
     pub notes: Option<String>,
+    #[serde(default)]
+    pub barcodes: Vec<CreateBarcodeInput>,
     // Stock fields
     pub stock_quantity: i32,
     pub min_stock_level: i32,
@@ -45,7 +63,6 @@ pub struct UpdateInventoryItem {
     pub concentration: Option<String>,
     pub form: Option<String>,
     pub manufacturer: Option<String>,
-    pub barcode: Option<String>,
     pub requires_prescription: Option<bool>,
     pub is_controlled: Option<bool>,
     pub storage_instructions: Option<String>,
@@ -63,7 +80,6 @@ pub struct InventoryItemResponse {
     pub concentration: String,
     pub form: String,
     pub manufacturer: Option<String>,
-    pub barcode: Option<String>,
     pub requires_prescription: bool,
     pub is_controlled: bool,
     pub storage_instructions: Option<String>,
@@ -73,6 +89,7 @@ pub struct InventoryItemResponse {
     pub updated_by: Option<Id>,
     pub created_at: String,
     pub updated_at: String,
+    pub barcodes: Vec<InventoryItemBarcodeResponse>,
 }
 
 /// DTO for inventory item with stock response (combines both tables)
@@ -85,7 +102,6 @@ pub struct InventoryItemWithStockResponse {
     pub concentration: String,
     pub form: String,
     pub manufacturer: Option<String>,
-    pub barcode: Option<String>,
     pub requires_prescription: bool,
     pub is_controlled: bool,
     pub storage_instructions: Option<String>,
@@ -102,6 +118,8 @@ pub struct InventoryItemWithStockResponse {
     pub unit_price: f64,
     pub last_restocked_at: Option<String>,
     pub stock_updated_at: String,
+    // Barcodes
+    pub barcodes: Vec<InventoryItemBarcodeResponse>,
 }
 
 impl From<Model> for InventoryItemResponse {
@@ -113,7 +131,6 @@ impl From<Model> for InventoryItemResponse {
             concentration: model.concentration,
             form: model.form,
             manufacturer: model.manufacturer,
-            barcode: model.barcode,
             requires_prescription: model.requires_prescription,
             is_controlled: model.is_controlled,
             storage_instructions: model.storage_instructions,
@@ -123,6 +140,7 @@ impl From<Model> for InventoryItemResponse {
             updated_by: model.updated_by,
             created_at: model.created_at.to_string(),
             updated_at: model.updated_at.to_string(),
+            barcodes: Vec::new(), // Will be populated by service layer
         }
     }
 }

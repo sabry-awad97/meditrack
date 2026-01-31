@@ -24,6 +24,34 @@ export const InventoryItemIdSchema = z.string().uuid();
 export type InventoryItemId = z.infer<typeof InventoryItemIdSchema>;
 
 /**
+ * Barcode input schema for creating barcodes
+ */
+export const CreateBarcodeInputSchema = z.object({
+  barcode: z.string().min(1),
+  barcode_type: z.string().optional(),
+  is_primary: z.boolean(),
+  description: z.string().optional(),
+});
+export type CreateBarcodeInput = z.infer<typeof CreateBarcodeInputSchema>;
+
+/**
+ * Inventory item barcode response schema
+ */
+export const InventoryItemBarcodeResponseSchema = z.object({
+  id: z.string().uuid(),
+  inventory_item_id: z.string().uuid(),
+  barcode: z.string(),
+  barcode_type: z.string().nullable(),
+  is_primary: z.boolean(),
+  description: z.string().nullable(),
+  created_at: z.string(),
+  created_by: z.string().uuid().nullable(),
+});
+export type InventoryItemBarcodeResponse = z.infer<
+  typeof InventoryItemBarcodeResponseSchema
+>;
+
+/**
  * Inventory item with stock response schema (matches backend InventoryItemWithStockResponse)
  */
 export const InventoryItemWithStockResponseSchema = z.object({
@@ -34,7 +62,6 @@ export const InventoryItemWithStockResponseSchema = z.object({
   concentration: z.string(),
   form: z.string(),
   manufacturer: z.string().nullable(),
-  barcode: z.string().nullable(),
   requires_prescription: z.boolean(),
   is_controlled: z.boolean(),
   storage_instructions: z.string().nullable(),
@@ -51,6 +78,8 @@ export const InventoryItemWithStockResponseSchema = z.object({
   unit_price: z.number(),
   last_restocked_at: z.string().nullable(),
   stock_updated_at: z.string(),
+  // Barcodes
+  barcodes: z.array(InventoryItemBarcodeResponseSchema),
 });
 export type InventoryItemWithStockResponse = z.infer<
   typeof InventoryItemWithStockResponseSchema
@@ -66,7 +95,6 @@ export const InventoryItemResponseSchema = z.object({
   concentration: z.string(),
   form: z.string(),
   manufacturer: z.string().nullable(),
-  barcode: z.string().nullable(),
   requires_prescription: z.boolean(),
   is_controlled: z.boolean(),
   storage_instructions: z.string().nullable(),
@@ -76,6 +104,7 @@ export const InventoryItemResponseSchema = z.object({
   updated_by: InventoryItemIdSchema.nullable(),
   created_at: z.string(),
   updated_at: z.string(),
+  barcodes: z.array(InventoryItemBarcodeResponseSchema),
 });
 export type InventoryItemResponse = z.infer<typeof InventoryItemResponseSchema>;
 
@@ -106,11 +135,11 @@ export const CreateInventoryItemWithStockSchema = z.object({
   concentration: z.string().min(1),
   form: z.string().min(1),
   manufacturer: z.string().optional(),
-  barcode: z.string().optional(),
   requires_prescription: z.boolean(),
   is_controlled: z.boolean(),
   storage_instructions: z.string().optional(),
   notes: z.string().optional(),
+  barcodes: z.array(CreateBarcodeInputSchema).default([]),
   // Stock fields
   stock_quantity: z.number().int().nonnegative(),
   min_stock_level: z.number().int().nonnegative(),
@@ -129,7 +158,6 @@ export const UpdateInventoryItemSchema = z.object({
   concentration: z.string().min(1).optional(),
   form: z.string().min(1).optional(),
   manufacturer: z.string().optional(),
-  barcode: z.string().optional(),
   requires_prescription: z.boolean().optional(),
   is_controlled: z.boolean().optional(),
   storage_instructions: z.string().optional(),
@@ -439,6 +467,75 @@ export async function getPriceStatistics(
 }
 
 // ============================================================================
+// Barcode Management Operations
+// ============================================================================
+
+/**
+ * Get all barcodes for an inventory item
+ */
+export async function getItemBarcodes(
+  itemId: InventoryItemId,
+): Promise<InventoryItemBarcodeResponse[]> {
+  logger.info("Getting barcodes for item:", itemId);
+  return invokeCommand(
+    "get_item_barcodes",
+    z.array(InventoryItemBarcodeResponseSchema),
+    { params: { item_id: itemId } },
+  );
+}
+
+/**
+ * Add a barcode to an inventory item
+ */
+export async function addBarcode(
+  itemId: InventoryItemId,
+  data: CreateBarcodeInput,
+): Promise<MutationResult> {
+  logger.info("Adding barcode to item:", itemId);
+  return invokeCommand("add_barcode", MutationResultSchema, {
+    params: { item_id: itemId, data },
+  });
+}
+
+/**
+ * Remove a barcode from an inventory item
+ */
+export async function removeBarcode(
+  barcodeId: string,
+): Promise<MutationResult> {
+  logger.info("Removing barcode:", barcodeId);
+  return invokeCommand("remove_barcode", MutationResultSchema, {
+    params: { barcode_id: barcodeId },
+  });
+}
+
+/**
+ * Set a barcode as primary for an inventory item
+ */
+export async function setPrimaryBarcode(
+  itemId: InventoryItemId,
+  barcodeId: string,
+): Promise<MutationResult> {
+  logger.info("Setting primary barcode:", { itemId, barcodeId });
+  return invokeCommand("set_primary_barcode", MutationResultSchema, {
+    params: { id: itemId, data: { barcode_id: barcodeId } },
+  });
+}
+
+/**
+ * Update a barcode
+ */
+export async function updateBarcode(
+  barcodeId: string,
+  data: Partial<CreateBarcodeInput>,
+): Promise<MutationResult> {
+  logger.info("Updating barcode:", barcodeId);
+  return invokeCommand("update_barcode", MutationResultSchema, {
+    params: { barcode_id: barcodeId, data },
+  });
+}
+
+// ============================================================================
 // Exports
 // ============================================================================
 
@@ -468,4 +565,11 @@ export const inventoryApi = {
   getPriceHistory: getPriceHistory,
   getLatestPrice: getLatestPrice,
   getPriceStatistics: getPriceStatistics,
+
+  // Barcode Management
+  getBarcodes: getItemBarcodes,
+  addBarcode: addBarcode,
+  removeBarcode: removeBarcode,
+  setPrimaryBarcode: setPrimaryBarcode,
+  updateBarcode: updateBarcode,
 } as const;

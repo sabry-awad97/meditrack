@@ -33,10 +33,6 @@ pub struct Model {
     #[sea_orm(column_type = "String(StringLen::N(200))", nullable)]
     pub manufacturer: Option<String>,
 
-    /// Barcode/SKU - VARCHAR(100) (nullable, unique)
-    #[sea_orm(column_type = "String(StringLen::N(100))", nullable, unique)]
-    pub barcode: Option<String>,
-
     /// Whether item requires prescription - BOOLEAN
     pub requires_prescription: bool,
 
@@ -89,6 +85,10 @@ pub enum Relation {
     /// One-to-one: Inventory item has one stock record
     #[sea_orm(has_one = "super::inventory_stock::Entity")]
     InventoryStock,
+
+    /// One-to-many: Inventory item has many barcodes
+    #[sea_orm(has_many = "super::inventory_item_barcode::Entity")]
+    Barcodes,
 }
 
 impl Related<super::special_order_item::Entity> for Entity {
@@ -106,6 +106,12 @@ impl Related<super::supplier_inventory_item::Entity> for Entity {
 impl Related<super::inventory_stock::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::InventoryStock.def()
+    }
+}
+
+impl Related<super::inventory_item_barcode::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Barcodes.def()
     }
 }
 

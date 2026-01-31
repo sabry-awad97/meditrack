@@ -123,6 +123,12 @@ pub async fn run() {
         ipc::commands::inventory::search_inventory_items,
         // Inventory Statistics
         ipc::commands::inventory::get_inventory_statistics,
+        // Inventory Barcode Management
+        ipc::commands::inventory::get_item_barcodes,
+        ipc::commands::inventory::add_barcode,
+        ipc::commands::inventory::remove_barcode,
+        ipc::commands::inventory::set_primary_barcode,
+        ipc::commands::inventory::update_barcode,
         // Inventory Price History
         ipc::commands::inventory::get_price_history,
         ipc::commands::inventory::get_latest_price,

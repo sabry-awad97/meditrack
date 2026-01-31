@@ -1,6 +1,8 @@
 use db_entity::inventory_item::dto::{
-    CreateInventoryItemWithStock, InventoryItemWithStockResponse, UpdateInventoryItem,
+    CreateBarcodeInput, CreateInventoryItemWithStock, InventoryItemWithStockResponse,
+    SetPrimaryBarcode, UpdateInventoryItem,
 };
+use db_entity::inventory_item_barcode::dto::InventoryItemBarcodeResponse;
 use db_entity::inventory_price_history::dto::{
     PriceHistoryQueryDto, PriceHistoryResponse, PriceStatistics,
 };
@@ -306,6 +308,136 @@ pub async fn get_inventory_statistics(app: AppHandle) -> IpcResponse<InventorySt
                 )
             })
             .tap_err(|e| tracing::error!("Failed to get inventory statistics: {}", e))
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+// ============================================================================
+// Barcode Management Operations
+// ============================================================================
+
+/// Get all barcodes for an inventory item
+#[tauri::command]
+pub async fn get_item_barcodes(
+    app: AppHandle,
+    params: GetParams,
+) -> IpcResponse<Vec<InventoryItemBarcodeResponse>> {
+    let result: AppResult<Vec<InventoryItemBarcodeResponse>> = async {
+        get_inventory_service(&app)
+            .get_item_barcodes(*params.id())
+            .await
+            .tap_ok(|barcodes| {
+                tracing::debug!(
+                    "Retrieved {} barcodes for item {}",
+                    barcodes.len(),
+                    params.id()
+                )
+            })
+            .tap_err(|e| tracing::error!("Failed to get barcodes for item {}: {}", params.id(), e))
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// Add a barcode to an inventory item
+#[tauri::command]
+pub async fn add_barcode(
+    app: AppHandle,
+    params: UpdateParams<CreateBarcodeInput>,
+) -> IpcResponse<MutationResult> {
+    let result: AppResult<MutationResult> = async {
+        let data = params.data();
+        get_inventory_service(&app)
+            .add_barcode(
+                *params.id(),
+                data.barcode.clone(),
+                data.barcode_type.clone(),
+                data.is_primary,
+                data.description.clone(),
+                None,
+            )
+            .await
+            .tap_ok(|barcode_id| {
+                tracing::info!("Added barcode {} to item {}", barcode_id, params.id())
+            })
+            .tap_err(|e| tracing::error!("Failed to add barcode to item {}: {}", params.id(), e))
+            .map(MutationResult::from)
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// Remove a barcode
+#[tauri::command]
+pub async fn remove_barcode(app: AppHandle, params: GetParams) -> IpcResponse<MutationResult> {
+    let result: AppResult<MutationResult> = async {
+        get_inventory_service(&app)
+            .remove_barcode(*params.id())
+            .await
+            .tap_ok(|_| tracing::info!("Removed barcode: {}", params.id()))
+            .tap_err(|e| tracing::error!("Failed to remove barcode {}: {}", params.id(), e))
+            .map(|_| MutationResult::from(*params.id()))
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// Set a barcode as primary
+#[tauri::command]
+pub async fn set_primary_barcode(
+    app: AppHandle,
+    params: UpdateParams<SetPrimaryBarcode>,
+) -> IpcResponse<MutationResult> {
+    let result: AppResult<MutationResult> = async {
+        get_inventory_service(&app)
+            .set_primary_barcode(*params.id(), params.data().barcode_id)
+            .await
+            .tap_ok(|_| {
+                tracing::info!(
+                    "Set barcode {} as primary for item {}",
+                    params.data().barcode_id,
+                    params.id()
+                )
+            })
+            .tap_err(|e| {
+                tracing::error!(
+                    "Failed to set barcode {} as primary for item {}: {}",
+                    params.data().barcode_id,
+                    params.id(),
+                    e
+                )
+            })
+            .map(|_| MutationResult::from(params.data().barcode_id))
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// Update a barcode
+#[tauri::command]
+pub async fn update_barcode(
+    app: AppHandle,
+    params: UpdateParams<CreateBarcodeInput>,
+) -> IpcResponse<MutationResult> {
+    let result: AppResult<MutationResult> = async {
+        let data = params.data();
+        get_inventory_service(&app)
+            .update_barcode(
+                *params.id(),
+                Some(data.barcode.clone()),
+                data.barcode_type.clone(),
+                data.description.clone(),
+            )
+            .await
+            .tap_ok(|_| tracing::info!("Updated barcode: {}", params.id()))
+            .tap_err(|e| tracing::error!("Failed to update barcode {}: {}", params.id(), e))
+            .map(|_| MutationResult::from(*params.id()))
             .map_err(Into::into)
     }
     .await;

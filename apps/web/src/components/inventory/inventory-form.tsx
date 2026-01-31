@@ -193,7 +193,16 @@ export function InventoryForm({
       concentration: formData.concentration.trim(),
       form: formData.form,
       manufacturer: formData.manufacturer.trim() || undefined,
-      barcode: formData.barcode.trim() || undefined,
+      barcodes: formData.barcode.trim()
+        ? [
+            {
+              barcode: formData.barcode.trim(),
+              is_primary: true,
+              barcode_type: undefined,
+              description: undefined,
+            },
+          ]
+        : [],
       stock_quantity: parseInt(formData.stock_quantity),
       min_stock_level: parseInt(formData.min_stock_level),
       unit_price: parseFloat(formData.unit_price),

@@ -54,6 +54,8 @@ pub use settings::{
 };
 
 pub use inventory::{
+    // Barcode management
+    add_barcode,
     // Stock management
     adjust_inventory_stock,
     // CRUD operations
@@ -63,6 +65,7 @@ pub use inventory::{
     get_inventory_item_by_barcode,
     // Statistics
     get_inventory_statistics,
+    get_item_barcodes,
     // Price history
     get_latest_price,
     // Listing & filtering
@@ -71,8 +74,11 @@ pub use inventory::{
     get_price_history,
     get_price_statistics,
     list_active_inventory_items,
+    remove_barcode,
     restore_inventory_item,
     search_inventory_items,
+    set_primary_barcode,
+    update_barcode,
     update_inventory_item,
     update_inventory_stock,
 };

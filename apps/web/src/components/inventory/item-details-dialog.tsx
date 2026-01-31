@@ -369,7 +369,11 @@ export function ItemDetailsDialog({
                       <DetailField
                         icon={<Barcode className="h-4 w-4" />}
                         label={t("itemDetails.barcode")}
-                        value={item.barcode || t("table.na")}
+                        value={
+                          item.barcodes.find((b) => b.is_primary)?.barcode ||
+                          item.barcodes[0]?.barcode ||
+                          t("table.na")
+                        }
                       />
                     </CardContent>
                   </Card>

@@ -8,6 +8,8 @@ use db_entity::inventory_item::dto::{
     UpdateInventoryItem,
 };
 use db_entity::inventory_item::{self, Entity as InventoryItem};
+use db_entity::inventory_item_barcode::dto::InventoryItemBarcodeResponse;
+use db_entity::inventory_item_barcode::{self, Entity as InventoryItemBarcode};
 use db_entity::inventory_stock::dto::{AdjustStock, InventoryStockResponse, UpdateInventoryStock};
 use db_entity::inventory_stock::{self, Entity as InventoryStock};
 use rust_decimal::Decimal;
@@ -42,10 +44,14 @@ impl InventoryService {
     }
 
     /// Build combined response from item and stock models
-    fn build_combined_response(
+    async fn build_combined_response(
+        &self,
         item: db_entity::inventory_item::Model,
         stock: db_entity::inventory_stock::Model,
     ) -> ServiceResult<InventoryItemWithStockResponse> {
+        // Fetch barcodes for this item
+        let barcodes = self.get_item_barcodes(item.id).await?;
+
         Ok(InventoryItemWithStockResponse {
             id: item.id,
             name: item.name,
@@ -53,7 +59,6 @@ impl InventoryService {
             concentration: item.concentration,
             form: item.form,
             manufacturer: item.manufacturer,
-            barcode: item.barcode,
             requires_prescription: item.requires_prescription,
             is_controlled: item.is_controlled,
             storage_instructions: item.storage_instructions,
@@ -69,6 +74,7 @@ impl InventoryService {
             unit_price: Self::decimal_to_f64(&stock.unit_price)?,
             last_restocked_at: stock.last_restocked_at.map(|dt| dt.to_string()),
             stock_updated_at: stock.updated_at.to_string(),
+            barcodes,
         })
     }
 
@@ -95,7 +101,6 @@ impl InventoryService {
             concentration: Set(dto.concentration),
             form: Set(dto.form),
             manufacturer: Set(dto.manufacturer),
-            barcode: Set(dto.barcode),
             requires_prescription: Set(dto.requires_prescription),
             is_controlled: Set(dto.is_controlled),
             storage_instructions: Set(dto.storage_instructions),
@@ -113,6 +118,26 @@ impl InventoryService {
             .await
             .tap_ok(|_| tracing::info!("Created inventory item: {}", item_id))
             .tap_err(|e| tracing::error!("Failed to create inventory item: {}", e))?;
+
+        // Create barcodes if provided
+        for (index, barcode_input) in dto.barcodes.iter().enumerate() {
+            let barcode = inventory_item_barcode::ActiveModel {
+                id: Set(Id::new()),
+                inventory_item_id: Set(item_id),
+                barcode: Set(barcode_input.barcode.clone()),
+                barcode_type: Set(barcode_input.barcode_type.clone()),
+                is_primary: Set(barcode_input.is_primary || (index == 0 && dto.barcodes.len() == 1)),
+                description: Set(barcode_input.description.clone()),
+                created_at: Set(now.into()),
+                created_by: Set(created_by),
+            };
+
+            barcode
+                .insert(&txn)
+                .await
+                .tap_ok(|_| tracing::info!("Created barcode for item: {}", item_id))
+                .tap_err(|e| tracing::error!("Failed to create barcode: {}", e))?;
+        }
 
         // Create inventory stock
         let stock_id = Id::new();
@@ -143,7 +168,7 @@ impl InventoryService {
         txn.commit().await?;
 
         // Build combined response
-        Self::build_combined_response(item, stock)
+        self.build_combined_response(item, stock).await
     }
 
     /// Get inventory item with stock by ID
@@ -161,7 +186,7 @@ impl InventoryService {
 
         tracing::debug!("Retrieved inventory item with stock: {}", id);
 
-        Self::build_combined_response(item, stock)
+        self.build_combined_response(item, stock).await
     }
 
     /// Get inventory item by barcode
@@ -169,8 +194,20 @@ impl InventoryService {
         &self,
         barcode: &str,
     ) -> ServiceResult<InventoryItemWithStockResponse> {
-        let result = InventoryItem::find()
-            .filter(inventory_item::Column::Barcode.eq(barcode))
+        // Find barcode first
+        let barcode_record = InventoryItemBarcode::find()
+            .filter(inventory_item_barcode::Column::Barcode.eq(barcode))
+            .one(&*self.db)
+            .await?
+            .ok_or_else(|| {
+                ServiceError::NotFound(format!(
+                    "Inventory item not found with barcode: {}",
+                    barcode
+                ))
+            })?;
+
+        // Get item with stock
+        let result = InventoryItem::find_by_id(barcode_record.inventory_item_id)
             .filter(inventory_item::Column::DeletedAt.is_null())
             .find_also_related(InventoryStock)
             .one(&*self.db)
@@ -192,7 +229,7 @@ impl InventoryService {
 
         tracing::debug!("Retrieved inventory item by barcode: {}", barcode);
 
-        Self::build_combined_response(item, stock)
+        self.build_combined_response(item, stock).await
     }
 
     /// Update inventory item (catalog only)
@@ -222,9 +259,6 @@ impl InventoryService {
         }
         if let Some(manufacturer) = dto.manufacturer {
             item.manufacturer = Set(Some(manufacturer));
-        }
-        if let Some(barcode) = dto.barcode {
-            item.barcode = Set(Some(barcode));
         }
         if let Some(requires_prescription) = dto.requires_prescription {
             item.requires_prescription = Set(requires_prescription);
@@ -417,12 +451,15 @@ impl InventoryService {
             .await
             .tap_err(|e| tracing::error!("Failed to list active inventory items: {}", e))?;
 
-        results
-            .into_iter()
-            .filter_map(|(item, stock)| stock.map(|stock| (item, stock)))
-            .map(|(item, stock)| Self::build_combined_response(item, stock))
-            .collect::<ServiceResult<Vec<_>>>()
-            .tap_ok(|items| tracing::debug!("Listed {} active inventory items", items.len()))
+        let mut items = Vec::new();
+        for (item, stock) in results {
+            if let Some(stock) = stock {
+                items.push(self.build_combined_response(item, stock).await?);
+            }
+        }
+
+        tracing::debug!("Listed {} active inventory items", items.len());
+        Ok(items)
     }
 
     /// Get low stock items (optimized with database-level filtering)
@@ -447,12 +484,15 @@ impl InventoryService {
             .await
             .tap_err(|e| tracing::error!("Failed to get low stock items: {}", e))?;
 
-        results
-            .into_iter()
-            .filter_map(|(item, stock)| stock.map(|stock| (item, stock)))
-            .map(|(item, stock)| Self::build_combined_response(item, stock))
-            .collect::<ServiceResult<Vec<_>>>()
-            .tap_ok(|items| tracing::debug!("Retrieved {} low stock items", items.len()))
+        let mut items = Vec::new();
+        for (item, stock) in results {
+            if let Some(stock) = stock {
+                items.push(self.build_combined_response(item, stock).await?);
+            }
+        }
+
+        tracing::debug!("Retrieved {} low stock items", items.len());
+        Ok(items)
     }
 
     /// Get out of stock items (optimized with database-level filtering)
@@ -466,12 +506,15 @@ impl InventoryService {
             .await
             .tap_err(|e| tracing::error!("Failed to get out of stock items: {}", e))?;
 
-        results
-            .into_iter()
-            .filter_map(|(item, stock)| stock.map(|stock| (item, stock)))
-            .map(|(item, stock)| Self::build_combined_response(item, stock))
-            .collect::<ServiceResult<Vec<_>>>()
-            .tap_ok(|items| tracing::debug!("Retrieved {} out of stock items", items.len()))
+        let mut items = Vec::new();
+        for (item, stock) in results {
+            if let Some(stock) = stock {
+                items.push(self.build_combined_response(item, stock).await?);
+            }
+        }
+
+        tracing::debug!("Retrieved {} out of stock items", items.len());
+        Ok(items)
     }
 
     /// Search inventory items by name or generic name
@@ -485,8 +528,7 @@ impl InventoryService {
             .filter(
                 Condition::any()
                     .add(inventory_item::Column::Name.like(&search_pattern))
-                    .add(inventory_item::Column::GenericName.like(&search_pattern))
-                    .add(inventory_item::Column::Barcode.like(&search_pattern)),
+                    .add(inventory_item::Column::GenericName.like(&search_pattern)),
             )
             .filter(inventory_item::Column::DeletedAt.is_null())
             .find_also_related(InventoryStock)
@@ -496,12 +538,190 @@ impl InventoryService {
                 tracing::error!("Failed to search inventory items '{}': {}", search_term, e)
             })?;
 
-        results
+        let mut items = Vec::new();
+        for (item, stock) in results {
+            if let Some(stock) = stock {
+                items.push(self.build_combined_response(item, stock).await?);
+            }
+        }
+
+        tracing::debug!("Search '{}' found {} items", search_term, items.len());
+        Ok(items)
+    }
+
+    // ========================================================================
+    // Barcode Management Operations
+    // ========================================================================
+
+    /// Get all barcodes for an inventory item
+    pub async fn get_item_barcodes(
+        &self,
+        item_id: Id,
+    ) -> ServiceResult<Vec<InventoryItemBarcodeResponse>> {
+        let barcodes = InventoryItemBarcode::find()
+            .filter(inventory_item_barcode::Column::InventoryItemId.eq(item_id))
+            .order_by_desc(inventory_item_barcode::Column::IsPrimary)
+            .order_by_asc(inventory_item_barcode::Column::CreatedAt)
+            .all(&*self.db)
+            .await
+            .tap_err(|e| tracing::error!("Failed to get barcodes for item {}: {}", item_id, e))?;
+
+        Ok(barcodes
             .into_iter()
-            .filter_map(|(item, stock)| stock.map(|stock| (item, stock)))
-            .map(|(item, stock)| Self::build_combined_response(item, stock))
-            .collect::<ServiceResult<Vec<_>>>()
-            .tap_ok(|items| tracing::debug!("Search '{}' found {} items", search_term, items.len()))
+            .map(InventoryItemBarcodeResponse::from)
+            .collect())
+    }
+
+    /// Add a barcode to an inventory item
+    pub async fn add_barcode(
+        &self,
+        item_id: Id,
+        barcode: String,
+        barcode_type: Option<String>,
+        is_primary: bool,
+        description: Option<String>,
+        created_by: Option<Id>,
+    ) -> ServiceResult<Id> {
+        // Verify item exists
+        InventoryItem::find_by_id(item_id)
+            .one(&*self.db)
+            .await?
+            .ok_or_else(|| {
+                ServiceError::NotFound(format!("Inventory item not found: {}", item_id))
+            })?;
+
+        // If setting as primary, unset other primary barcodes
+        if is_primary {
+            InventoryItemBarcode::update_many()
+                .filter(inventory_item_barcode::Column::InventoryItemId.eq(item_id))
+                .filter(inventory_item_barcode::Column::IsPrimary.eq(true))
+                .col_expr(
+                    inventory_item_barcode::Column::IsPrimary,
+                    Expr::value(false),
+                )
+                .exec(&*self.db)
+                .await
+                .tap_err(|e| tracing::error!("Failed to unset primary barcodes: {}", e))?;
+        }
+
+        let barcode_id = Id::new();
+        let barcode_model = inventory_item_barcode::ActiveModel {
+            id: Set(barcode_id),
+            inventory_item_id: Set(item_id),
+            barcode: Set(barcode),
+            barcode_type: Set(barcode_type),
+            is_primary: Set(is_primary),
+            description: Set(description),
+            created_at: Set(chrono::Utc::now().into()),
+            created_by: Set(created_by),
+        };
+
+        barcode_model
+            .insert(&*self.db)
+            .await
+            .tap_ok(|_| tracing::info!("Added barcode {} to item {}", barcode_id, item_id))
+            .tap_err(|e| tracing::error!("Failed to add barcode: {}", e))?;
+
+        Ok(barcode_id)
+    }
+
+    /// Remove a barcode
+    pub async fn remove_barcode(&self, barcode_id: Id) -> ServiceResult<()> {
+        let barcode = InventoryItemBarcode::find_by_id(barcode_id)
+            .one(&*self.db)
+            .await?
+            .ok_or_else(|| ServiceError::NotFound(format!("Barcode not found: {}", barcode_id)))?;
+
+        // Check if this is the only barcode for the item
+        let barcode_count = InventoryItemBarcode::find()
+            .filter(inventory_item_barcode::Column::InventoryItemId.eq(barcode.inventory_item_id))
+            .count(&*self.db)
+            .await?;
+
+        if barcode_count <= 1 {
+            return Err(ServiceError::BadRequest(
+                "Cannot remove the last barcode from an item".to_string(),
+            ));
+        }
+
+        InventoryItemBarcode::delete_by_id(barcode_id)
+            .exec(&*self.db)
+            .await
+            .tap_ok(|_| tracing::info!("Removed barcode: {}", barcode_id))
+            .tap_err(|e| tracing::error!("Failed to remove barcode {}: {}", barcode_id, e))?;
+
+        Ok(())
+    }
+
+    /// Set a barcode as primary
+    pub async fn set_primary_barcode(&self, item_id: Id, barcode_id: Id) -> ServiceResult<()> {
+        // Verify barcode exists and belongs to item
+        let barcode = InventoryItemBarcode::find_by_id(barcode_id)
+            .one(&*self.db)
+            .await?
+            .ok_or_else(|| ServiceError::NotFound(format!("Barcode not found: {}", barcode_id)))?;
+
+        if barcode.inventory_item_id != item_id {
+            return Err(ServiceError::BadRequest(
+                "Barcode does not belong to this item".to_string(),
+            ));
+        }
+
+        let txn = self.db.begin().await?;
+
+        // Unset all primary barcodes for this item
+        InventoryItemBarcode::update_many()
+            .filter(inventory_item_barcode::Column::InventoryItemId.eq(item_id))
+            .col_expr(
+                inventory_item_barcode::Column::IsPrimary,
+                Expr::value(false),
+            )
+            .exec(&txn)
+            .await?;
+
+        // Set this barcode as primary
+        let mut barcode: inventory_item_barcode::ActiveModel = barcode.into();
+        barcode.is_primary = Set(true);
+        barcode.update(&txn).await?;
+
+        txn.commit().await?;
+
+        tracing::info!("Set barcode {} as primary for item {}", barcode_id, item_id);
+        Ok(())
+    }
+
+    /// Update a barcode
+    pub async fn update_barcode(
+        &self,
+        barcode_id: Id,
+        barcode: Option<String>,
+        barcode_type: Option<String>,
+        description: Option<String>,
+    ) -> ServiceResult<()> {
+        let existing = InventoryItemBarcode::find_by_id(barcode_id)
+            .one(&*self.db)
+            .await?
+            .ok_or_else(|| ServiceError::NotFound(format!("Barcode not found: {}", barcode_id)))?;
+
+        let mut barcode_model: inventory_item_barcode::ActiveModel = existing.into();
+
+        if let Some(barcode) = barcode {
+            barcode_model.barcode = Set(barcode);
+        }
+        if let Some(barcode_type) = barcode_type {
+            barcode_model.barcode_type = Set(Some(barcode_type));
+        }
+        if let Some(description) = description {
+            barcode_model.description = Set(Some(description));
+        }
+
+        barcode_model
+            .update(&*self.db)
+            .await
+            .tap_ok(|_| tracing::info!("Updated barcode: {}", barcode_id))
+            .tap_err(|e| tracing::error!("Failed to update barcode {}: {}", barcode_id, e))?;
+
+        Ok(())
     }
 
     // ========================================================================

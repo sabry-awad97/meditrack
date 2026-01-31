@@ -334,7 +334,9 @@ function InventoryComponent() {
         !searchQuery ||
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.generic_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.barcode?.toLowerCase().includes(searchQuery.toLowerCase());
+        item.barcodes.some((b) =>
+          b.barcode.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
       // Form filter
       const matchesForm =
@@ -492,16 +494,20 @@ function InventoryComponent() {
       {
         accessorKey: "barcode",
         header: t("table.barcode"),
-        cell: ({ row }) =>
-          row.original.barcode ? (
+        cell: ({ row }) => {
+          const primaryBarcode =
+            row.original.barcodes.find((b) => b.is_primary)?.barcode ||
+            row.original.barcodes[0]?.barcode;
+          return primaryBarcode ? (
             <span className="font-mono text-xs text-muted-foreground">
-              {row.original.barcode}
+              {primaryBarcode}
             </span>
           ) : (
             <span className="text-muted-foreground text-xs">
               {t("table.na")}
             </span>
-          ),
+          );
+        },
       },
       {
         id: "actions",
@@ -1541,9 +1547,10 @@ function InventoryItemCard({
         </div>
 
         {/* Barcode */}
-        {item.barcode && (
+        {item.barcodes.length > 0 && (
           <div className="text-xs text-muted-foreground font-mono">
-            {item.barcode}
+            {item.barcodes.find((b) => b.is_primary)?.barcode ||
+              item.barcodes[0]?.barcode}
           </div>
         )}
       </CardContent>
