@@ -67,6 +67,7 @@ function OnboardingPage() {
   const completeSetup = useCompleteFirstRunSetup();
   const upsertSetting = useUpsertSettingValue();
   const [currentStep, setCurrentStep] = useState(0);
+  const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
   const { t } = useTranslation("onboarding");
   const { locale, setLocale } = useLocale();
   const { direction } = useDirection();
@@ -147,7 +148,10 @@ function OnboardingPage() {
         animate={{ opacity: 1, y: 0 }}
         className="absolute top-6 right-6 z-10"
       >
-        <Popover>
+        <Popover
+          open={languagePopoverOpen}
+          onOpenChange={setLanguagePopoverOpen}
+        >
           <PopoverTrigger
             render={(props) => (
               <button
@@ -163,7 +167,10 @@ function OnboardingPage() {
               {Object.entries(LOCALES).map(([code, config]) => (
                 <button
                   key={code}
-                  onClick={() => setLocale(code as "en" | "ar")}
+                  onClick={async () => {
+                    await setLocale(code as "en" | "ar");
+                    setLanguagePopoverOpen(false);
+                  }}
                   className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm transition-colors ${
                     locale === code
                       ? "bg-primary text-primary-foreground"

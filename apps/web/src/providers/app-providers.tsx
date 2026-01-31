@@ -12,6 +12,7 @@ import {
   SETTING_DEFAULT_LANGUAGE,
   SETTING_DEFAULT_THEME,
 } from "@/lib/constants";
+import { useCheckFirstRun } from "@/hooks/use-onboarding-db";
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -21,6 +22,10 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const direction = useDirection();
   const { setLocale } = useLocale();
   const { setTheme } = useTheme();
+
+  // Check if this is first run (onboarding not completed)
+  const { data: isFirstRun, isLoading: isCheckingFirstRun } =
+    useCheckFirstRun();
 
   // Load settings from PostgreSQL
   const defaultLanguage = useSettingValue<Locale>(
@@ -38,20 +43,24 @@ function AppContent({ children }: { children: React.ReactNode }) {
   // Initialize auto-archive system
   useAutoArchive();
 
-  // Sync language from database
+  // Sync language from database (skip during first run/onboarding)
   useEffect(() => {
     if (
+      !isCheckingFirstRun &&
+      !isFirstRun &&
       defaultLanguage &&
       (defaultLanguage === "en" || defaultLanguage === "ar")
     ) {
       console.log("✅ Syncing language from database:", defaultLanguage);
       setLocale(defaultLanguage);
     }
-  }, [defaultLanguage, setLocale]);
+  }, [defaultLanguage, setLocale, isFirstRun, isCheckingFirstRun]);
 
-  // Sync theme from database
+  // Sync theme from database (skip during first run/onboarding)
   useEffect(() => {
     if (
+      !isCheckingFirstRun &&
+      !isFirstRun &&
       defaultTheme &&
       (defaultTheme === "light" ||
         defaultTheme === "dark" ||
@@ -60,7 +69,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
       console.log("✅ Syncing theme from database:", defaultTheme);
       setTheme(defaultTheme);
     }
-  }, [defaultTheme, setTheme]);
+  }, [defaultTheme, setTheme, isFirstRun, isCheckingFirstRun]);
 
   return (
     <>
