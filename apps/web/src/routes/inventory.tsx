@@ -12,6 +12,18 @@ import {
   Filter,
   LayoutGrid,
   Table as TableIcon,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Copy,
+  Archive,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
 } from "lucide-react";
 import {
   useReactTable,
@@ -26,13 +38,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Page,
   PageHeader,
@@ -63,6 +68,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from "@/components/ui/pagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   useInventoryItems,
   useInventoryStatistics,
   useResetInventory,
@@ -78,10 +104,55 @@ import {
 } from "@/lib/inventory-types";
 import type { InventoryItem } from "@/lib/inventory-types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/inventory")({
   component: InventoryComponent,
 });
+
+// Helper function to generate pagination items with ellipsis
+function generatePaginationItems(
+  currentPage: number,
+  totalPages: number,
+): (number | "ellipsis")[] {
+  const items: (number | "ellipsis")[] = [];
+
+  if (totalPages <= 7) {
+    // Show all pages if 7 or fewer
+    for (let i = 0; i < totalPages; i++) {
+      items.push(i);
+    }
+  } else {
+    // Always show first page
+    items.push(0);
+
+    if (currentPage <= 3) {
+      // Near the start
+      for (let i = 1; i <= 4; i++) {
+        items.push(i);
+      }
+      items.push("ellipsis");
+      items.push(totalPages - 1);
+    } else if (currentPage >= totalPages - 4) {
+      // Near the end
+      items.push("ellipsis");
+      for (let i = totalPages - 5; i < totalPages - 1; i++) {
+        items.push(i);
+      }
+      items.push(totalPages - 1);
+    } else {
+      // In the middle
+      items.push("ellipsis");
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        items.push(i);
+      }
+      items.push("ellipsis");
+      items.push(totalPages - 1);
+    }
+  }
+
+  return items;
+}
 
 function InventoryComponent() {
   // Fetch data
@@ -284,6 +355,87 @@ function InventoryComponent() {
           ) : (
             <span className="text-muted-foreground text-xs">N/A</span>
           ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const item = row.original;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end" className="w-[200px]">
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.info(`Viewing details for ${item.name}`);
+                  }}
+                >
+                  <Eye className="h-4 w-4" />
+                  View Details
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.info(`Editing ${item.name}`);
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit Item
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.info(`Duplicating ${item.name}`);
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                  Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.info(`Adding stock for ${item.name}`);
+                  }}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Add Stock
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.info(`Reducing stock for ${item.name}`);
+                  }}
+                >
+                  <TrendingDown className="h-4 w-4" />
+                  Reduce Stock
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.info(`Viewing stock history for ${item.name}`);
+                  }}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Stock History
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => {
+                    toast.info(`Archiving ${item.name}`);
+                  }}
+                >
+                  <Archive className="h-4 w-4" />
+                  Archive
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
     ],
     [],
@@ -657,37 +809,144 @@ function InventoryComponent() {
                   </Table>
                 </div>
                 {/* Pagination */}
-                <div className="flex items-center justify-between py-4 shrink-0">
-                  <div className="text-sm text-muted-foreground">
-                    Showing{" "}
-                    {table.getState().pagination.pageIndex *
-                      table.getState().pagination.pageSize +
-                      1}{" "}
-                    to{" "}
-                    {Math.min(
-                      (table.getState().pagination.pageIndex + 1) *
-                        table.getState().pagination.pageSize,
-                      filteredItems.length,
-                    )}{" "}
-                    of {filteredItems.length} items
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 shrink-0 border-t bg-muted/20">
+                  {/* Items info and page size selector */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-muted-foreground">
+                      Showing{" "}
+                      <span className="font-medium text-foreground">
+                        {table.getState().pagination.pageIndex *
+                          table.getState().pagination.pageSize +
+                          1}
+                      </span>{" "}
+                      to{" "}
+                      <span className="font-medium text-foreground">
+                        {Math.min(
+                          (table.getState().pagination.pageIndex + 1) *
+                            table.getState().pagination.pageSize,
+                          filteredItems.length,
+                        )}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-medium text-foreground">
+                        {filteredItems.length}
+                      </span>{" "}
+                      items
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">
+                        Rows per page:
+                      </span>
+                      <Select
+                        value={table.getState().pagination.pageSize.toString()}
+                        onValueChange={(value) => {
+                          table.setPageSize(Number(value));
+                        }}
+                      >
+                        <SelectTrigger className="h-8 w-[70px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[10, 20, 30, 50, 100].map((pageSize) => (
+                            <SelectItem
+                              key={pageSize}
+                              value={pageSize.toString()}
+                            >
+                              {pageSize}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
+
+                  {/* Page navigation */}
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                    >
-                      Next
-                    </Button>
+                    <Pagination>
+                      <PaginationContent>
+                        {/* First page button */}
+                        <PaginationItem>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!table.getCanPreviousPage()}
+                          >
+                            <ChevronsLeft className="h-4 w-4" />
+                            <span className="sr-only">First page</span>
+                          </Button>
+                        </PaginationItem>
+
+                        {/* Previous page button */}
+                        <PaginationItem>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                          >
+                            <ChevronLeftIcon className="h-4 w-4" />
+                            <span className="sr-only">Previous page</span>
+                          </Button>
+                        </PaginationItem>
+
+                        {/* Page numbers */}
+                        {generatePaginationItems(
+                          table.getState().pagination.pageIndex,
+                          table.getPageCount(),
+                        ).map((item, index) => (
+                          <PaginationItem key={index}>
+                            {item === "ellipsis" ? (
+                              <PaginationEllipsis />
+                            ) : (
+                              <PaginationLink
+                                onClick={() =>
+                                  table.setPageIndex(item as number)
+                                }
+                                isActive={
+                                  table.getState().pagination.pageIndex === item
+                                }
+                                className="h-8 w-8 cursor-pointer"
+                              >
+                                {(item as number) + 1}
+                              </PaginationLink>
+                            )}
+                          </PaginationItem>
+                        ))}
+
+                        {/* Next page button */}
+                        <PaginationItem>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                          >
+                            <ChevronRightIcon className="h-4 w-4" />
+                            <span className="sr-only">Next page</span>
+                          </Button>
+                        </PaginationItem>
+
+                        {/* Last page button */}
+                        <PaginationItem>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              table.setPageIndex(table.getPageCount() - 1)
+                            }
+                            disabled={!table.getCanNextPage()}
+                          >
+                            <ChevronsRight className="h-4 w-4" />
+                            <span className="sr-only">Last page</span>
+                          </Button>
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   </div>
                 </div>
               </div>
@@ -745,7 +1004,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
   const stockLabel = getStockStatusLabel(stockStatus);
 
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer">
+    <Card className="hover:shadow-md transition-shadow group relative">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
@@ -758,7 +1017,92 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
               </CardDescription>
             )}
           </div>
-          <Badge className={cn("shrink-0", stockColor)}>{stockLabel}</Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge className={cn(stockColor)}>{stockLabel}</Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end" className="w-[200px]">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Viewing details for ${item.name}`);
+                  }}
+                >
+                  <Eye className="h-4 w-4" />
+                  View Details
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Editing ${item.name}`);
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit Item
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Duplicating ${item.name}`);
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                  Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Adding stock for ${item.name}`);
+                  }}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  Add Stock
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Reducing stock for ${item.name}`);
+                  }}
+                >
+                  <TrendingDown className="h-4 w-4" />
+                  Reduce Stock
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Viewing stock history for ${item.name}`);
+                  }}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Stock History
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Archiving ${item.name}`);
+                  }}
+                >
+                  <Archive className="h-4 w-4" />
+                  Archive
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
