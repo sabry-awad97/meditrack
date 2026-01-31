@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { useDirection } from "@meditrack/i18n";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,8 @@ function DialogContent({
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
 }) {
+  const { isRTL } = useDirection();
+
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -63,7 +66,7 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-2 right-2"
+                className={cn("absolute top-2", isRTL ? "left-2" : "right-2")}
                 size="icon-sm"
               />
             }

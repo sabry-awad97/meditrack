@@ -160,14 +160,15 @@ function getStockStatusColor(
 
 function getStockStatusLabel(
   status: "in_stock" | "low_stock" | "out_of_stock",
+  t: (key: string) => string,
 ): string {
   switch (status) {
     case "out_of_stock":
-      return "Out of Stock";
+      return t("stockStatus.outOfStock");
     case "low_stock":
-      return "Low Stock";
+      return t("stockStatus.lowStock");
     case "in_stock":
-      return "In Stock";
+      return t("stockStatus.inStock");
   }
 }
 
@@ -365,7 +366,7 @@ function InventoryComponent() {
     () => [
       {
         accessorKey: "name",
-        header: "Medicine Name",
+        header: t("table.medicineName"),
         cell: ({ row }) => (
           <div className="min-w-[200px]">
             <div className="font-medium">{row.original.name}</div>
@@ -379,7 +380,7 @@ function InventoryComponent() {
       },
       {
         accessorKey: "concentration",
-        header: "Concentration",
+        header: t("table.concentration"),
         cell: ({ row }) => (
           <Badge variant="outline" className="font-normal">
             {row.original.concentration}
@@ -388,7 +389,7 @@ function InventoryComponent() {
       },
       {
         accessorKey: "form",
-        header: "Form",
+        header: t("table.form"),
         cell: ({ row }) => (
           <Badge variant="outline" className="font-normal">
             {row.original.form}
@@ -397,14 +398,14 @@ function InventoryComponent() {
       },
       {
         accessorKey: "stock_quantity",
-        header: "Stock",
+        header: t("table.stock"),
         cell: ({ row }) => {
           const stockStatus = getStockStatus(
             row.original.stock_quantity,
             row.original.min_stock_level,
           );
           const stockColor = getStockStatusColor(stockStatus);
-          const stockLabel = getStockStatusLabel(stockStatus);
+          const stockLabel = getStockStatusLabel(stockStatus, t);
           const percentage = Math.min(
             (row.original.stock_quantity / row.original.min_stock_level) * 100,
             100,
@@ -413,10 +414,10 @@ function InventoryComponent() {
           return (
             <div className="min-w-[150px]">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">
-                  {row.original.stock_quantity} units
+                <span className="text-sm font-medium whitespace-nowrap">
+                  {row.original.stock_quantity} {t("table.units")}
                 </span>
-                <Badge className={cn("text-xs", stockColor)}>
+                <Badge className={cn("text-xs whitespace-nowrap", stockColor)}>
                   {stockLabel}
                 </Badge>
               </div>
@@ -439,7 +440,7 @@ function InventoryComponent() {
       },
       {
         accessorKey: "unit_price",
-        header: "Unit Price",
+        header: t("table.unitPrice"),
         cell: ({ row }) => (
           <span className="font-medium">
             ${row.original.unit_price.toFixed(2)}
@@ -448,30 +449,32 @@ function InventoryComponent() {
       },
       {
         accessorKey: "manufacturer",
-        header: "Manufacturer",
+        header: t("table.manufacturer"),
         cell: ({ row }) =>
           row.original.manufacturer ? (
             <Badge variant="outline" className="font-normal">
               {row.original.manufacturer}
             </Badge>
           ) : (
-            <span className="text-muted-foreground text-xs">N/A</span>
+            <span className="text-muted-foreground text-xs">
+              {t("table.na")}
+            </span>
           ),
       },
       {
         id: "badges",
-        header: "Type",
+        header: t("table.type"),
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1 min-w-[120px]">
             {row.original.requires_prescription && (
               <Badge variant="secondary" className="text-xs">
-                Rx
+                {t("table.rx")}
               </Badge>
             )}
             {row.original.is_controlled && (
               <Badge variant="destructive" className="text-xs gap-1">
                 <Shield className="h-3 w-3" />
-                Controlled
+                {t("table.controlled")}
               </Badge>
             )}
           </div>
@@ -479,19 +482,21 @@ function InventoryComponent() {
       },
       {
         accessorKey: "barcode",
-        header: "Barcode",
+        header: t("table.barcode"),
         cell: ({ row }) =>
           row.original.barcode ? (
             <span className="font-mono text-xs text-muted-foreground">
               {row.original.barcode}
             </span>
           ) : (
-            <span className="text-muted-foreground text-xs">N/A</span>
+            <span className="text-muted-foreground text-xs">
+              {t("table.na")}
+            </span>
           ),
       },
       {
         id: "actions",
-        header: "Actions",
+        header: t("table.actions"),
         cell: ({ row }) => {
           const item = row.original;
 
@@ -508,7 +513,7 @@ function InventoryComponent() {
               <DropdownMenuContent align="end" className="w-[200px]">
                 <DropdownMenuItem onClick={() => handleViewDetails(item)}>
                   <Eye className="h-4 w-4" />
-                  <span>View Details</span>
+                  <span>{t("actions.viewDetails")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -516,7 +521,7 @@ function InventoryComponent() {
                   }}
                 >
                   <Edit className="h-4 w-4" />
-                  <span>Edit Item</span>
+                  <span>{t("actions.editItem")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -524,12 +529,12 @@ function InventoryComponent() {
                   }}
                 >
                   <Copy className="h-4 w-4" />
-                  <span>Duplicate</span>
+                  <span>{t("actions.duplicate")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => handleOpenStockAdjust(item)}>
                   <TrendingUp className="h-4 w-4" />
-                  <span>Adjust Stock</span>
+                  <span>{t("actions.adjustStock")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -537,7 +542,7 @@ function InventoryComponent() {
                   }}
                 >
                   <BarChart3 className="h-4 w-4" />
-                  <span>Stock History</span>
+                  <span>{t("actions.stockHistory")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -545,7 +550,7 @@ function InventoryComponent() {
                   onClick={() => handleDelete(item)}
                 >
                   <Archive className="h-4 w-4" />
-                  <span>Archive</span>
+                  <span>{t("actions.archive")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -553,7 +558,7 @@ function InventoryComponent() {
         },
       },
     ],
-    [handleViewDetails, handleOpenStockAdjust, handleDelete],
+    [t, isRTL, handleViewDetails, handleOpenStockAdjust, handleDelete],
   );
 
   // Table instance
@@ -668,7 +673,7 @@ function InventoryComponent() {
                     )}
                   />
                   <Input
-                    placeholder="Search by name, generic name, or barcode..."
+                    placeholder={t("page.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={isRTL ? "pr-10" : "pl-10"}
@@ -680,8 +685,8 @@ function InventoryComponent() {
                   {/* Form Filter */}
                   <Select
                     items={[
-                      { value: null, label: "Filter by Form" },
-                      { value: "all", label: "All Forms" },
+                      { value: null, label: t("filters.filterByForm") },
+                      { value: "all", label: t("filters.allForms") },
                       ...MEDICINE_FORMS.map((form) => ({
                         value: form,
                         label: form,
@@ -691,10 +696,12 @@ function InventoryComponent() {
                     onValueChange={setFormFilter}
                   >
                     <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="All Forms" />
+                      <SelectValue placeholder={t("filters.allForms")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Forms</SelectItem>
+                      <SelectItem value="all">
+                        {t("filters.allForms")}
+                      </SelectItem>
                       {MEDICINE_FORMS.map((form) => (
                         <SelectItem key={form} value={form}>
                           {form}
@@ -706,44 +713,59 @@ function InventoryComponent() {
                   {/* Stock Filter */}
                   <Select
                     items={[
-                      { value: null, label: "Filter by Stock" },
-                      { value: "all", label: "All Stock" },
-                      { value: "in_stock", label: "In Stock" },
-                      { value: "low_stock", label: "Low Stock" },
-                      { value: "out_of_stock", label: "Out of Stock" },
+                      { value: null, label: t("filters.filterByStock") },
+                      { value: "all", label: t("filters.allStock") },
+                      { value: "in_stock", label: t("filters.inStock") },
+                      { value: "low_stock", label: t("filters.lowStock") },
+                      { value: "out_of_stock", label: t("filters.outOfStock") },
                     ]}
                     value={stockFilter}
                     onValueChange={setStockFilter}
                   >
                     <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="All Stock" />
+                      <SelectValue placeholder={t("filters.allStock")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Stock</SelectItem>
-                      <SelectItem value="in_stock">In Stock</SelectItem>
-                      <SelectItem value="low_stock">Low Stock</SelectItem>
-                      <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                      <SelectItem value="all">
+                        {t("filters.allStock")}
+                      </SelectItem>
+                      <SelectItem value="in_stock">
+                        {t("filters.inStock")}
+                      </SelectItem>
+                      <SelectItem value="low_stock">
+                        {t("filters.lowStock")}
+                      </SelectItem>
+                      <SelectItem value="out_of_stock">
+                        {t("filters.outOfStock")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
 
                   {/* Prescription Filter */}
                   <Select
                     items={[
-                      { value: null, label: "Filter by Type" },
-                      { value: "all", label: "All Types" },
-                      { value: "prescription", label: "Prescription" },
-                      { value: "otc", label: "OTC" },
+                      { value: null, label: t("filters.filterByType") },
+                      { value: "all", label: t("filters.allTypes") },
+                      {
+                        value: "prescription",
+                        label: t("filters.prescription"),
+                      },
+                      { value: "otc", label: t("filters.otc") },
                     ]}
                     value={prescriptionFilter}
                     onValueChange={setPrescriptionFilter}
                   >
                     <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="All Types" />
+                      <SelectValue placeholder={t("filters.allTypes")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="prescription">Prescription</SelectItem>
-                      <SelectItem value="otc">OTC</SelectItem>
+                      <SelectItem value="all">
+                        {t("filters.allTypes")}
+                      </SelectItem>
+                      <SelectItem value="prescription">
+                        {t("filters.prescription")}
+                      </SelectItem>
+                      <SelectItem value="otc">{t("filters.otc")}</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -789,7 +811,7 @@ function InventoryComponent() {
                   </SheetTrigger>
                   <SheetContent side="bottom" className="h-[80vh]">
                     <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
+                      <SheetTitle>{t("filters.filters")}</SheetTitle>
                       <SheetDescription>
                         Filter inventory items by form, stock status, and type
                       </SheetDescription>
@@ -798,12 +820,12 @@ function InventoryComponent() {
                       {/* Form Filter */}
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
-                          Medicine Form
+                          {t("filters.medicineForm")}
                         </label>
                         <Select
                           items={[
-                            { value: null, label: "Filter by Form" },
-                            { value: "all", label: "All Forms" },
+                            { value: null, label: t("filters.filterByForm") },
+                            { value: "all", label: t("filters.allForms") },
                             ...MEDICINE_FORMS.map((form) => ({
                               value: form,
                               label: form,
@@ -813,10 +835,12 @@ function InventoryComponent() {
                           onValueChange={setFormFilter}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="All Forms" />
+                            <SelectValue placeholder={t("filters.allForms")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Forms</SelectItem>
+                            <SelectItem value="all">
+                              {t("filters.allForms")}
+                            </SelectItem>
                             {MEDICINE_FORMS.map((form) => (
                               <SelectItem key={form} value={form}>
                                 {form}
@@ -829,28 +853,40 @@ function InventoryComponent() {
                       {/* Stock Filter */}
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
-                          Stock Status
+                          {t("filters.stockStatus")}
                         </label>
                         <Select
                           items={[
-                            { value: null, label: "Filter by Stock" },
-                            { value: "all", label: "All Stock" },
-                            { value: "in_stock", label: "In Stock" },
-                            { value: "low_stock", label: "Low Stock" },
-                            { value: "out_of_stock", label: "Out of Stock" },
+                            { value: null, label: t("filters.filterByStock") },
+                            { value: "all", label: t("filters.allStock") },
+                            { value: "in_stock", label: t("filters.inStock") },
+                            {
+                              value: "low_stock",
+                              label: t("filters.lowStock"),
+                            },
+                            {
+                              value: "out_of_stock",
+                              label: t("filters.outOfStock"),
+                            },
                           ]}
                           value={stockFilter}
                           onValueChange={setStockFilter}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="All Stock" />
+                            <SelectValue placeholder={t("filters.allStock")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Stock</SelectItem>
-                            <SelectItem value="in_stock">In Stock</SelectItem>
-                            <SelectItem value="low_stock">Low Stock</SelectItem>
+                            <SelectItem value="all">
+                              {t("filters.allStock")}
+                            </SelectItem>
+                            <SelectItem value="in_stock">
+                              {t("filters.inStock")}
+                            </SelectItem>
+                            <SelectItem value="low_stock">
+                              {t("filters.lowStock")}
+                            </SelectItem>
                             <SelectItem value="out_of_stock">
-                              Out of Stock
+                              {t("filters.outOfStock")}
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -859,27 +895,34 @@ function InventoryComponent() {
                       {/* Prescription Filter */}
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
-                          Medicine Type
+                          {t("filters.medicineType")}
                         </label>
                         <Select
                           items={[
-                            { value: null, label: "Filter by Type" },
-                            { value: "all", label: "All Types" },
-                            { value: "prescription", label: "Prescription" },
-                            { value: "otc", label: "OTC" },
+                            { value: null, label: t("filters.filterByType") },
+                            { value: "all", label: t("filters.allTypes") },
+                            {
+                              value: "prescription",
+                              label: t("filters.prescription"),
+                            },
+                            { value: "otc", label: t("filters.otc") },
                           ]}
                           value={prescriptionFilter}
                           onValueChange={setPrescriptionFilter}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="All Types" />
+                            <SelectValue placeholder={t("filters.allTypes")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Types</SelectItem>
-                            <SelectItem value="prescription">
-                              Prescription
+                            <SelectItem value="all">
+                              {t("filters.allTypes")}
                             </SelectItem>
-                            <SelectItem value="otc">OTC</SelectItem>
+                            <SelectItem value="prescription">
+                              {t("filters.prescription")}
+                            </SelectItem>
+                            <SelectItem value="otc">
+                              {t("filters.otc")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -965,7 +1008,10 @@ function InventoryComponent() {
                       {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                           {headerGroup.headers.map((header) => (
-                            <TableHead key={header.id}>
+                            <TableHead
+                              key={header.id}
+                              className={cn(isRTL ? "text-right" : "text-left")}
+                            >
                               {header.isPlaceholder
                                 ? null
                                 : flexRender(
@@ -986,7 +1032,12 @@ function InventoryComponent() {
                             className="cursor-pointer"
                           >
                             {row.getVisibleCells().map((cell) => (
-                              <TableCell key={cell.id}>
+                              <TableCell
+                                key={cell.id}
+                                className={cn(
+                                  isRTL ? "text-right" : "text-left",
+                                )}
+                              >
                                 {flexRender(
                                   cell.column.columnDef.cell,
                                   cell.getContext(),
@@ -1061,13 +1112,13 @@ function InventoryComponent() {
                     {/* Items info and page size selector */}
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                       <div className="text-sm text-muted-foreground">
-                        Showing{" "}
+                        {t("pagination.showing")}{" "}
                         <span className="font-medium text-foreground">
                           {table.getState().pagination.pageIndex *
                             table.getState().pagination.pageSize +
                             1}
                         </span>{" "}
-                        to{" "}
+                        {t("pagination.to")}{" "}
                         <span className="font-medium text-foreground">
                           {Math.min(
                             (table.getState().pagination.pageIndex + 1) *
@@ -1075,15 +1126,15 @@ function InventoryComponent() {
                             filteredItems.length,
                           )}
                         </span>{" "}
-                        of{" "}
+                        {t("pagination.of")}{" "}
                         <span className="font-medium text-foreground">
                           {filteredItems.length}
                         </span>{" "}
-                        items
+                        {t("pagination.items")}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground whitespace-nowrap">
-                          Rows per page:
+                          {t("pagination.rowsPerPage")}
                         </span>
                         <Select
                           value={table
@@ -1334,9 +1385,10 @@ function InventoryItemCard({
   onAdjustStock,
   onDelete,
 }: InventoryItemCardProps) {
+  const { t } = useTranslation("inventory");
   const stockStatus = getStockStatus(item.stock_quantity, item.min_stock_level);
   const stockColor = getStockStatusColor(stockStatus);
-  const stockLabel = getStockStatusLabel(stockStatus);
+  const stockLabel = getStockStatusLabel(stockStatus, t);
 
   return (
     <Card className="hover:shadow-md transition-shadow group relative">
@@ -1376,7 +1428,7 @@ function InventoryItemCard({
                   }}
                 >
                   <Eye className="h-4 w-4" />
-                  <span>View Details</span>
+                  <span>{t("actions.viewDetails")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1385,7 +1437,7 @@ function InventoryItemCard({
                   }}
                 >
                   <Edit className="h-4 w-4" />
-                  <span>Edit Item</span>
+                  <span>{t("actions.editItem")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1394,7 +1446,7 @@ function InventoryItemCard({
                   }}
                 >
                   <Copy className="h-4 w-4" />
-                  <span>Duplicate</span>
+                  <span>{t("actions.duplicate")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -1404,7 +1456,7 @@ function InventoryItemCard({
                   }}
                 >
                   <TrendingUp className="h-4 w-4" />
-                  <span>Adjust Stock</span>
+                  <span>{t("actions.adjustStock")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1413,7 +1465,7 @@ function InventoryItemCard({
                   }}
                 >
                   <BarChart3 className="h-4 w-4" />
-                  <span>Stock History</span>
+                  <span>{t("actions.stockHistory")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -1424,7 +1476,7 @@ function InventoryItemCard({
                   }}
                 >
                   <Archive className="h-4 w-4" />
-                  <span>Archive</span>
+                  <span>{t("actions.archive")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

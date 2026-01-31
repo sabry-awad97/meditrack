@@ -12,7 +12,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { format } from "date-fns";
-import { useTranslation } from "@meditrack/i18n";
+import { useTranslation, useDirection } from "@meditrack/i18n";
 
 import {
   Dialog,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { InventoryItemWithStockResponse } from "@/api/inventory.api";
 
@@ -38,6 +39,7 @@ export function ItemDetailsDialog({
   item,
 }: ItemDetailsDialogProps) {
   const { t } = useTranslation("inventory");
+  const { isRTL } = useDirection();
 
   if (!item) return null;
 
@@ -61,271 +63,308 @@ export function ItemDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <DialogTitle className="text-2xl">{item.name}</DialogTitle>
-              {item.generic_name && (
-                <DialogDescription className="text-base mt-1">
-                  {item.generic_name}
-                </DialogDescription>
+      <DialogContent className="sm:max-w-2xl h-[90vh] flex flex-col p-0 gap-0">
+        <div className={cn("p-6 border-b shrink-0", isRTL ? "pl-14" : "pr-14")}>
+          <DialogHeader className={cn(isRTL && "text-right")}>
+            <div
+              className={cn(
+                "flex items-start gap-4",
+                isRTL && "flex-row-reverse",
               )}
-            </div>
-            <Badge
-              variant={
-                stockStatus === "out_of_stock"
-                  ? "destructive"
-                  : stockStatus === "low_stock"
-                    ? "secondary"
-                    : "default"
-              }
-              className="text-sm px-3 py-1"
             >
-              {getStockStatusLabel()}
-            </Badge>
-          </div>
-        </DialogHeader>
-
-        <div className="space-y-6 mt-4">
-          {/* Stock Overview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="p-4 rounded-lg bg-linear-to-br from-primary/5 to-primary/10 border border-primary/20"
-          >
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              {t("itemDetails.stockInfo")}
-            </h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  {t("itemDetails.currentStock")}
-                </p>
-                <p className="text-3xl font-bold">{item.stock_quantity}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  {t("itemDetails.minLevel")}
-                </p>
-                <p className="text-3xl font-bold">{item.min_stock_level}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  {t("itemDetails.totalValue")}
-                </p>
-                <p className="text-3xl font-bold">
-                  ${(item.stock_quantity * item.unit_price).toFixed(2)}
-                </p>
+              <div className={cn("flex-1", isRTL && "text-right")}>
+                <DialogTitle className="text-2xl">{item.name}</DialogTitle>
+                {item.generic_name && (
+                  <DialogDescription className="text-base mt-1">
+                    {item.generic_name}
+                  </DialogDescription>
+                )}
               </div>
             </div>
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-2 text-sm">
-                <span className="text-muted-foreground">
-                  {t("itemDetails.stockLevel")}
-                </span>
-                <span className="font-medium">
-                  {stockPercentage.toFixed(0)}%
-                </span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  className={cn(
-                    "h-full",
-                    stockStatus === "out_of_stock"
-                      ? "bg-red-500"
-                      : stockStatus === "low_stock"
-                        ? "bg-yellow-500"
-                        : "bg-green-500",
-                  )}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${stockPercentage}%` }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Basic Information */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-4"
+          </DialogHeader>
+          <Badge
+            variant={
+              stockStatus === "out_of_stock"
+                ? "destructive"
+                : stockStatus === "low_stock"
+                  ? "secondary"
+                  : "default"
+            }
+            className={cn(
+              "absolute top-4 text-sm px-3 py-1",
+              isRTL ? "left-12" : "right-12",
+            )}
           >
-            <h3 className="font-semibold flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              {t("itemDetails.basicInfo")}
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <DetailField
-                label={t("itemDetails.concentration")}
-                value={item.concentration}
-              />
-              <DetailField label={t("itemDetails.form")} value={item.form} />
-              {item.manufacturer && (
-                <DetailField
-                  label={t("itemDetails.manufacturer")}
-                  value={item.manufacturer}
-                  icon={Building2}
-                />
-              )}
-              {item.barcode && (
-                <DetailField
-                  label={t("itemDetails.barcode")}
-                  value={item.barcode}
-                  icon={Barcode}
-                  className="font-mono"
-                />
-              )}
-            </div>
-          </motion.div>
+            {getStockStatusLabel()}
+          </Badge>
+        </div>
 
-          <Separator />
-
-          {/* Pricing */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="space-y-4"
-          >
-            <h3 className="font-semibold flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              {t("itemDetails.pricing")}
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <DetailField
-                label={t("itemDetails.unitPrice")}
-                value={`$${item.unit_price.toFixed(2)}`}
-              />
-              <DetailField
-                label={t("itemDetails.totalInventoryValue")}
-                value={`$${(item.stock_quantity * item.unit_price).toFixed(2)}`}
-              />
-            </div>
-          </motion.div>
-
-          <Separator />
-
-          {/* Classification */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-4"
-          >
-            <h3 className="font-semibold flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              {t("itemDetails.classification")}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={item.requires_prescription ? "secondary" : "outline"}
-                className="gap-1"
+        <ScrollArea className="flex-1 h-0 px-6">
+          <div className="space-y-6 py-4">
+            {/* Stock Overview */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="p-4 rounded-lg bg-linear-to-br from-primary/5 to-primary/10 border border-primary/20"
+            >
+              <h3
+                className={cn(
+                  "font-semibold mb-4 flex items-center gap-2",
+                  isRTL && "flex-row-reverse",
+                )}
               >
-                {item.requires_prescription ? (
-                  <CheckCircle2 className="h-3 w-3" />
-                ) : (
-                  <XCircle className="h-3 w-3" />
-                )}
-                {item.requires_prescription
-                  ? t("itemDetails.prescriptionRequired")
-                  : t("itemDetails.overTheCounter")}
-              </Badge>
-              {item.is_controlled && (
-                <Badge variant="destructive" className="gap-1">
-                  <AlertTriangle className="h-3 w-3" />
-                  {t("itemDetails.controlledSubstance")}
-                </Badge>
-              )}
-              <Badge variant={item.is_active ? "default" : "outline"}>
-                {item.is_active
-                  ? t("itemDetails.active")
-                  : t("itemDetails.inactive")}
-              </Badge>
-            </div>
-          </motion.div>
-
-          {/* Storage & Notes */}
-          {(item.storage_instructions || item.notes) && (
-            <>
-              <Separator />
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="space-y-4"
-              >
-                {item.storage_instructions && (
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">
-                      {t("itemDetails.storageInstructions")}
-                    </h4>
-                    <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50">
-                      {item.storage_instructions}
-                    </p>
-                  </div>
-                )}
-                {item.notes && (
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">
-                      {t("itemDetails.additionalNotes")}
-                    </h4>
-                    <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50">
-                      {item.notes}
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            </>
-          )}
-
-          <Separator />
-
-          {/* Timestamps */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="space-y-4"
-          >
-            <h3 className="font-semibold flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {t("itemDetails.timeline")}
-            </h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="space-y-1">
-                <p className="text-muted-foreground">
-                  {t("itemDetails.created")}
-                </p>
-                <p className="font-medium">
-                  {format(new Date(item.created_at), "PPp")}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-muted-foreground">
-                  {t("itemDetails.lastUpdated")}
-                </p>
-                <p className="font-medium">
-                  {format(new Date(item.updated_at), "PPp")}
-                </p>
-              </div>
-              {item.last_restocked_at && (
+                <Package className="h-5 w-5" />
+                {t("itemDetails.stockInfo")}
+              </h3>
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <p className="text-muted-foreground">
-                    {t("itemDetails.lastRestocked")}
+                  <p className="text-sm text-muted-foreground">
+                    {t("itemDetails.currentStock")}
                   </p>
-                  <p className="font-medium">
-                    {format(new Date(item.last_restocked_at), "PPp")}
+                  <p className="text-3xl font-bold">{item.stock_quantity}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {t("itemDetails.minLevel")}
+                  </p>
+                  <p className="text-3xl font-bold">{item.min_stock_level}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {t("itemDetails.totalValue")}
+                  </p>
+                  <p className="text-3xl font-bold">
+                    ${(item.stock_quantity * item.unit_price).toFixed(2)}
                   </p>
                 </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2 text-sm">
+                  <span className="text-muted-foreground">
+                    {t("itemDetails.stockLevel")}
+                  </span>
+                  <span className="font-medium">
+                    {stockPercentage.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <motion.div
+                    className={cn(
+                      "h-full",
+                      stockStatus === "out_of_stock"
+                        ? "bg-red-500"
+                        : stockStatus === "low_stock"
+                          ? "bg-yellow-500"
+                          : "bg-green-500",
+                    )}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${stockPercentage}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Basic Information */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-4"
+            >
+              <h3
+                className={cn(
+                  "font-semibold flex items-center gap-2",
+                  isRTL && "flex-row-reverse",
+                )}
+              >
+                <FileText className="h-5 w-5" />
+                {t("itemDetails.basicInfo")}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <DetailField
+                  label={t("itemDetails.concentration")}
+                  value={item.concentration}
+                />
+                <DetailField label={t("itemDetails.form")} value={item.form} />
+                {item.manufacturer && (
+                  <DetailField
+                    label={t("itemDetails.manufacturer")}
+                    value={item.manufacturer}
+                    icon={Building2}
+                  />
+                )}
+                {item.barcode && (
+                  <DetailField
+                    label={t("itemDetails.barcode")}
+                    value={item.barcode}
+                    icon={Barcode}
+                    className="font-mono"
+                  />
+                )}
+              </div>
+            </motion.div>
+
+            <Separator />
+
+            {/* Pricing */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-4"
+            >
+              <h3
+                className={cn(
+                  "font-semibold flex items-center gap-2",
+                  isRTL && "flex-row-reverse",
+                )}
+              >
+                <DollarSign className="h-5 w-5" />
+                {t("itemDetails.pricing")}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <DetailField
+                  label={t("itemDetails.unitPrice")}
+                  value={`$${item.unit_price.toFixed(2)}`}
+                />
+                <DetailField
+                  label={t("itemDetails.totalInventoryValue")}
+                  value={`$${(item.stock_quantity * item.unit_price).toFixed(2)}`}
+                />
+              </div>
+            </motion.div>
+
+            <Separator />
+
+            {/* Classification */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-4"
+            >
+              <h3
+                className={cn(
+                  "font-semibold flex items-center gap-2",
+                  isRTL && "flex-row-reverse",
+                )}
+              >
+                <Shield className="h-5 w-5" />
+                {t("itemDetails.classification")}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                <Badge
+                  variant={item.requires_prescription ? "secondary" : "outline"}
+                  className="gap-1"
+                >
+                  {item.requires_prescription ? (
+                    <CheckCircle2 className="h-3 w-3" />
+                  ) : (
+                    <XCircle className="h-3 w-3" />
+                  )}
+                  {item.requires_prescription
+                    ? t("itemDetails.prescriptionRequired")
+                    : t("itemDetails.overTheCounter")}
+                </Badge>
+                {item.is_controlled && (
+                  <Badge variant="destructive" className="gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {t("itemDetails.controlledSubstance")}
+                  </Badge>
+                )}
+                <Badge variant={item.is_active ? "default" : "outline"}>
+                  {item.is_active
+                    ? t("itemDetails.active")
+                    : t("itemDetails.inactive")}
+                </Badge>
+              </div>
+            </motion.div>
+
+            {/* Storage & Notes */}
+            {(item.storage_instructions || item.notes) && (
+              <>
+                <Separator />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-4"
+                >
+                  {item.storage_instructions && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">
+                        {t("itemDetails.storageInstructions")}
+                      </h4>
+                      <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50">
+                        {item.storage_instructions}
+                      </p>
+                    </div>
+                  )}
+                  {item.notes && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">
+                        {t("itemDetails.additionalNotes")}
+                      </h4>
+                      <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50">
+                        {item.notes}
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              </>
+            )}
+
+            <Separator />
+
+            {/* Timestamps */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="space-y-4"
+            >
+              <h3
+                className={cn(
+                  "font-semibold flex items-center gap-2",
+                  isRTL && "flex-row-reverse",
+                )}
+              >
+                <Calendar className="h-5 w-5" />
+                {t("itemDetails.timeline")}
+              </h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <p className="text-muted-foreground">
+                    {t("itemDetails.created")}
+                  </p>
+                  <p className="font-medium">
+                    {format(new Date(item.created_at), "PPp")}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground">
+                    {t("itemDetails.lastUpdated")}
+                  </p>
+                  <p className="font-medium">
+                    {format(new Date(item.updated_at), "PPp")}
+                  </p>
+                </div>
+                {item.last_restocked_at && (
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground">
+                      {t("itemDetails.lastRestocked")}
+                    </p>
+                    <p className="font-medium">
+                      {format(new Date(item.last_restocked_at), "PPp")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -345,9 +384,16 @@ function DetailField({
   icon: Icon,
   className,
 }: DetailFieldProps) {
+  const { isRTL } = useDirection();
+
   return (
     <div className="space-y-1">
-      <p className="text-sm text-muted-foreground flex items-center gap-1">
+      <p
+        className={cn(
+          "text-sm text-muted-foreground flex items-center gap-1",
+          isRTL && "flex-row-reverse justify-end",
+        )}
+      >
         {Icon && <Icon className="h-3 w-3" />}
         {label}
       </p>

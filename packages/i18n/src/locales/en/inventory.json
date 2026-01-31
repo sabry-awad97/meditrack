@@ -210,5 +210,12 @@
     "deleteDescription": "This action will archive the item. You can restore it later if needed.",
     "cancel": "Cancel",
     "archive": "Archive"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "items": "items",
+    "rowsPerPage": "Rows per page:"
   }
 }
