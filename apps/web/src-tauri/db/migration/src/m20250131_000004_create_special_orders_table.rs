@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SpecialOrder::Table)
+                    .table(Alias::new("special_orders"))
                     .if_not_exists()
                     .col(
                         ColumnDef::new(SpecialOrder::Id)
@@ -77,16 +77,16 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_special_orders_customer")
-                            .from(SpecialOrder::Table, SpecialOrder::CustomerId)
-                            .to(Customer::Table, Customer::Id)
+                            .from(Alias::new("special_orders"), SpecialOrder::CustomerId)
+                            .to(Alias::new("customers"), Customer::Id)
                             .on_delete(ForeignKeyAction::Restrict)
                             .on_update(ForeignKeyAction::Cascade),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_special_orders_supplier")
-                            .from(SpecialOrder::Table, SpecialOrder::SupplierId)
-                            .to(Supplier::Table, Supplier::Id)
+                            .from(Alias::new("special_orders"), SpecialOrder::SupplierId)
+                            .to(Alias::new("suppliers"), Supplier::Id)
                             .on_delete(ForeignKeyAction::SetNull)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -99,7 +99,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_orders_customer_id")
-                    .table(SpecialOrder::Table)
+                    .table(Alias::new("special_orders"))
                     .col(SpecialOrder::CustomerId)
                     .to_owned(),
             )
@@ -109,7 +109,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_orders_supplier_id")
-                    .table(SpecialOrder::Table)
+                    .table(Alias::new("special_orders"))
                     .col(SpecialOrder::SupplierId)
                     .to_owned(),
             )
@@ -119,7 +119,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_orders_order_number")
-                    .table(SpecialOrder::Table)
+                    .table(Alias::new("special_orders"))
                     .col(SpecialOrder::OrderNumber)
                     .to_owned(),
             )
@@ -129,7 +129,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_orders_status")
-                    .table(SpecialOrder::Table)
+                    .table(Alias::new("special_orders"))
                     .col(SpecialOrder::Status)
                     .to_owned(),
             )
@@ -139,7 +139,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_orders_order_date")
-                    .table(SpecialOrder::Table)
+                    .table(Alias::new("special_orders"))
                     .col(SpecialOrder::OrderDate)
                     .to_owned(),
             )
@@ -180,7 +180,7 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes and foreign keys will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(SpecialOrder::Table).to_owned())
+            .drop_table(Table::drop().table(Alias::new("special_orders")).to_owned())
             .await?;
 
         Ok(())

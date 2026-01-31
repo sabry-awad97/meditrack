@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SupplierInventoryItem::Table)
+                    .table(Alias::new("supplier_inventory_items"))
                     .if_not_exists()
                     .col(
                         ColumnDef::new(SupplierInventoryItem::Id)
@@ -87,10 +87,10 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .name("fk_supplier_inventory_items_supplier")
                             .from(
-                                SupplierInventoryItem::Table,
+                                Alias::new("supplier_inventory_items"),
                                 SupplierInventoryItem::SupplierId,
                             )
-                            .to(Supplier::Table, Supplier::Id)
+                            .to(Alias::new("suppliers"), Supplier::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -98,10 +98,10 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .name("fk_supplier_inventory_items_inventory")
                             .from(
-                                SupplierInventoryItem::Table,
+                                Alias::new("supplier_inventory_items"),
                                 SupplierInventoryItem::InventoryItemId,
                             )
-                            .to(InventoryItem::Table, InventoryItem::Id)
+                            .to(Alias::new("inventory_items"), InventoryItem::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -114,7 +114,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_supplier_inventory_items_supplier_id")
-                    .table(SupplierInventoryItem::Table)
+                    .table(Alias::new("supplier_inventory_items"))
                     .col(SupplierInventoryItem::SupplierId)
                     .to_owned(),
             )
@@ -124,7 +124,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_supplier_inventory_items_inventory_id")
-                    .table(SupplierInventoryItem::Table)
+                    .table(Alias::new("supplier_inventory_items"))
                     .col(SupplierInventoryItem::InventoryItemId)
                     .to_owned(),
             )
@@ -134,7 +134,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_supplier_inventory_items_is_preferred")
-                    .table(SupplierInventoryItem::Table)
+                    .table(Alias::new("supplier_inventory_items"))
                     .col(SupplierInventoryItem::IsPreferred)
                     .to_owned(),
             )
@@ -144,7 +144,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_supplier_inventory_items_is_active")
-                    .table(SupplierInventoryItem::Table)
+                    .table(Alias::new("supplier_inventory_items"))
                     .col(SupplierInventoryItem::IsActive)
                     .to_owned(),
             )
@@ -155,7 +155,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_supplier_inventory_items_unique")
-                    .table(SupplierInventoryItem::Table)
+                    .table(Alias::new("supplier_inventory_items"))
                     .col(SupplierInventoryItem::SupplierId)
                     .col(SupplierInventoryItem::InventoryItemId)
                     .unique()
@@ -190,7 +190,11 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes and foreign keys will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(SupplierInventoryItem::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .table(Alias::new("supplier_inventory_items"))
+                    .to_owned(),
+            )
             .await?;
 
         Ok(())

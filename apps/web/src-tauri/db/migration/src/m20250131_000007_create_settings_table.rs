@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Setting::Table)
+                    .table(Alias::new("settings"))
                     .if_not_exists()
                     .col(
                         ColumnDef::new(Setting::Key)
@@ -41,7 +41,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_settings_category")
-                    .table(Setting::Table)
+                    .table(Alias::new("settings"))
                     .col(Setting::Category)
                     .to_owned(),
             )
@@ -72,7 +72,7 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(Setting::Table).to_owned())
+            .drop_table(Table::drop().table(Alias::new("settings")).to_owned())
             .await?;
 
         Ok(())

@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(InventoryItem::Table)
+                    .table(Alias::new("inventory_items"))
                     .if_not_exists()
                     .col(
                         ColumnDef::new(InventoryItem::Id)
@@ -118,7 +118,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_inventory_items_name")
-                    .table(InventoryItem::Table)
+                    .table(Alias::new("inventory_items"))
                     .col(InventoryItem::Name)
                     .to_owned(),
             )
@@ -128,7 +128,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_inventory_items_generic_name")
-                    .table(InventoryItem::Table)
+                    .table(Alias::new("inventory_items"))
                     .col(InventoryItem::GenericName)
                     .to_owned(),
             )
@@ -138,7 +138,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_inventory_items_form")
-                    .table(InventoryItem::Table)
+                    .table(Alias::new("inventory_items"))
                     .col(InventoryItem::Form)
                     .to_owned(),
             )
@@ -148,7 +148,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_inventory_items_is_active")
-                    .table(InventoryItem::Table)
+                    .table(Alias::new("inventory_items"))
                     .col(InventoryItem::IsActive)
                     .to_owned(),
             )
@@ -197,7 +197,11 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(InventoryItem::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .table(Alias::new("inventory_items"))
+                    .to_owned(),
+            )
             .await?;
 
         Ok(())

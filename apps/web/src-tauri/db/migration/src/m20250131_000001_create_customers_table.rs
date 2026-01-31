@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Customer::Table)
+                    .table(Alias::new("customers"))
                     .if_not_exists()
                     .col(ColumnDef::new(Customer::Id).uuid().not_null().primary_key())
                     .col(
@@ -66,7 +66,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_customers_full_name")
-                    .table(Customer::Table)
+                    .table(Alias::new("customers"))
                     .col(Customer::FullName)
                     .to_owned(),
             )
@@ -76,7 +76,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_customers_phone_number")
-                    .table(Customer::Table)
+                    .table(Alias::new("customers"))
                     .col(Customer::PhoneNumber)
                     .to_owned(),
             )
@@ -86,7 +86,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_customers_email")
-                    .table(Customer::Table)
+                    .table(Alias::new("customers"))
                     .col(Customer::Email)
                     .to_owned(),
             )
@@ -96,7 +96,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_customers_national_id")
-                    .table(Customer::Table)
+                    .table(Alias::new("customers"))
                     .col(Customer::NationalId)
                     .to_owned(),
             )
@@ -106,7 +106,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_customers_is_active")
-                    .table(Customer::Table)
+                    .table(Alias::new("customers"))
                     .col(Customer::IsActive)
                     .to_owned(),
             )
@@ -145,7 +145,7 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(Customer::Table).to_owned())
+            .drop_table(Table::drop().table(Alias::new("customers")).to_owned())
             .await?;
 
         Ok(())

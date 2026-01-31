@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Supplier::Table)
+                    .table(Alias::new("suppliers"))
                     .if_not_exists()
                     .col(ColumnDef::new(Supplier::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Supplier::Name).string_len(200).not_null())
@@ -53,7 +53,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_suppliers_name")
-                    .table(Supplier::Table)
+                    .table(Alias::new("suppliers"))
                     .col(Supplier::Name)
                     .to_owned(),
             )
@@ -63,7 +63,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_suppliers_rating")
-                    .table(Supplier::Table)
+                    .table(Alias::new("suppliers"))
                     .col(Supplier::Rating)
                     .to_owned(),
             )
@@ -73,7 +73,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_suppliers_is_active")
-                    .table(Supplier::Table)
+                    .table(Alias::new("suppliers"))
                     .col(Supplier::IsActive)
                     .to_owned(),
             )
@@ -112,7 +112,7 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(Supplier::Table).to_owned())
+            .drop_table(Table::drop().table(Alias::new("suppliers")).to_owned())
             .await?;
 
         Ok(())

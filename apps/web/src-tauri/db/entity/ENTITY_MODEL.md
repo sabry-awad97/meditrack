@@ -439,7 +439,6 @@ erDiagram
         varchar custom_form
         integer quantity
         decimal unit_price
-        decimal subtotal
         text notes
         timestamptz created_at
         timestamptz updated_at
@@ -453,10 +452,8 @@ erDiagram
         varchar whatsapp
         varchar email
         text address
-        jsonb common_medicines
-        integer avg_delivery_days
         decimal rating
-        integer total_orders
+        boolean is_active
         text notes
         timestamptz created_at
         timestamptz updated_at

@@ -9,7 +9,7 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SpecialOrderItem::Table)
+                    .table(Alias::new("special_order_items"))
                     .if_not_exists()
                     .col(
                         ColumnDef::new(SpecialOrderItem::Id)
@@ -68,16 +68,22 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_special_order_items_order")
-                            .from(SpecialOrderItem::Table, SpecialOrderItem::SpecialOrderId)
-                            .to(SpecialOrder::Table, SpecialOrder::Id)
+                            .from(
+                                Alias::new("special_order_items"),
+                                SpecialOrderItem::SpecialOrderId,
+                            )
+                            .to(Alias::new("special_orders"), SpecialOrder::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_special_order_items_inventory")
-                            .from(SpecialOrderItem::Table, SpecialOrderItem::InventoryItemId)
-                            .to(InventoryItem::Table, InventoryItem::Id)
+                            .from(
+                                Alias::new("special_order_items"),
+                                SpecialOrderItem::InventoryItemId,
+                            )
+                            .to(Alias::new("inventory_items"), InventoryItem::Id)
                             .on_delete(ForeignKeyAction::SetNull)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -90,7 +96,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_order_items_order_id")
-                    .table(SpecialOrderItem::Table)
+                    .table(Alias::new("special_order_items"))
                     .col(SpecialOrderItem::SpecialOrderId)
                     .to_owned(),
             )
@@ -100,7 +106,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .name("idx_special_order_items_inventory_id")
-                    .table(SpecialOrderItem::Table)
+                    .table(Alias::new("special_order_items"))
                     .col(SpecialOrderItem::InventoryItemId)
                     .to_owned(),
             )
@@ -133,7 +139,11 @@ impl MigrationTrait for Migration {
 
         // Drop table (indexes and foreign keys will be dropped automatically)
         manager
-            .drop_table(Table::drop().table(SpecialOrderItem::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .table(Alias::new("special_order_items"))
+                    .to_owned(),
+            )
             .await?;
 
         Ok(())
