@@ -7,6 +7,7 @@ import {
   Settings,
   HelpCircle,
   ChevronDown,
+  ChevronRight,
   Pill,
   Bell,
   Moon,
@@ -14,8 +15,14 @@ import {
   Languages,
   LogOut,
   PackageSearch,
+  FileText,
+  TrendingUp,
+  Archive,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 import {
   Sidebar,
@@ -29,9 +36,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuBadge,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,13 +90,29 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Track which menu items are expanded
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  // Toggle expanded state for a menu item
+  const toggleExpanded = (itemTitle: string) => {
+    setExpandedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemTitle)) {
+        next.delete(itemTitle);
+      } else {
+        next.add(itemTitle);
+      }
+      return next;
+    });
+  };
+
   // Handle logout with navigation
   const handleLogout = async () => {
     await logout();
     navigate({ to: "/login" });
   };
 
-  // Main menu items
+  // Define menu structure with nested items
   const mainMenuItems = [
     {
       title: t("navigation.home"),
@@ -89,16 +120,28 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: t("navigation.orders"),
-      url: "/special-orders",
-      icon: Package,
-      badge: "orders",
-    },
-    {
       title: t("navigation.inventory"),
       url: "/inventory",
       icon: PackageSearch,
       badge: "inventory",
+      subItems: [
+        {
+          title: t("navigation.allItems"),
+          url: "/inventory",
+          icon: PackageSearch,
+        },
+        {
+          title: t("navigation.manufacturers"),
+          url: "/inventory/manufacturers",
+          icon: Users,
+        },
+      ],
+    },
+    {
+      title: t("navigation.orders"),
+      url: "/special-orders",
+      icon: Package,
+      badge: "orders",
     },
     {
       title: t("navigation.suppliers"),
@@ -109,6 +152,18 @@ export function AppSidebar() {
       title: t("navigation.reports"),
       url: "/reports",
       icon: BarChart3,
+      subItems: [
+        {
+          title: t("navigation.salesReports"),
+          url: "/reports/sales",
+          icon: TrendingUp,
+        },
+        {
+          title: t("navigation.inventoryReports"),
+          url: "/reports/inventory",
+          icon: FileText,
+        },
+      ],
     },
   ];
 
@@ -198,7 +253,12 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainMenuItems.map((item) => {
-                const isActive = currentPath === item.url;
+                const isActive =
+                  currentPath === item.url ||
+                  currentPath.startsWith(item.url + "/");
+                const hasSubItems = item.subItems && item.subItems.length > 0;
+                const isExpanded = expandedItems.has(item.title);
+
                 let badgeValue = 0;
                 let showBadge = false;
 
@@ -211,6 +271,112 @@ export function AppSidebar() {
                 ) {
                   badgeValue = totalInventoryItems;
                   showBadge = true;
+                }
+
+                if (hasSubItems) {
+                  return (
+                    <Collapsible
+                      key={item.title}
+                      open={isExpanded}
+                      onOpenChange={() => toggleExpanded(item.title)}
+                      className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger
+                          render={(props) => (
+                            <SidebarMenuButton
+                              isActive={isActive}
+                              tooltip={
+                                state === "collapsed" ? item.title : undefined
+                              }
+                              className="w-full"
+                              {...props}
+                            >
+                              <item.icon className="shrink-0 size-4" />
+                              <span
+                                className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                              >
+                                {item.title}
+                              </span>
+                              <motion.div
+                                animate={{ rotate: isExpanded ? 90 : 0 }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: "easeInOut",
+                                }}
+                                className={`shrink-0 ${isRTL ? "rotate-180" : ""}`}
+                              >
+                                <ChevronRight className="size-4" />
+                              </motion.div>
+                            </SidebarMenuButton>
+                          )}
+                        />
+                        {showBadge && (
+                          <SidebarMenuBadge
+                            className={
+                              isRTL ? "left-6 right-auto" : "right-6 left-auto"
+                            }
+                          >
+                            {badgeValue}
+                          </SidebarMenuBadge>
+                        )}
+                        <CollapsibleContent>
+                          <AnimatePresence initial={false}>
+                            {isExpanded && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: "easeInOut",
+                                }}
+                                style={{ overflow: "hidden" }}
+                              >
+                                <SidebarMenuSub>
+                                  {item.subItems?.map((subItem, index) => {
+                                    const isSubActive =
+                                      currentPath === subItem.url;
+                                    return (
+                                      <motion.div
+                                        key={subItem.title}
+                                        initial={{ x: -10, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        transition={{
+                                          duration: 0.15,
+                                          delay: index * 0.05,
+                                          ease: "easeOut",
+                                        }}
+                                      >
+                                        <SidebarMenuSubItem>
+                                          <SidebarMenuSubButton
+                                            isActive={isSubActive}
+                                            render={(props) => (
+                                              <Link
+                                                to={subItem.url}
+                                                {...props}
+                                              />
+                                            )}
+                                          >
+                                            <subItem.icon className="shrink-0 size-4" />
+                                            <span
+                                              className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
+                                            >
+                                              {subItem.title}
+                                            </span>
+                                          </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                      </motion.div>
+                                    );
+                                  })}
+                                </SidebarMenuSub>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  );
                 }
 
                 return (
@@ -226,10 +392,16 @@ export function AppSidebar() {
                       >
                         {item.title}
                       </span>
-                      {showBadge && (
-                        <SidebarMenuBadge>{badgeValue}</SidebarMenuBadge>
-                      )}
                     </SidebarMenuButton>
+                    {showBadge && (
+                      <SidebarMenuBadge
+                        className={
+                          isRTL ? "left-1 right-auto" : "right-1 left-auto"
+                        }
+                      >
+                        {badgeValue}
+                      </SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 );
               })}
