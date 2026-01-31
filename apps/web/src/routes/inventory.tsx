@@ -82,6 +82,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -226,6 +234,15 @@ function InventoryComponent() {
       );
     });
   }, [items, searchQuery, formFilter, stockFilter, prescriptionFilter]);
+
+  // Count active filters
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (formFilter && formFilter !== "all") count++;
+    if (stockFilter && stockFilter !== "all") count++;
+    if (prescriptionFilter && prescriptionFilter !== "all") count++;
+    return count;
+  }, [formFilter, stockFilter, prescriptionFilter]);
 
   // Table columns definition
   const columns = useMemo<ColumnDef<InventoryItem>[]>(
@@ -478,11 +495,12 @@ function InventoryComponent() {
         <PageHeaderActions>
           {isDev && (
             <>
+              {/* Desktop: Show all dev buttons */}
               <Button
                 onClick={() => resetInventory.mutate()}
                 variant="outline"
                 size="lg"
-                className="gap-2"
+                className="gap-2 hidden lg:flex"
               >
                 <Database className="h-5 w-5" />
                 Reset Data
@@ -492,14 +510,47 @@ function InventoryComponent() {
                   onClick={() => clearInventory.mutate()}
                   variant="outline"
                   size="lg"
-                  className="gap-2 text-destructive hover:text-destructive"
+                  className="gap-2 text-destructive hover:text-destructive hidden lg:flex"
                 >
                   <Trash2 className="h-5 w-5" />
                   Clear All
                 </Button>
               )}
+
+              {/* Mobile/Tablet: Dropdown menu for dev actions */}
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2 lg:hidden"
+                    >
+                      <Database className="h-5 w-5" />
+                      <span className="hidden sm:inline">Dev Tools</span>
+                    </Button>
+                  }
+                />
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => resetInventory.mutate()}>
+                    <Database className="h-4 w-4" />
+                    Reset Data
+                  </DropdownMenuItem>
+                  {items.length > 0 && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => clearInventory.mutate()}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Clear All
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           )}
+
+          {/* View toggle - responsive sizing */}
           <Button
             onClick={toggleViewMode}
             variant="outline"
@@ -524,14 +575,16 @@ function InventoryComponent() {
                 )}
               />
             </div>
-            <span className="relative">
+            <span className="relative hidden sm:inline">
               {viewMode === "table" ? "Grid View" : "Table View"}
             </span>
             <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </Button>
+
+          {/* Add Item - always prominent */}
           <Button size="lg" className="gap-2 rounded-md">
             <Plus className="h-5 w-5" />
-            Add Item
+            <span className="hidden sm:inline">Add Item</span>
           </Button>
         </PageHeaderActions>
       </PageHeader>
@@ -541,7 +594,7 @@ function InventoryComponent() {
           {/* Statistics */}
           {stats && (
             <PageSection className="mb-6 border-b-2 border-dashed pb-6 shrink-0">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                 <StatsCard
                   title="Total Items"
                   value={stats.total}
@@ -579,52 +632,9 @@ function InventoryComponent() {
           {/* Filters */}
           {items.length > 0 && (
             <div className="mb-6 flex flex-col gap-4 shrink-0">
-              {/* View Mode Indicator */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={toggleViewMode}
-                    className="relative flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-full border border-border/50 hover:bg-muted/70 transition-colors cursor-pointer group"
-                    aria-label="Toggle view mode"
-                  >
-                    <div
-                      className={cn(
-                        "absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-primary rounded-full transition-all duration-300 ease-out group-hover:shadow-md",
-                        viewMode === "grid" && "translate-x-[calc(100%+4px)]",
-                      )}
-                    />
-                    <div
-                      className={cn(
-                        "relative z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full transition-all duration-200",
-                        viewMode === "table"
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      <TableIcon className="h-3.5 w-3.5" />
-                      <span className="text-xs font-medium">Table</span>
-                    </div>
-                    <div
-                      className={cn(
-                        "relative z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full transition-all duration-200",
-                        viewMode === "grid"
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      <LayoutGrid className="h-3.5 w-3.5" />
-                      <span className="text-xs font-medium">Grid</span>
-                    </div>
-                  </button>
-                  <div className="text-sm text-muted-foreground">
-                    {filteredItems.length}{" "}
-                    {filteredItems.length === 1 ? "item" : "items"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                {/* Search */}
+              {/* Search and Filter Button Row */}
+              <div className="flex items-center gap-3">
+                {/* Search - always visible */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -635,6 +645,140 @@ function InventoryComponent() {
                   />
                 </div>
 
+                {/* Mobile: Filter Sheet */}
+                <Sheet>
+                  <SheetTrigger className="md:hidden">
+                    <Button variant="outline" className="gap-2 shrink-0">
+                      <Filter className="h-4 w-4" />
+                      Filters
+                      {activeFiltersCount > 0 && (
+                        <Badge
+                          variant="secondary"
+                          className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center"
+                        >
+                          {activeFiltersCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[80vh]">
+                    <SheetHeader>
+                      <SheetTitle>Filters</SheetTitle>
+                      <SheetDescription>
+                        Filter inventory items by form, stock status, and type
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6 space-y-4">
+                      {/* Form Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Medicine Form
+                        </label>
+                        <Select
+                          items={[
+                            { value: null, label: "Filter by Form" },
+                            { value: "all", label: "All Forms" },
+                            ...MEDICINE_FORMS.map((form) => ({
+                              value: form,
+                              label: form,
+                            })),
+                          ]}
+                          value={formFilter}
+                          onValueChange={setFormFilter}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="All Forms" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Forms</SelectItem>
+                            {MEDICINE_FORMS.map((form) => (
+                              <SelectItem key={form} value={form}>
+                                {form}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Stock Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Stock Status
+                        </label>
+                        <Select
+                          items={[
+                            { value: null, label: "Filter by Stock" },
+                            { value: "all", label: "All Stock" },
+                            { value: "in_stock", label: "In Stock" },
+                            { value: "low_stock", label: "Low Stock" },
+                            { value: "out_of_stock", label: "Out of Stock" },
+                          ]}
+                          value={stockFilter}
+                          onValueChange={setStockFilter}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="All Stock" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Stock</SelectItem>
+                            <SelectItem value="in_stock">In Stock</SelectItem>
+                            <SelectItem value="low_stock">Low Stock</SelectItem>
+                            <SelectItem value="out_of_stock">
+                              Out of Stock
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Prescription Filter */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Medicine Type
+                        </label>
+                        <Select
+                          items={[
+                            { value: null, label: "Filter by Type" },
+                            { value: "all", label: "All Types" },
+                            { value: "prescription", label: "Prescription" },
+                            { value: "otc", label: "OTC" },
+                          ]}
+                          value={prescriptionFilter}
+                          onValueChange={setPrescriptionFilter}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="All Types" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="prescription">
+                              Prescription
+                            </SelectItem>
+                            <SelectItem value="otc">OTC</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Clear Filters Button */}
+                      {activeFiltersCount > 0 && (
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => {
+                            setFormFilter(null);
+                            setStockFilter(null);
+                            setPrescriptionFilter(null);
+                          }}
+                        >
+                          Clear All Filters
+                        </Button>
+                      )}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
+              {/* Desktop: Inline Filters */}
+              <div className="hidden md:flex flex-row gap-4">
                 {/* Form Filter */}
                 <Select
                   items={[
@@ -648,7 +792,7 @@ function InventoryComponent() {
                   value={formFilter}
                   onValueChange={setFormFilter}
                 >
-                  <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="All Forms" />
                   </SelectTrigger>
                   <SelectContent>
@@ -673,7 +817,7 @@ function InventoryComponent() {
                   value={stockFilter}
                   onValueChange={setStockFilter}
                 >
-                  <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="All Stock" />
                   </SelectTrigger>
                   <SelectContent>
@@ -695,7 +839,7 @@ function InventoryComponent() {
                   value={prescriptionFilter}
                   onValueChange={setPrescriptionFilter}
                 >
-                  <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
@@ -704,6 +848,23 @@ function InventoryComponent() {
                     <SelectItem value="otc">OTC</SelectItem>
                   </SelectContent>
                 </Select>
+
+                {/* Clear Filters */}
+                {activeFiltersCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setFormFilter(null);
+                      setStockFilter(null);
+                      setPrescriptionFilter(null);
+                    }}
+                    className="gap-2"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Clear ({activeFiltersCount})
+                  </Button>
+                )}
               </div>
 
               {/* Active Filters Summary */}
@@ -725,9 +886,9 @@ function InventoryComponent() {
           <div className="flex-1 min-h-0">
             {filteredItems.length === 0 ? (
               <div className="h-full flex items-center justify-center border border-dashed rounded-lg">
-                <div className="text-center p-12">
-                  <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">
+                <div className="text-center p-6 sm:p-12">
+                  <Package className="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2">
                     {searchQuery ||
                     (formFilter && formFilter !== "all") ||
                     (stockFilter && stockFilter !== "all") ||
@@ -735,7 +896,7 @@ function InventoryComponent() {
                       ? "No items found"
                       : "No inventory items"}
                   </h3>
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                     {searchQuery ||
                     (formFilter && formFilter !== "all") ||
                     (stockFilter && stockFilter !== "all") ||
@@ -809,144 +970,180 @@ function InventoryComponent() {
                   </Table>
                 </div>
                 {/* Pagination */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 shrink-0 border-t bg-muted/20">
-                  {/* Items info and page size selector */}
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-muted-foreground">
-                      Showing{" "}
-                      <span className="font-medium text-foreground">
-                        {table.getState().pagination.pageIndex *
-                          table.getState().pagination.pageSize +
-                          1}
-                      </span>{" "}
-                      to{" "}
-                      <span className="font-medium text-foreground">
-                        {Math.min(
-                          (table.getState().pagination.pageIndex + 1) *
-                            table.getState().pagination.pageSize,
-                          filteredItems.length,
-                        )}
-                      </span>{" "}
-                      of{" "}
-                      <span className="font-medium text-foreground">
-                        {filteredItems.length}
-                      </span>{" "}
-                      items
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
-                        Rows per page:
-                      </span>
-                      <Select
-                        value={table.getState().pagination.pageSize.toString()}
-                        onValueChange={(value) => {
-                          table.setPageSize(Number(value));
-                        }}
-                      >
-                        <SelectTrigger className="h-8 w-[70px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[10, 20, 30, 50, 100].map((pageSize) => (
-                            <SelectItem
-                              key={pageSize}
-                              value={pageSize.toString()}
-                            >
-                              {pageSize}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="flex flex-col gap-4 py-4 shrink-0 border-t bg-muted/20">
+                  {/* Mobile: Simple pagination */}
+                  <div className="flex sm:hidden items-center justify-between w-full px-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                      className="gap-1"
+                    >
+                      <ChevronLeftIcon className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    <span className="text-sm font-medium">
+                      Page {table.getState().pagination.pageIndex + 1} of{" "}
+                      {table.getPageCount()}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.nextPage()}
+                      disabled={!table.getCanNextPage()}
+                      className="gap-1"
+                    >
+                      Next
+                      <ChevronRightIcon className="h-4 w-4" />
+                    </Button>
                   </div>
 
-                  {/* Page navigation */}
-                  <div className="flex items-center gap-2">
-                    <Pagination>
-                      <PaginationContent>
-                        {/* First page button */}
-                        <PaginationItem>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => table.setPageIndex(0)}
-                            disabled={!table.getCanPreviousPage()}
-                          >
-                            <ChevronsLeft className="h-4 w-4" />
-                            <span className="sr-only">First page</span>
-                          </Button>
-                        </PaginationItem>
-
-                        {/* Previous page button */}
-                        <PaginationItem>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                          >
-                            <ChevronLeftIcon className="h-4 w-4" />
-                            <span className="sr-only">Previous page</span>
-                          </Button>
-                        </PaginationItem>
-
-                        {/* Page numbers */}
-                        {generatePaginationItems(
-                          table.getState().pagination.pageIndex,
-                          table.getPageCount(),
-                        ).map((item, index) => (
-                          <PaginationItem key={index}>
-                            {item === "ellipsis" ? (
-                              <PaginationEllipsis />
-                            ) : (
-                              <PaginationLink
-                                onClick={() =>
-                                  table.setPageIndex(item as number)
-                                }
-                                isActive={
-                                  table.getState().pagination.pageIndex === item
-                                }
-                                className="h-8 w-8 cursor-pointer"
+                  {/* Tablet & Desktop: Full pagination */}
+                  <div className="hidden sm:flex flex-col lg:flex-row items-center justify-between gap-4 px-4">
+                    {/* Items info and page size selector */}
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing{" "}
+                        <span className="font-medium text-foreground">
+                          {table.getState().pagination.pageIndex *
+                            table.getState().pagination.pageSize +
+                            1}
+                        </span>{" "}
+                        to{" "}
+                        <span className="font-medium text-foreground">
+                          {Math.min(
+                            (table.getState().pagination.pageIndex + 1) *
+                              table.getState().pagination.pageSize,
+                            filteredItems.length,
+                          )}
+                        </span>{" "}
+                        of{" "}
+                        <span className="font-medium text-foreground">
+                          {filteredItems.length}
+                        </span>{" "}
+                        items
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground whitespace-nowrap">
+                          Rows per page:
+                        </span>
+                        <Select
+                          value={table
+                            .getState()
+                            .pagination.pageSize.toString()}
+                          onValueChange={(value) => {
+                            table.setPageSize(Number(value));
+                          }}
+                        >
+                          <SelectTrigger className="h-8 w-[70px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[10, 20, 30, 50, 100].map((pageSize) => (
+                              <SelectItem
+                                key={pageSize}
+                                value={pageSize.toString()}
                               >
-                                {(item as number) + 1}
-                              </PaginationLink>
-                            )}
+                                {pageSize}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Page navigation */}
+                    <div className="flex items-center gap-2">
+                      <Pagination>
+                        <PaginationContent>
+                          {/* First page button */}
+                          <PaginationItem className="hidden md:block">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => table.setPageIndex(0)}
+                              disabled={!table.getCanPreviousPage()}
+                            >
+                              <ChevronsLeft className="h-4 w-4" />
+                              <span className="sr-only">First page</span>
+                            </Button>
                           </PaginationItem>
-                        ))}
 
-                        {/* Next page button */}
-                        <PaginationItem>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                          >
-                            <ChevronRightIcon className="h-4 w-4" />
-                            <span className="sr-only">Next page</span>
-                          </Button>
-                        </PaginationItem>
+                          {/* Previous page button */}
+                          <PaginationItem>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => table.previousPage()}
+                              disabled={!table.getCanPreviousPage()}
+                            >
+                              <ChevronLeftIcon className="h-4 w-4" />
+                              <span className="sr-only">Previous page</span>
+                            </Button>
+                          </PaginationItem>
 
-                        {/* Last page button */}
-                        <PaginationItem>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() =>
-                              table.setPageIndex(table.getPageCount() - 1)
-                            }
-                            disabled={!table.getCanNextPage()}
-                          >
-                            <ChevronsRight className="h-4 w-4" />
-                            <span className="sr-only">Last page</span>
-                          </Button>
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
+                          {/* Page numbers - hidden on small tablets */}
+                          <div className="hidden md:flex items-center gap-1">
+                            {generatePaginationItems(
+                              table.getState().pagination.pageIndex,
+                              table.getPageCount(),
+                            ).map((item, index) => (
+                              <PaginationItem key={index}>
+                                {item === "ellipsis" ? (
+                                  <PaginationEllipsis />
+                                ) : (
+                                  <PaginationLink
+                                    onClick={() =>
+                                      table.setPageIndex(item as number)
+                                    }
+                                    isActive={
+                                      table.getState().pagination.pageIndex ===
+                                      item
+                                    }
+                                    className="h-8 w-8 cursor-pointer"
+                                  >
+                                    {(item as number) + 1}
+                                  </PaginationLink>
+                                )}
+                              </PaginationItem>
+                            ))}
+                          </div>
+
+                          {/* Next page button */}
+                          <PaginationItem>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => table.nextPage()}
+                              disabled={!table.getCanNextPage()}
+                            >
+                              <ChevronRightIcon className="h-4 w-4" />
+                              <span className="sr-only">Next page</span>
+                            </Button>
+                          </PaginationItem>
+
+                          {/* Last page button */}
+                          <PaginationItem className="hidden md:block">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() =>
+                                table.setPageIndex(table.getPageCount() - 1)
+                              }
+                              disabled={!table.getCanNextPage()}
+                            >
+                              <ChevronsRight className="h-4 w-4" />
+                              <span className="sr-only">Last page</span>
+                            </Button>
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -955,7 +1152,7 @@ function InventoryComponent() {
                 key="grid-view"
                 className="h-full overflow-y-auto pb-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
               >
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-w-[2000px] mx-auto">
                   {filteredItems.map((item) => (
                     <InventoryItemCard key={item.id} item={item} />
                   ))}
