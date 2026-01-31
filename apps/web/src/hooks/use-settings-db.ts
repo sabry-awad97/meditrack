@@ -408,6 +408,7 @@ export function useSettingValue<T = any>(
 /**
  * Set a setting (create or update)
  *
+ * @internal Used internally by useUpsertSettingValue
  * @example
  * ```tsx
  * const setSetting = useSetSetting();
@@ -462,6 +463,8 @@ export function useSetSetting() {
 /**
  * Update an existing setting
  *
+ * @deprecated Use useUpsertSettingValue instead for automatic create-or-update
+ * @internal Kept for backward compatibility
  * @example
  * ```tsx
  * const updateSetting = useUpdateSetting();
@@ -519,7 +522,17 @@ export function useUpsertSettingValue() {
 
   return {
     mutate: (
-      { key, value, category }: { key: string; value: any; category?: string },
+      {
+        key,
+        value,
+        category,
+        description,
+      }: {
+        key: string;
+        value: any;
+        category?: string;
+        description?: string;
+      },
       options?: { onSuccess?: () => void; onError?: (error: Error) => void },
     ) => {
       try {
@@ -539,6 +552,7 @@ export function useUpsertSettingValue() {
               key,
               value,
               category,
+              description,
             },
             {
               onSuccess: options?.onSuccess,
@@ -560,6 +574,8 @@ export function useUpsertSettingValue() {
 /**
  * Delete a setting
  *
+ * @deprecated Settings should not be deleted in production
+ * @internal Kept for development/testing purposes
  * @example
  * ```tsx
  * const deleteSetting = useDeleteSetting();

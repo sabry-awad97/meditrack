@@ -169,6 +169,18 @@ tasks:
       - docker-compose logs -f pgadmin
 
   # ─────────────────────────────────────────────────────────────────────────
+  #  Drizzle Studio
+  # ─────────────────────────────────────────────────────────────────────────
+
+  db:studio:
+    desc: "🎨 Open Drizzle Studio (https://local.drizzle.studio)"
+    cmds:
+      - echo "🚀 Starting Drizzle Studio..."
+      - echo "📍 URL https://local.drizzle.studio"
+      - echo "⚠️  Press Ctrl+C to stop"
+      - "{{.BUN}} run db:studio"
+
+  # ─────────────────────────────────────────────────────────────────────────
   #  Redis Cache
   # ─────────────────────────────────────────────────────────────────────────
 

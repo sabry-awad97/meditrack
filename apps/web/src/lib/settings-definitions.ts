@@ -356,6 +356,13 @@ export function getDefaultValue(key: string): unknown {
   return setting?.defaultValue;
 }
 
+// Get setting definition by key
+export function getSettingDefinition(
+  key: string,
+): SettingDefinition | undefined {
+  return SETTINGS_DEFINITIONS.find((s) => s.key === key);
+}
+
 // الحصول على جميع القيم الافتراضية
 export function getAllDefaultValues(): Record<string, unknown> {
   return SETTINGS_DEFINITIONS.reduce(

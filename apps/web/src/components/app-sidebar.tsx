@@ -48,6 +48,7 @@ import {
   useDirection,
 } from "@meditrack/i18n";
 import { useAuth } from "@/hooks/use-auth";
+import { getSettingDefinition } from "@/lib/settings-definitions";
 
 export function AppSidebar() {
   const { state, open, setOpen } = useSidebar();
@@ -138,10 +139,12 @@ export function AppSidebar() {
 
     const newState = open ? "open" : "collapsed";
     if (sidebarDefaultState !== newState) {
+      const def = getSettingDefinition("sidebarDefaultState");
       upsertSettingValue.mutate({
         key: "sidebarDefaultState",
         value: newState,
-        category: "appearance",
+        category: def?.category,
+        description: def?.description,
       });
     }
   }, [open, sidebarDefaultState, upsertSettingValue]);
@@ -249,10 +252,12 @@ export function AppSidebar() {
                     const newTheme = theme === "dark" ? "light" : "dark";
                     setTheme(newTheme);
                     // Save to database
+                    const def = getSettingDefinition("defaultTheme");
                     upsertSettingValue.mutate({
                       key: "defaultTheme",
                       value: newTheme,
-                      category: "appearance",
+                      category: def?.category,
+                      description: def?.description,
                     });
                   }}
                   tooltip={
@@ -287,10 +292,12 @@ export function AppSidebar() {
                     setLocale(newLocale);
                     // Save to database
                     console.log("💾 Saving language to database...");
+                    const def = getSettingDefinition("defaultLanguage");
                     upsertSettingValue.mutate({
                       key: "defaultLanguage",
                       value: newLocale,
-                      category: "appearance",
+                      category: def?.category,
+                      description: def?.description,
                     });
                   }}
                   tooltip={

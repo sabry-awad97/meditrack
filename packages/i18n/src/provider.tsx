@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import type { Locale } from "./types";
-import { initializeI18n, i18n, setStoredLocale } from "./config/i18n-config";
+import { initializeI18n, i18n } from "./config/i18n-config";
 import { getDirection } from "./config/locales";
 
 export interface I18nProviderProps {
@@ -118,7 +118,8 @@ export function I18nProvider({
     const handleLanguageChange = (lng: string) => {
       const locale = lng as Locale;
       updateDocumentAttributes(locale);
-      setStoredLocale(locale);
+      // Note: Locale persistence is handled by app-providers via PostgreSQL
+      // No localStorage storage needed here
     };
 
     i18n.on("languageChanged", handleLanguageChange);

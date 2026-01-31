@@ -1,82 +1,27 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { I18nProvider, useDirection } from "@meditrack/i18n";
+import { I18nProvider, useDirection, useLocale } from "@meditrack/i18n";
 import { QueryProvider } from "./query-provider";
 import { ZodProvider } from "./zod-provider";
 import { AuthProvider } from "@/contexts/auth-context";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Locale } from "@meditrack/i18n";
-import { useNotifications, useAutoArchive } from "@/hooks";
+import { useNotifications, useAutoArchive, useSettingValue } from "@/hooks";
+import { useTheme } from "@/components/theme-provider";
 
 interface AppProvidersProps {
   children: React.ReactNode;
 }
 
-// Helper to get stored language from IndexedDB
-async function getStoredLanguage(): Promise<Locale> {
-  try {
-    // Lazy load localforage only when needed
-    const { default: localforage } = await import("localforage");
-    const settingsDB = localforage.createInstance({
-      name: "pharmacy-special-orders",
-      storeName: "settings",
-    });
-
-    const language = await settingsDB.getItem<string>("defaultLanguage");
-    if (language === "en" || language === "ar") {
-      return language;
-    }
-  } catch (error) {
-    console.warn("⚠️ Failed to read language from settings:", error);
-  }
-
-  // Fallback to localStorage (i18n's own storage)
-  try {
-    const stored = localStorage.getItem("meditrack-locale");
-    if (stored === "en" || stored === "ar") {
-      return stored;
-    }
-  } catch (error) {
-    console.warn("⚠️ Failed to read language from localStorage:", error);
-  }
-
-  return "en"; // Default to English
-}
-
-// Helper to get stored theme from IndexedDB
-async function getStoredTheme(): Promise<"light" | "dark" | "system"> {
-  try {
-    // Lazy load localforage only when needed
-    const { default: localforage } = await import("localforage");
-    const settingsDB = localforage.createInstance({
-      name: "pharmacy-special-orders",
-      storeName: "settings",
-    });
-
-    const theme = await settingsDB.getItem<string>("defaultTheme");
-    if (theme === "light" || theme === "dark" || theme === "system") {
-      return theme;
-    }
-  } catch (error) {
-    console.warn("⚠️ Failed to read theme from settings:", error);
-  }
-
-  // Fallback to localStorage (ThemeProvider's own storage)
-  try {
-    const stored = localStorage.getItem("pharmacy-theme");
-    if (stored === "light" || stored === "dark" || stored === "system") {
-      return stored as "light" | "dark" | "system";
-    }
-  } catch (error) {
-    console.warn("⚠️ Failed to read theme from localStorage:", error);
-  }
-
-  return "system"; // Default to system
-}
-
 function AppContent({ children }: { children: React.ReactNode }) {
   const direction = useDirection();
-  const [defaultTheme, setDefaultTheme] = useState<"light" | "dark" | "system">(
+  const { setLocale } = useLocale();
+  const { setTheme } = useTheme();
+
+  // Load settings from PostgreSQL
+  const defaultLanguage = useSettingValue<Locale>("defaultLanguage", "en");
+  const defaultTheme = useSettingValue<"light" | "dark" | "system">(
+    "defaultTheme",
     "system",
   );
 
@@ -86,48 +31,58 @@ function AppContent({ children }: { children: React.ReactNode }) {
   // Initialize auto-archive system
   useAutoArchive();
 
+  // Sync language from database
   useEffect(() => {
-    getStoredTheme().then(setDefaultTheme);
-  }, []);
+    if (
+      defaultLanguage &&
+      (defaultLanguage === "en" || defaultLanguage === "ar")
+    ) {
+      console.log("✅ Syncing language from database:", defaultLanguage);
+      setLocale(defaultLanguage);
+    }
+  }, [defaultLanguage, setLocale]);
+
+  // Sync theme from database
+  useEffect(() => {
+    if (
+      defaultTheme &&
+      (defaultTheme === "light" ||
+        defaultTheme === "dark" ||
+        defaultTheme === "system")
+    ) {
+      console.log("✅ Syncing theme from database:", defaultTheme);
+      setTheme(defaultTheme);
+    }
+  }, [defaultTheme, setTheme]);
 
   return (
-    <ZodProvider>
-      <QueryProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme={defaultTheme}
-          disableTransitionOnChange
-          storageKey="pharmacy-theme"
-        >
-          <AuthProvider>
-            {children}
-            <Toaster
-              richColors
-              position="top-center"
-              dir={direction.isRTL ? "rtl" : "ltr"}
-            />
-          </AuthProvider>
-        </ThemeProvider>
-      </QueryProvider>
-    </ZodProvider>
+    <>
+      {children}
+      <Toaster
+        richColors
+        position="top-center"
+        dir={direction.isRTL ? "rtl" : "ltr"}
+      />
+    </>
   );
 }
 
 export function AppProviders({ children }: AppProvidersProps) {
-  const [initialLocale, setInitialLocale] = useState<Locale>("en"); // Start with default immediately
-
-  useEffect(() => {
-    // Load stored locale in background and update if different
-    getStoredLanguage().then((locale) => {
-      if (locale !== initialLocale) {
-        setInitialLocale(locale);
-      }
-    });
-  }, []);
-
   return (
-    <I18nProvider initialLocale={initialLocale}>
-      <AppContent>{children}</AppContent>
+    <I18nProvider initialLocale="en">
+      <ZodProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            disableTransitionOnChange
+          >
+            <AuthProvider>
+              <AppContent>{children}</AppContent>
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryProvider>
+      </ZodProvider>
     </I18nProvider>
   );
 }

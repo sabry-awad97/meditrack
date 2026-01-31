@@ -22,8 +22,6 @@ import settingsAr from "../locales/ar/settings.json";
 import validationAr from "../locales/ar/validation.json";
 import onboardingAr from "../locales/ar/onboarding.json";
 
-const STORAGE_KEY = "meditrack-locale";
-
 // Missing translations registry for development
 export const missingTranslations = new Set<string>();
 
@@ -41,43 +39,8 @@ export function clearMissingTranslations(): void {
   missingTranslations.clear();
 }
 
-export function getStoredLocale(): Locale | null {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "ar") {
-      return stored;
-    }
-  } catch (error) {
-    console.warn("Failed to read locale from localStorage:", error);
-  }
-  return null;
-}
-
-export function setStoredLocale(locale: Locale): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, locale);
-  } catch (error) {
-    console.warn("Failed to save locale to localStorage:", error);
-  }
-}
-
-export function detectLocale(): Locale {
-  // 1. Check localStorage
-  const stored = getStoredLocale();
-  if (stored) return stored;
-
-  // 2. Check browser language
-  if (typeof navigator !== "undefined") {
-    const browserLang = navigator.language.split("-")[0];
-    if (browserLang === "ar") return "ar";
-  }
-
-  // 3. Default to English
-  return DEFAULT_LOCALE;
-}
-
 export async function initializeI18n(initialLocale?: Locale) {
-  const locale = initialLocale || detectLocale();
+  const locale = initialLocale || DEFAULT_LOCALE;
   console.log("🌍 Initializing i18n with locale:", locale);
 
   try {
@@ -146,9 +109,6 @@ export async function initializeI18n(initialLocale?: Locale) {
       "✅ i18n initialized successfully with language:",
       i18n.language,
     );
-
-    // Store the selected locale
-    setStoredLocale(locale);
 
     return i18n;
   } catch (error) {

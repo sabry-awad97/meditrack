@@ -53,5 +53,8 @@ coverage
 tmp
 temp
 
+# Drizzle Studio
+drizzle
+
 # Legacy files
 legacy

@@ -2,9 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import * as fc from "fast-check";
 import {
   initializeI18n,
-  getStoredLocale,
-  setStoredLocale,
-  detectLocale,
 } from "../config/i18n-config";
 
 /**
@@ -44,60 +41,6 @@ describe("Property Test: Language Selection and Persistence", () => {
 
         // Verify it's not returning the key (which would indicate missing translation)
         expect(translation).not.toBe("app.name");
-      }),
-      { numRuns: 100 },
-    );
-  });
-
-  it("Property 3: Language preference persistence (round trip)", async () => {
-    // Property: Any locale saved to storage should be retrievable
-    // This is a round-trip property: save -> retrieve -> should be equal
-    await fc.assert(
-      fc.asyncProperty(fc.constantFrom("en", "ar"), async (locale) => {
-        // Save locale
-        setStoredLocale(locale);
-
-        // Retrieve locale
-        const retrieved = getStoredLocale();
-
-        // Should match what was saved
-        expect(retrieved).toBe(locale);
-      }),
-      { numRuns: 100 },
-    );
-  });
-
-  it("should persist locale across i18n re-initialization", async () => {
-    // Property: Locale persists across multiple initialization cycles
-    await fc.assert(
-      fc.asyncProperty(fc.constantFrom("en", "ar"), async (locale) => {
-        // Initialize with a specific locale
-        await initializeI18n(locale);
-
-        // Verify it was stored
-        const stored = getStoredLocale();
-        expect(stored).toBe(locale);
-
-        // Re-initialize without specifying locale (should use stored)
-        const i18n = await initializeI18n();
-
-        // Should use the stored locale
-        expect(i18n.language).toBe(locale);
-      }),
-      { numRuns: 100 },
-    );
-  });
-
-  it("should detect locale from storage when available", async () => {
-    // Property: detectLocale should return stored locale when available
-    await fc.assert(
-      fc.asyncProperty(fc.constantFrom("en", "ar"), async (locale) => {
-        // Store a locale
-        setStoredLocale(locale);
-
-        // Detect should return the stored locale
-        const detected = detectLocale();
-        expect(detected).toBe(locale);
       }),
       { numRuns: 100 },
     );
@@ -183,30 +126,6 @@ describe("Property Test: Language Selection and Persistence", () => {
       localStorage.setItem = originalSetItem;
       localStorage.getItem = originalGetItem;
     }
-  });
-
-  it("should ignore invalid stored locale values", async () => {
-    // Property: Invalid locale values in storage should be ignored
-    await fc.assert(
-      fc.asyncProperty(
-        fc
-          .string({ minLength: 1, maxLength: 10 })
-          .filter((s) => s !== "en" && s !== "ar"),
-        async (invalidLocale) => {
-          // Store an invalid locale
-          localStorage.setItem("meditrack-locale", invalidLocale);
-
-          // getStoredLocale should return null for invalid values
-          const stored = getStoredLocale();
-          expect(stored).toBeNull();
-
-          // detectLocale should fall back to default
-          const detected = detectLocale();
-          expect(detected).toBe("en"); // Default locale
-        },
-      ),
-      { numRuns: 50 },
-    );
   });
 
   it("should handle concurrent language switches correctly", async () => {

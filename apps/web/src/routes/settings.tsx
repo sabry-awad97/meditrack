@@ -193,9 +193,14 @@ function SettingsPage() {
     }
   }, [defaultTheme, theme, setTheme]);
 
-  const handleChange = (key: string, value: unknown, category?: string) => {
+  const handleChange = (
+    key: string,
+    value: unknown,
+    category?: string,
+    description?: string,
+  ) => {
     // Update setting immediately (upsert: create if not exists, update if exists)
-    upsertSettingValue.mutate({ key, value, category });
+    upsertSettingValue.mutate({ key, value, category, description });
 
     // If language is changed, update i18n immediately for better UX
     if (key === "defaultLanguage" && (value === "en" || value === "ar")) {
@@ -341,7 +346,12 @@ function SettingsPage() {
                             key={setting.id}
                             setting={setting}
                             onChange={(value) =>
-                              handleChange(setting.key, value, setting.category)
+                              handleChange(
+                                setting.key,
+                                value,
+                                setting.category,
+                                setting.description,
+                              )
                             }
                             searchQuery={searchQuery}
                           />

@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUpsertSettingValue } from "@/hooks";
+import { getSettingDefinition } from "@/lib/settings-definitions";
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
@@ -17,10 +18,12 @@ export function ModeToggle() {
   const handleThemeChange = (theme: "light" | "dark" | "system") => {
     setTheme(theme);
     // Also save to settings database for persistence
+    const def = getSettingDefinition("defaultTheme");
     upsertSettingValue.mutate({
       key: "defaultTheme",
       value: theme,
-      category: "appearance",
+      category: def?.category,
+      description: def?.description,
     });
   };
 

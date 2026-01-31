@@ -113,11 +113,7 @@ export {
   useSettingCategories,
   useSettingsStatistics,
   useSettingValue,
-  useSetSetting,
-  useUpdateSetting,
   useUpsertSettingValue,
-  useDeleteSetting,
-  useDeleteSettingByKey,
   useRefreshSettings,
 } from "./use-settings-db";
 

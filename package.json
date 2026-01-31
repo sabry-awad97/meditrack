@@ -22,7 +22,12 @@
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
-    "dev:web": "turbo -F web dev"
+    "dev:web": "turbo -F web dev",
+    "db:studio": "drizzle-kit studio",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres",
+    "db:reset": "docker compose down -v && docker compose up -d postgres"
   },
   "dependencies": {
     "@meditrack/env": "workspace:*",
@@ -31,6 +36,10 @@
   },
   "devDependencies": {
     "@meditrack/config": "workspace:*",
+    "@types/node": "^25.1.0",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.45.1",
+    "pg": "^8.18.0",
     "turbo": "^2.8.0",
     "typescript": "^5.9.3"
   },
