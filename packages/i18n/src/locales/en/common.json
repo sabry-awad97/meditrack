@@ -8,6 +8,7 @@
   "navigation": {
     "home": "Home",
     "orders": "Special Orders",
+    "inventory": "Inventory",
     "suppliers": "Suppliers",
     "reports": "Reports",
     "settings": "Settings",

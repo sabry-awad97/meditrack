@@ -13,6 +13,7 @@ import {
   Sun,
   Languages,
   LogOut,
+  PackageSearch,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -90,6 +91,11 @@ export function AppSidebar() {
       url: "/special-orders",
       icon: Package,
       badge: true,
+    },
+    {
+      title: t("navigation.inventory"),
+      url: "/inventory",
+      icon: PackageSearch,
     },
     {
       title: t("navigation.suppliers"),

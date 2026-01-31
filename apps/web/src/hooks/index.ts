@@ -128,3 +128,21 @@ export { useNotifications } from "./use-notifications";
 
 // Hooks للأرشفة التلقائية
 export { useAutoArchive, useArchivableOrdersStats } from "./use-auto-archive";
+
+// Hooks للمخزون (Inventory)
+export {
+  useInventoryItems,
+  useInventoryItem,
+  useInventoryStatistics,
+  useLowStockItems,
+  useOutOfStockItems,
+  useControlledSubstances,
+  useCreateInventoryItem,
+  useUpdateInventoryItem,
+  useDeleteInventoryItem,
+  useUpdateStock,
+  useAdjustStock,
+  useResetInventory,
+  useClearInventory,
+  inventoryKeys,
+} from "./use-inventory";
