@@ -7,6 +7,7 @@ use typed_builder::TypedBuilder;
 use db_migration::run_migrations;
 
 mod inventory;
+mod manufacturer;
 mod onboarding;
 mod settings;
 mod staff;
@@ -35,6 +36,9 @@ pub use settings::{SettingsService, SettingsStatistics};
 
 // Export Inventory service
 pub use inventory::{InventoryService, InventoryStatistics};
+
+// Export Manufacturer service
+pub use manufacturer::ManufacturerService;
 
 // Export Price History service
 pub use inventory::price_history::PriceHistoryService;
@@ -82,6 +86,10 @@ pub struct ServiceManager {
     /// Inventory service
     #[builder(setter(into))]
     inventory: Arc<InventoryService>,
+
+    /// Manufacturer service
+    #[builder(setter(into))]
+    manufacturer: Arc<ManufacturerService>,
 
     /// Price history service
     #[builder(setter(into))]
@@ -138,6 +146,7 @@ impl ServiceManager {
         let onboarding = Arc::new(OnboardingService::new(user.clone()));
         let settings = Arc::new(SettingsService::new(db.clone()));
         let inventory = Arc::new(InventoryService::new(db.clone()));
+        let manufacturer = Arc::new(ManufacturerService::new(db.clone()));
         let price_history = Arc::new(PriceHistoryService::new(db.clone()));
 
         Ok(Self::builder()
@@ -147,6 +156,7 @@ impl ServiceManager {
             .onboarding(onboarding)
             .settings(settings)
             .inventory(inventory)
+            .manufacturer(manufacturer)
             .price_history(price_history)
             .build())
     }

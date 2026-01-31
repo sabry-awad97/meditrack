@@ -52,13 +52,24 @@ impl InventoryService {
         // Fetch barcodes for this item
         let barcodes = self.get_item_barcodes(item.id).await?;
 
+        // Fetch manufacturer name if manufacturer_id exists
+        let manufacturer_name = if let Some(manufacturer_id) = item.manufacturer_id {
+            db_entity::manufacturer::Entity::find_by_id(manufacturer_id)
+                .one(self.db.as_ref())
+                .await?
+                .map(|m| m.name)
+        } else {
+            None
+        };
+
         Ok(InventoryItemWithStockResponse {
             id: item.id,
             name: item.name,
             generic_name: item.generic_name,
             concentration: item.concentration,
             form: item.form,
-            manufacturer: item.manufacturer,
+            manufacturer_id: item.manufacturer_id,
+            manufacturer_name,
             requires_prescription: item.requires_prescription,
             is_controlled: item.is_controlled,
             storage_instructions: item.storage_instructions,
@@ -100,7 +111,7 @@ impl InventoryService {
             generic_name: Set(dto.generic_name),
             concentration: Set(dto.concentration),
             form: Set(dto.form),
-            manufacturer: Set(dto.manufacturer),
+            manufacturer_id: Set(dto.manufacturer_id),
             requires_prescription: Set(dto.requires_prescription),
             is_controlled: Set(dto.is_controlled),
             storage_instructions: Set(dto.storage_instructions),
@@ -257,8 +268,8 @@ impl InventoryService {
         if let Some(form) = dto.form {
             item.form = Set(form);
         }
-        if let Some(manufacturer) = dto.manufacturer {
-            item.manufacturer = Set(Some(manufacturer));
+        if let Some(manufacturer_id) = dto.manufacturer_id {
+            item.manufacturer_id = Set(Some(manufacturer_id));
         }
         if let Some(requires_prescription) = dto.requires_prescription {
             item.requires_prescription = Set(requires_prescription);

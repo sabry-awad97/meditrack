@@ -133,6 +133,17 @@ pub async fn run() {
         ipc::commands::inventory::get_price_history,
         ipc::commands::inventory::get_latest_price,
         ipc::commands::inventory::get_price_statistics,
+        // Manufacturer CRUD operations
+        ipc::commands::manufacturer::create_manufacturer,
+        ipc::commands::manufacturer::get_manufacturer,
+        ipc::commands::manufacturer::update_manufacturer,
+        ipc::commands::manufacturer::delete_manufacturer,
+        // Manufacturer Retrieval
+        ipc::commands::manufacturer::get_manufacturer_by_name,
+        ipc::commands::manufacturer::list_manufacturers,
+        ipc::commands::manufacturer::list_active_manufacturers,
+        // Manufacturer Management
+        ipc::commands::manufacturer::hard_delete_manufacturer,
     ]);
 
     builder

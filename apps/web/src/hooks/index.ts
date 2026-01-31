@@ -156,3 +156,22 @@ export {
   // Query Keys
   inventoryKeys,
 } from "./use-inventory";
+
+// Hooks للمصنعين (Manufacturers)
+export {
+  // Query Hooks
+  useManufacturers,
+  useActiveManufacturers,
+  useManufacturer,
+  useManufacturerByName,
+  // Mutation Hooks
+  useCreateManufacturer,
+  useUpdateManufacturer,
+  useDeleteManufacturer,
+  useHardDeleteManufacturer,
+  // Utility Hooks
+  usePrefetchManufacturer,
+  useInvalidateManufacturers,
+  // Query Keys
+  manufacturerKeys,
+} from "./use-manufacturers";

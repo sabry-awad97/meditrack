@@ -1,4 +1,5 @@
 pub mod inventory;
+pub mod manufacturer;
 pub mod onboarding;
 pub mod settings;
 pub mod user;
@@ -81,4 +82,9 @@ pub use inventory::{
     update_barcode,
     update_inventory_item,
     update_inventory_stock,
+};
+
+pub use manufacturer::{
+    create_manufacturer, delete_manufacturer, get_manufacturer, get_manufacturer_by_name,
+    hard_delete_manufacturer, list_active_manufacturers, list_manufacturers, update_manufacturer,
 };

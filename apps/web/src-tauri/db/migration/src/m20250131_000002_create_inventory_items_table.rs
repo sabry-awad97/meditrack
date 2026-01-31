@@ -40,11 +40,7 @@ impl MigrationTrait for Migration {
                             .string_len(50)
                             .not_null(),
                     )
-                    .col(
-                        ColumnDef::new(InventoryItem::Manufacturer)
-                            .string_len(200)
-                            .null(),
-                    )
+                    .col(ColumnDef::new(InventoryItem::ManufacturerId).uuid().null())
                     .col(
                         ColumnDef::new(InventoryItem::RequiresPrescription)
                             .boolean()
@@ -87,6 +83,14 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(InventoryItem::DeletedAt)
                             .timestamp_with_time_zone()
                             .null(),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_inventory_items_manufacturer")
+                            .from(Alias::new("inventory_items"), InventoryItem::ManufacturerId)
+                            .to(Alias::new("manufacturers"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::SetNull)
+                            .on_update(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
             )
@@ -133,6 +137,16 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_inventory_items_manufacturer_id")
+                    .table(Alias::new("inventory_items"))
+                    .col(InventoryItem::ManufacturerId)
+                    .to_owned(),
+            )
+            .await?;
+
         // Partial index for active items (soft delete)
         manager
             .get_connection()
@@ -154,397 +168,11 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        // ========================================
-        // Create inventory_stock table (Transactional Data)
-        // ========================================
-        manager
-            .create_table(
-                Table::create()
-                    .table(Alias::new("inventory_stock"))
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(InventoryStock::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::InventoryItemId)
-                            .uuid()
-                            .not_null()
-                            .unique_key(), // One-to-one relationship
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::StockQuantity)
-                            .integer()
-                            .not_null()
-                            .default(0),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::MinStockLevel)
-                            .integer()
-                            .not_null()
-                            .default(10),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::UnitPrice)
-                            .decimal_len(10, 2)
-                            .not_null()
-                            .default(0.00),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::LastRestockedAt)
-                            .timestamp_with_time_zone()
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .not_null()
-                            .default(Expr::current_timestamp()),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryStock::UpdatedAt)
-                            .timestamp_with_time_zone()
-                            .not_null()
-                            .default(Expr::current_timestamp()),
-                    )
-                    .foreign_key(
-                        ForeignKey::create()
-                            .name("fk_inventory_stock_inventory_item")
-                            .from(
-                                Alias::new("inventory_stock"),
-                                InventoryStock::InventoryItemId,
-                            )
-                            .to(Alias::new("inventory_items"), InventoryItem::Id)
-                            .on_delete(ForeignKeyAction::Cascade)
-                            .on_update(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create indexes for inventory_stock
-        manager
-            .create_index(
-                Index::create()
-                    .name("idx_inventory_stock_inventory_item_id")
-                    .table(Alias::new("inventory_stock"))
-                    .col(InventoryStock::InventoryItemId)
-                    .to_owned(),
-            )
-            .await?;
-
-        // Partial index for low stock items
-        manager
-            .get_connection()
-            .execute_unprepared(
-                "CREATE INDEX idx_inventory_stock_low_stock ON inventory_stock (inventory_item_id) WHERE stock_quantity <= min_stock_level;",
-            )
-            .await?;
-
-        // Partial index for out of stock items
-        manager
-            .get_connection()
-            .execute_unprepared(
-                "CREATE INDEX idx_inventory_stock_out_of_stock ON inventory_stock (inventory_item_id) WHERE stock_quantity = 0;",
-            )
-            .await?;
-
-        // Create trigger to auto-update updated_at for inventory_stock
-        manager
-            .get_connection()
-            .execute_unprepared(
-                r#"
-                CREATE TRIGGER update_inventory_stock_updated_at
-                    BEFORE UPDATE ON inventory_stock
-                    FOR EACH ROW
-                    EXECUTE FUNCTION update_updated_at_column();
-                "#,
-            )
-            .await?;
-
-        // ========================================
-        // Create inventory_price_history table
-        // ========================================
-        manager
-            .create_table(
-                Table::create()
-                    .table(Alias::new("inventory_price_history"))
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(InventoryPriceHistory::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryPriceHistory::InventoryItemId)
-                            .uuid()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryPriceHistory::UnitPrice)
-                            .decimal_len(10, 2)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryPriceHistory::RecordedAt)
-                            .timestamp_with_time_zone()
-                            .not_null()
-                            .default(Expr::current_timestamp()),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryPriceHistory::ChangedBy)
-                            .uuid()
-                            .null(),
-                    )
-                    .col(ColumnDef::new(InventoryPriceHistory::Reason).text().null())
-                    .foreign_key(
-                        ForeignKey::create()
-                            .name("fk_price_history_inventory_item")
-                            .from(
-                                Alias::new("inventory_price_history"),
-                                InventoryPriceHistory::InventoryItemId,
-                            )
-                            .to(Alias::new("inventory_items"), InventoryItem::Id)
-                            .on_delete(ForeignKeyAction::NoAction)
-                            .on_update(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create composite index on (inventory_item_id, recorded_at DESC)
-        manager
-            .get_connection()
-            .execute_unprepared(
-                "CREATE INDEX idx_price_history_item_time ON inventory_price_history (inventory_item_id, recorded_at DESC);",
-            )
-            .await?;
-
-        // Create index on recorded_at for time-based queries
-        manager
-            .create_index(
-                Index::create()
-                    .name("idx_price_history_recorded_at")
-                    .table(Alias::new("inventory_price_history"))
-                    .col(InventoryPriceHistory::RecordedAt)
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create trigger function to record price changes
-        manager
-            .get_connection()
-            .execute_unprepared(
-                r#"
-                CREATE OR REPLACE FUNCTION record_price_change()
-                RETURNS TRIGGER AS $$
-                BEGIN
-                    BEGIN
-                        -- Only record if price actually changed
-                        IF OLD.unit_price IS DISTINCT FROM NEW.unit_price THEN
-                            INSERT INTO inventory_price_history (
-                                id,
-                                inventory_item_id,
-                                unit_price,
-                                recorded_at,
-                                changed_by,
-                                reason
-                            ) VALUES (
-                                gen_random_uuid(),
-                                NEW.inventory_item_id,
-                                NEW.unit_price,
-                                NOW(),
-                                NULL,
-                                NULL
-                            );
-                        END IF;
-                    EXCEPTION
-                        WHEN OTHERS THEN
-                            -- Log error but don't block the stock update
-                            RAISE WARNING 'Failed to record price history: %', SQLERRM;
-                    END;
-                    
-                    RETURN NEW;
-                END;
-                $$ LANGUAGE plpgsql;
-                "#,
-            )
-            .await?;
-
-        // Attach trigger to inventory_stock table
-        manager
-            .get_connection()
-            .execute_unprepared(
-                r#"
-                CREATE TRIGGER price_history_trigger
-                    AFTER UPDATE OF unit_price ON inventory_stock
-                    FOR EACH ROW
-                    EXECUTE FUNCTION record_price_change();
-                "#,
-            )
-            .await?;
-
-        // ========================================
-        // Create inventory_item_barcodes table
-        // ========================================
-        manager
-            .create_table(
-                Table::create()
-                    .table(Alias::new("inventory_item_barcodes"))
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::InventoryItemId)
-                            .uuid()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::Barcode)
-                            .string_len(100)
-                            .not_null()
-                            .unique_key(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::BarcodeType)
-                            .string_len(50)
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::IsPrimary)
-                            .boolean()
-                            .not_null()
-                            .default(false),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::Description)
-                            .text()
-                            .null(),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .not_null()
-                            .default(Expr::current_timestamp()),
-                    )
-                    .col(
-                        ColumnDef::new(InventoryItemBarcode::CreatedBy)
-                            .uuid()
-                            .null(),
-                    )
-                    .foreign_key(
-                        ForeignKey::create()
-                            .name("fk_barcode_inventory_item")
-                            .from(
-                                Alias::new("inventory_item_barcodes"),
-                                InventoryItemBarcode::InventoryItemId,
-                            )
-                            .to(Alias::new("inventory_items"), InventoryItem::Id)
-                            .on_delete(ForeignKeyAction::Cascade)
-                            .on_update(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create indexes for inventory_item_barcodes
-        manager
-            .create_index(
-                Index::create()
-                    .name("idx_barcodes_inventory_item_id")
-                    .table(Alias::new("inventory_item_barcodes"))
-                    .col(InventoryItemBarcode::InventoryItemId)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .name("idx_barcodes_barcode")
-                    .table(Alias::new("inventory_item_barcodes"))
-                    .col(InventoryItemBarcode::Barcode)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .name("idx_barcodes_type")
-                    .table(Alias::new("inventory_item_barcodes"))
-                    .col(InventoryItemBarcode::BarcodeType)
-                    .to_owned(),
-            )
-            .await?;
-
-        // Partial unique index to ensure only one primary barcode per item
-        manager
-            .get_connection()
-            .execute_unprepared(
-                "CREATE UNIQUE INDEX idx_barcodes_unique_primary ON inventory_item_barcodes (inventory_item_id) WHERE is_primary = TRUE;",
-            )
-            .await?;
-
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Drop inventory_item_barcodes table first (due to foreign key)
-        manager
-            .drop_table(
-                Table::drop()
-                    .table(Alias::new("inventory_item_barcodes"))
-                    .if_exists()
-                    .to_owned(),
-            )
-            .await?;
-
-        // Drop price history trigger and function
-        manager
-            .get_connection()
-            .execute_unprepared("DROP TRIGGER IF EXISTS price_history_trigger ON inventory_stock;")
-            .await?;
-
-        manager
-            .get_connection()
-            .execute_unprepared("DROP FUNCTION IF EXISTS record_price_change();")
-            .await?;
-
-        // Drop inventory_price_history table
-        manager
-            .drop_table(
-                Table::drop()
-                    .table(Alias::new("inventory_price_history"))
-                    .if_exists()
-                    .to_owned(),
-            )
-            .await?;
-
-        // Drop inventory_stock table (due to foreign key)
-        manager
-            .get_connection()
-            .execute_unprepared(
-                "DROP TRIGGER IF EXISTS update_inventory_stock_updated_at ON inventory_stock;",
-            )
-            .await?;
-
-        manager
-            .drop_table(
-                Table::drop()
-                    .table(Alias::new("inventory_stock"))
-                    .to_owned(),
-            )
-            .await?;
-
-        // Drop inventory_items table
+        // Drop trigger
         manager
             .get_connection()
             .execute_unprepared(
@@ -552,10 +180,12 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // Drop inventory_items table
         manager
             .drop_table(
                 Table::drop()
                     .table(Alias::new("inventory_items"))
+                    .if_exists()
                     .to_owned(),
             )
             .await?;
@@ -571,7 +201,7 @@ enum InventoryItem {
     GenericName,
     Concentration,
     Form,
-    Manufacturer,
+    ManufacturerId,
     RequiresPrescription,
     IsControlled,
     StorageInstructions,
@@ -582,38 +212,4 @@ enum InventoryItem {
     CreatedAt,
     UpdatedAt,
     DeletedAt,
-}
-
-#[derive(DeriveIden)]
-enum InventoryStock {
-    Id,
-    InventoryItemId,
-    StockQuantity,
-    MinStockLevel,
-    UnitPrice,
-    LastRestockedAt,
-    CreatedAt,
-    UpdatedAt,
-}
-
-#[derive(DeriveIden)]
-enum InventoryPriceHistory {
-    Id,
-    InventoryItemId,
-    UnitPrice,
-    RecordedAt,
-    ChangedBy,
-    Reason,
-}
-
-#[derive(DeriveIden)]
-enum InventoryItemBarcode {
-    Id,
-    InventoryItemId,
-    Barcode,
-    BarcodeType,
-    IsPrimary,
-    Description,
-    CreatedAt,
-    CreatedBy,
 }

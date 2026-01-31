@@ -6,6 +6,7 @@ pub mod inventory_item;
 pub mod inventory_item_barcode;
 pub mod inventory_price_history;
 pub mod inventory_stock;
+pub mod manufacturer;
 pub mod role;
 pub mod setting;
 pub mod special_order;
@@ -32,6 +33,9 @@ pub mod prelude {
     pub use super::inventory_stock;
     pub use super::inventory_stock::Entity as InventoryStock;
     pub use super::inventory_stock::dto as inventory_stock_dto;
+    pub use super::manufacturer;
+    pub use super::manufacturer::Entity as Manufacturer;
+    pub use super::manufacturer::dto as manufacturer_dto;
     pub use super::role;
     pub use super::role::Entity as Role;
     pub use super::role::dto as role_dto;
