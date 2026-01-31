@@ -48,12 +48,17 @@ import {
   useDirection,
 } from "@meditrack/i18n";
 import { useAuth } from "@/hooks/use-auth";
-import { getSettingDefinition } from "@/lib/settings-definitions";
+import { getSettingDefinition } from "@/lib/constants";
+import {
+  SETTING_SIDEBAR_DEFAULT_STATE,
+  SETTING_DEFAULT_THEME,
+  SETTING_DEFAULT_LANGUAGE,
+} from "@/lib/constants";
 
 export function AppSidebar() {
   const { state, open, setOpen } = useSidebar();
   const sidebarDefaultState = useSettingValue<string>(
-    "sidebarDefaultState",
+    SETTING_SIDEBAR_DEFAULT_STATE,
     "open",
   );
   const upsertSettingValue = useUpsertSettingValue();
@@ -139,9 +144,9 @@ export function AppSidebar() {
 
     const newState = open ? "open" : "collapsed";
     if (sidebarDefaultState !== newState) {
-      const def = getSettingDefinition("sidebarDefaultState");
+      const def = getSettingDefinition(SETTING_SIDEBAR_DEFAULT_STATE);
       upsertSettingValue.mutate({
-        key: "sidebarDefaultState",
+        key: SETTING_SIDEBAR_DEFAULT_STATE,
         value: newState,
         category: def?.category,
         description: def?.description,
@@ -252,9 +257,9 @@ export function AppSidebar() {
                     const newTheme = theme === "dark" ? "light" : "dark";
                     setTheme(newTheme);
                     // Save to database
-                    const def = getSettingDefinition("defaultTheme");
+                    const def = getSettingDefinition(SETTING_DEFAULT_THEME);
                     upsertSettingValue.mutate({
-                      key: "defaultTheme",
+                      key: SETTING_DEFAULT_THEME,
                       value: newTheme,
                       category: def?.category,
                       description: def?.description,
@@ -292,9 +297,9 @@ export function AppSidebar() {
                     setLocale(newLocale);
                     // Save to database
                     console.log("💾 Saving language to database...");
-                    const def = getSettingDefinition("defaultLanguage");
+                    const def = getSettingDefinition(SETTING_DEFAULT_LANGUAGE);
                     upsertSettingValue.mutate({
-                      key: "defaultLanguage",
+                      key: SETTING_DEFAULT_LANGUAGE,
                       value: newLocale,
                       category: def?.category,
                       description: def?.description,

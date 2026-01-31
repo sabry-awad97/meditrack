@@ -4,13 +4,17 @@ import { useOrders, useUpdateOrderStatus } from "./use-orders-db";
 import type { Order } from "@/lib/types";
 import { logger } from "@/lib/logger";
 import { toast } from "sonner";
+import { SETTING_AUTO_ARCHIVE_DAYS } from "@/lib/constants";
 
 /**
  * Hook for auto-archiving old delivered orders
  * Runs periodically to check for orders that should be archived
  */
 export function useAutoArchive() {
-  const autoArchiveDays = useSettingValue<number>("autoArchiveDays", 30);
+  const autoArchiveDays = useSettingValue<number>(
+    SETTING_AUTO_ARCHIVE_DAYS,
+    30,
+  );
   const { data: orders = [] } = useOrders();
   const updateOrderStatus = useUpdateOrderStatus();
 
@@ -72,7 +76,7 @@ export function useAutoArchive() {
  * Get statistics about archivable orders
  */
 export function useArchivableOrdersStats() {
-  const autoArchiveDays = useSettingValue<number>("autoArchiveDays", 0);
+  const autoArchiveDays = useSettingValue<number>(SETTING_AUTO_ARCHIVE_DAYS, 0);
   const { data: orders = [] } = useOrders();
 
   if (!autoArchiveDays || autoArchiveDays <= 0) {

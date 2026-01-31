@@ -118,9 +118,7 @@ function RootComponent() {
       <HeadContent />
       <SidebarProvider defaultOpen={true}>
         <div className="flex h-screen w-full overflow-hidden" dir={direction}>
-          <Suspense fallback={<Loading />}>
-            <AppSidebar />
-          </Suspense>
+          <AppSidebar />
           <SidebarInset className="flex flex-col flex-1 min-w-0">
             <main className="flex-1 overflow-y-auto overflow-x-hidden">
               <Outlet />

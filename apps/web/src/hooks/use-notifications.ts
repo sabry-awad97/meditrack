@@ -3,6 +3,12 @@ import { useSettingValue } from "./use-settings-db";
 import { useOrders } from "./use-orders-db";
 import type { Order } from "@/lib/types";
 import { logger } from "@/lib/logger";
+import {
+  SETTING_ENABLE_NOTIFICATIONS,
+  SETTING_NOTIFICATION_SOUND,
+  SETTING_NOTIFY_ON_NEW_ORDER,
+  SETTING_NOTIFY_ON_STATUS_CHANGE,
+} from "@/lib/constants";
 
 /**
  * Hook for browser notifications
@@ -10,15 +16,21 @@ import { logger } from "@/lib/logger";
  */
 export function useNotifications() {
   const enableNotifications = useSettingValue<boolean>(
-    "enableNotifications",
+    SETTING_ENABLE_NOTIFICATIONS,
     true,
   );
-  const notifyOnNewOrder = useSettingValue<boolean>("notifyOnNewOrder", true);
+  const notifyOnNewOrder = useSettingValue<boolean>(
+    SETTING_NOTIFY_ON_NEW_ORDER,
+    true,
+  );
   const notifyOnStatusChange = useSettingValue<boolean>(
-    "notifyOnStatusChange",
+    SETTING_NOTIFY_ON_STATUS_CHANGE,
     true,
   );
-  const notificationSound = useSettingValue<boolean>("notificationSound", true);
+  const notificationSound = useSettingValue<boolean>(
+    SETTING_NOTIFICATION_SOUND,
+    true,
+  );
 
   const { data: orders = [] } = useOrders();
   const previousOrdersRef = useRef<Order[]>([]);

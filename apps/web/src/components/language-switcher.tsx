@@ -9,7 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUpsertSettingValue } from "@/hooks";
-import { getSettingDefinition } from "@/lib/settings-definitions";
+import {
+  getSettingDefinition,
+  SETTING_DEFAULT_LANGUAGE,
+} from "@/lib/constants";
 
 export function LanguageSwitcher() {
   const { locale, setLocale, availableLocales } = useLocale();
@@ -27,9 +30,9 @@ export function LanguageSwitcher() {
 
       // Also save to settings database for persistence
       console.log("💾 Saving to settings database...");
-      const def = getSettingDefinition("defaultLanguage");
+      const def = getSettingDefinition(SETTING_DEFAULT_LANGUAGE);
       upsertSettingValue.mutate({
-        key: "defaultLanguage",
+        key: SETTING_DEFAULT_LANGUAGE,
         value: newLocale,
         category: def?.category,
         description: def?.description,

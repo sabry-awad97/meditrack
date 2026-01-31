@@ -8,6 +8,10 @@ import { useEffect } from "react";
 import type { Locale } from "@meditrack/i18n";
 import { useNotifications, useAutoArchive, useSettingValue } from "@/hooks";
 import { useTheme } from "@/components/theme-provider";
+import {
+  SETTING_DEFAULT_LANGUAGE,
+  SETTING_DEFAULT_THEME,
+} from "@/lib/constants";
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -19,9 +23,12 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const { setTheme } = useTheme();
 
   // Load settings from PostgreSQL
-  const defaultLanguage = useSettingValue<Locale>("defaultLanguage", "en");
+  const defaultLanguage = useSettingValue<Locale>(
+    SETTING_DEFAULT_LANGUAGE,
+    "en",
+  );
   const defaultTheme = useSettingValue<"light" | "dark" | "system">(
-    "defaultTheme",
+    SETTING_DEFAULT_THEME,
     "system",
   );
 

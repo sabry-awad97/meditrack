@@ -11,7 +11,7 @@ import {
   Search,
   Settings as SettingsIcon,
   Users,
-  X
+  X,
 } from "lucide-react";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -54,10 +54,15 @@ import { useSettings, useSettingValue, useUpsertSettingValue } from "@/hooks";
 import {
   SETTINGS_CATEGORIES,
   SETTINGS_DEFINITIONS,
-} from "@/lib/settings-definitions";
-import type { SettingCategory, SettingDefinition } from "@/lib/types-settings";
+  type SettingCategory,
+  type SettingDefinition,
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useState as useNotificationState } from "react";
+import {
+  SETTING_DEFAULT_LANGUAGE,
+  SETTING_DEFAULT_THEME,
+} from "@/lib/constants";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -145,7 +150,10 @@ function SettingsPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sync language setting with i18n ONLY on initial load
-  const defaultLanguage = useSettingValue<string>("defaultLanguage", "en");
+  const defaultLanguage = useSettingValue<string>(
+    SETTING_DEFAULT_LANGUAGE,
+    "en",
+  );
   const hasInitializedLanguage = React.useRef(false);
   useEffect(() => {
     if (defaultLanguage && !hasInitializedLanguage.current) {
@@ -161,7 +169,7 @@ function SettingsPage() {
   }, [defaultLanguage, locale, setLocale]);
 
   // Sync theme setting with ThemeProvider ONLY on initial load
-  const defaultTheme = useSettingValue<string>("defaultTheme", "system");
+  const defaultTheme = useSettingValue<string>(SETTING_DEFAULT_THEME, "system");
   const hasInitializedTheme = React.useRef(false);
   useEffect(() => {
     if (defaultTheme && !hasInitializedTheme.current) {
@@ -188,13 +196,16 @@ function SettingsPage() {
     upsertSettingValue.mutate({ key, value, category, description });
 
     // If language is changed, update i18n immediately for better UX
-    if (key === "defaultLanguage" && (value === "en" || value === "ar")) {
+    if (
+      key === SETTING_DEFAULT_LANGUAGE &&
+      (value === "en" || value === "ar")
+    ) {
       setLocale(value);
     }
 
     // If theme is changed, update theme immediately for better UX
     if (
-      key === "defaultTheme" &&
+      key === SETTING_DEFAULT_THEME &&
       (value === "light" || value === "dark" || value === "system")
     ) {
       setTheme(value as "light" | "dark" | "system");

@@ -3,6 +3,12 @@ import { toast } from "sonner";
 import { useOrders } from "./use-orders-db";
 import { useSettingValue } from "./use-settings-db";
 import type { Order } from "@/lib/types";
+import {
+  SETTING_ENABLE_ALERTS,
+  SETTING_OLD_ORDER_THRESHOLD,
+  SETTING_PICKUP_REMINDER_DAYS,
+  SETTING_ALERT_CHECK_INTERVAL,
+} from "@/lib/constants";
 
 /**
  * Hook للتنبيهات التلقائية للطلبات
@@ -11,10 +17,19 @@ import type { Order } from "@/lib/types";
 export function useOrderAlerts(enabled?: boolean) {
   const { data: orders = [] } = useOrders();
 
-  const enableAlerts = useSettingValue<boolean>("enableAlerts", true);
-  const oldOrderThreshold = useSettingValue<number>("oldOrderThreshold", 7);
-  const pickupReminderDays = useSettingValue<number>("pickupReminderDays", 3);
-  const alertCheckInterval = useSettingValue<number>("alertCheckInterval", 30);
+  const enableAlerts = useSettingValue<boolean>(SETTING_ENABLE_ALERTS, true);
+  const oldOrderThreshold = useSettingValue<number>(
+    SETTING_OLD_ORDER_THRESHOLD,
+    7,
+  );
+  const pickupReminderDays = useSettingValue<number>(
+    SETTING_PICKUP_REMINDER_DAYS,
+    3,
+  );
+  const alertCheckInterval = useSettingValue<number>(
+    SETTING_ALERT_CHECK_INTERVAL,
+    30,
+  );
 
   // استخدام القيم من الإعدادات أو القيم الافتراضية
   const alertsEnabled = enabled ?? enableAlerts ?? true;
@@ -99,8 +114,14 @@ export function useOrderAlerts(enabled?: boolean) {
 export function useAlertStats() {
   const { data: orders = [] } = useOrders();
 
-  const oldOrderThreshold = useSettingValue<number>("oldOrderThreshold", 7);
-  const pickupReminderDays = useSettingValue<number>("pickupReminderDays", 3);
+  const oldOrderThreshold = useSettingValue<number>(
+    SETTING_OLD_ORDER_THRESHOLD,
+    7,
+  );
+  const pickupReminderDays = useSettingValue<number>(
+    SETTING_PICKUP_REMINDER_DAYS,
+    3,
+  );
 
   const now = new Date();
 
