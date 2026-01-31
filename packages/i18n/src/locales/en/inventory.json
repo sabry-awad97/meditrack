@@ -198,7 +198,11 @@
     "minPrice": "Min",
     "maxPrice": "Max",
     "avgPrice": "Avg",
-    "stable": "Stable"
+    "stable": "Stable",
+    "price": "Price",
+    "priceChanges": "price changes",
+    "trendingUp": "Trending up by",
+    "trendingDown": "Trending down by"
   },
   "stockStatus": {
     "inStock": "In Stock",

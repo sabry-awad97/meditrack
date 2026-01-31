@@ -198,7 +198,11 @@
     "minPrice": "الأدنى",
     "maxPrice": "الأعلى",
     "avgPrice": "المتوسط",
-    "stable": "مستقر"
+    "stable": "مستقر",
+    "price": "السعر",
+    "priceChanges": "تغييرات في السعر",
+    "trendingUp": "ارتفاع بنسبة",
+    "trendingDown": "انخفاض بنسبة"
   },
   "stockStatus": {
     "inStock": "متوفر",

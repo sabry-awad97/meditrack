@@ -472,7 +472,7 @@ function SettingsPage() {
                               Clear All Data
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Remove all orders and suppliers
+                              Remove all orders, suppliers & inventory
                             </div>
                           </div>
                         </button>
@@ -482,8 +482,13 @@ function SettingsPage() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Clear All Data?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This will permanently delete all orders and suppliers
-                          from your database.
+                          This will permanently delete all data from your
+                          database:
+                          <ul className="list-disc list-inside mt-2 space-y-1">
+                            <li>All orders</li>
+                            <li>All suppliers</li>
+                            <li>All inventory items and their price history</li>
+                          </ul>
                           <p className="mt-2 font-semibold text-destructive">
                             This action cannot be undone!
                           </p>

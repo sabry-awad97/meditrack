@@ -27,11 +27,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import type { InventoryItemWithStockResponse } from "@/api/inventory.api";
-import {
-  PriceHistoryChart,
-  type PriceHistoryEntry,
-} from "./price-history-chart";
+import type { InventoryItemWithStockResponse, PriceHistoryEntry } from "@/api/inventory.api";
+import { PriceHistoryChart } from "./price-history-chart";
 
 interface ItemDetailsDialogProps {
   open: boolean;

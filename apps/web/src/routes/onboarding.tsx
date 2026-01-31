@@ -77,10 +77,22 @@ function OnboardingPage() {
     handleSubmit,
     formState: { errors },
     trigger,
+    setValue,
   } = useForm<OnboardingFormData>({
     resolver: zodResolver(onboardingFormSchema),
     mode: "onChange",
   });
+
+  // Function to populate form with test data
+  const fillTestData = () => {
+    setValue("first_name", "Sabry");
+    setValue("last_name", "Awad");
+    setValue("email", "admin@pharmacy.test");
+    setValue("username", "admin");
+    setValue("password", "admin123");
+    setValue("confirmPassword", "admin123");
+    setValue("organization_name", "Well Pharmacy");
+  };
 
   const onSubmit = async (data: OnboardingFormData) => {
     const { confirmPassword, organization_name, ...setupData } = data;
@@ -317,6 +329,18 @@ function OnboardingPage() {
                       <ArrowRight className="ml-2 h-5 w-5" />
                     )}
                   </Button>
+
+                  {/* Test Data Button - Only in development */}
+                  {import.meta.env.DEV && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={fillTestData}
+                      className="mt-4 text-xs"
+                    >
+                      Use Test Data (Dev Only)
+                    </Button>
+                  )}
                 </motion.div>
               )}
 
