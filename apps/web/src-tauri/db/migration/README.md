@@ -4,13 +4,16 @@ This crate contains SeaORM migrations for the PostgreSQL database schema.
 
 ## Overview
 
-The migrations create a complete database schema for the staff and user management system with:
+The migrations create a complete database schema for the pharmacy management system with:
 
 - **ENUM types** for type-safe status fields
-- **Staff table** for employee records
-- **Roles table** for permission management
-- **Users table** for authentication and authorization
-- **Comprehensive indexes** for query performance
+- **User Management**: Staff, Roles, and Users tables
+- **Customer Management**: Customer records
+- **Inventory Management**: Medicine catalog
+- **Order Management**: Special orders and order items
+- **Supplier Management**: Suppliers and supplier-inventory relationships
+- **System Configuration**: Application settings
+- **Comprehensive indexes** for query performance (included in each migration)
 - **Soft deletion** support
 - **Audit trails** with created_by/updated_by fields
 - **Timezone-aware timestamps**
@@ -23,6 +26,7 @@ The migrations create a complete database schema for the staff and user manageme
      - `employment_status`: active, on_leave, terminated
      - `work_schedule`: full_time, part_time, contract
      - `user_status`: active, inactive, suspended, pending_verification
+     - `special_order_status`: pending, ordered, arrived, ready_for_pickup, delivered, cancelled
 
 2. **m20250130_000002_create_staff_table.rs**
    - Creates `staff` table with all employee fields
@@ -41,11 +45,51 @@ The migrations create a complete database schema for the staff and user manageme
    - Supports self-referential supervisor relationship
    - Adds trigger for auto-updating `updated_at` timestamp
 
-5. **m20250130_000005_create_indexes.rs**
-   - Creates comprehensive indexes for all tables
-   - Includes partial indexes for soft-deleted records
-   - Adds GIN index for JSONB permissions
-   - Creates composite indexes for common query patterns
+5. **m20250131_000001_create_customers_table.rs**
+   - Creates `customers` table for customer records
+   - Includes indexes for full_name, phone_number, email, national_id, is_active
+   - Partial index for active customers (soft delete)
+   - Adds trigger for auto-updating `updated_at` timestamp
+
+6. **m20250131_000002_create_inventory_items_table.rs**
+   - Creates `inventory_items` table for medicine catalog
+   - Includes indexes for name, generic_name, form, is_active
+   - Partial indexes for low stock items and active items
+   - Adds trigger for auto-updating `updated_at` timestamp
+
+7. **m20250131_000003_create_suppliers_table.rs**
+   - Creates `suppliers` table for supplier information
+   - Includes indexes for name, rating, is_active
+   - GIN index for JSONB common_medicines field
+   - Partial index for active suppliers
+   - Adds trigger for auto-updating `updated_at` timestamp
+
+8. **m20250131_000004_create_special_orders_table.rs**
+   - Creates `special_orders` table for special medicine orders
+   - Foreign keys to customers and suppliers
+   - Includes indexes for customer_id, supplier_id, order_number, status, order_date
+   - Partial index for active orders
+   - Adds trigger for auto-updating `updated_at` timestamp
+
+9. **m20250131_000005_create_special_order_items_table.rs**
+   - Creates `special_order_items` junction table for order line items
+   - Foreign keys to special_orders and inventory_items
+   - Includes indexes for special_order_id and inventory_item_id
+   - Supports custom items (not in catalog)
+   - Adds trigger for auto-updating `updated_at` timestamp
+
+10. **m20250131_000006_create_supplier_inventory_items_table.rs**
+    - Creates `supplier_inventory_items` junction table for supplier-medicine relationships
+    - Foreign keys to suppliers and inventory_items
+    - Includes indexes for supplier_id, inventory_item_id, is_preferred, is_active
+    - Composite unique index to prevent duplicate relationships
+    - Adds trigger for auto-updating `updated_at` timestamp
+
+11. **m20250131_000007_create_settings_table.rs**
+    - Creates `settings` table for application configuration
+    - Key-value pairs with JSONB values
+    - Includes index for category
+    - Adds trigger for auto-updating `updated_at` timestamp
 
 ## Prerequisites
 
@@ -116,27 +160,47 @@ cargo run -- generate <migration_name>
 
 ### Tables Created
 
-1. **staff**
-   - Employee records with HR information
-   - Soft deletion support
-   - Audit trail fields
+#### User Management
 
-2. **roles**
-   - Role definitions with JSONB permissions
-   - System role protection
-   - Hierarchical permission levels
+1. **staff** - Employee records with HR information
+2. **roles** - Role definitions with JSONB permissions
+3. **users** - User accounts linked to staff
 
-3. **users**
-   - User accounts linked to staff
-   - Authentication credentials
-   - Organizational hierarchy via supervisor_id
+#### Customer & Inventory
+
+4. **customers** - Customer records for orders
+5. **inventory_items** - Medicine catalog with stock management
+
+#### Orders
+
+6. **special_orders** - Special medicine orders
+7. **special_order_items** - Order line items (junction table)
+
+#### Suppliers
+
+8. **suppliers** - Supplier information and performance tracking
+9. **supplier_inventory_items** - Supplier-medicine relationships (junction table)
+
+#### Configuration
+
+10. **settings** - Application settings (key-value pairs)
 
 ### Relationships
 
 ```
+%% User Management
 staff (1) ←→ (0..1) users
 users (N) ←→ (1) roles
 users (N) ←→ (0..1) users (supervisor)
+
+%% Customer & Orders
+customers (1) ←→ (N) special_orders
+suppliers (1) ←→ (N) special_orders
+special_orders (1) ←→ (N) special_order_items
+inventory_items (1) ←→ (N) special_order_items
+
+%% Supplier-Inventory Relationship
+suppliers (N) ←→ (N) inventory_items (through supplier_inventory_items)
 ```
 
 ### Default Roles
@@ -153,6 +217,8 @@ The migration seeds 5 default system roles:
 
 ## Indexes Created
 
+All indexes are created within each migration file (not in a separate indexes migration).
+
 ### Staff Table Indexes
 
 - `idx_staff_employee_id` - Employee ID lookups
@@ -167,6 +233,7 @@ The migration seeds 5 default system roles:
 
 - `idx_roles_name` - Role name lookups
 - `idx_roles_level` - Permission hierarchy queries
+- `idx_roles_is_active` - Filter active roles
 - `idx_roles_permissions` - GIN index for JSONB queries
 - `idx_roles_active` - Partial index for non-deleted records
 - `idx_roles_system_active` - Composite index for system roles
@@ -184,6 +251,57 @@ The migration seeds 5 default system roles:
 - `idx_users_active` - Partial index for non-deleted records
 - `idx_users_status_active` - Composite index for active users
 - `idx_users_role_active` - Composite index for role-based queries
+
+### Customers Table Indexes
+
+- `idx_customers_full_name` - Customer name lookups
+- `idx_customers_phone_number` - Phone number lookups
+- `idx_customers_email` - Email lookups
+- `idx_customers_national_id` - National ID lookups
+- `idx_customers_is_active` - Filter active customers
+- `idx_customers_active` - Partial index for non-deleted records
+
+### Inventory Items Table Indexes
+
+- `idx_inventory_items_name` - Medicine name lookups
+- `idx_inventory_items_generic_name` - Generic name lookups
+- `idx_inventory_items_form` - Dosage form filtering
+- `idx_inventory_items_is_active` - Filter active items
+- `idx_inventory_items_low_stock` - Partial index for low stock items
+- `idx_inventory_items_active` - Partial index for non-deleted records
+
+### Suppliers Table Indexes
+
+- `idx_suppliers_name` - Supplier name lookups
+- `idx_suppliers_rating` - Rating-based queries
+- `idx_suppliers_is_active` - Filter active suppliers
+- `idx_suppliers_active` - Partial index for non-deleted records
+
+### Special Orders Table Indexes
+
+- `idx_special_orders_customer_id` - Customer relationship lookups
+- `idx_special_orders_supplier_id` - Supplier relationship lookups
+- `idx_special_orders_order_number` - Order number lookups
+- `idx_special_orders_status` - Status filtering
+- `idx_special_orders_order_date` - Date-based queries
+- `idx_special_orders_active` - Partial index for non-deleted records
+
+### Special Order Items Table Indexes
+
+- `idx_special_order_items_order_id` - Order relationship lookups
+- `idx_special_order_items_inventory_id` - Inventory relationship lookups
+
+### Supplier Inventory Items Table Indexes
+
+- `idx_supplier_inventory_items_supplier_id` - Supplier relationship lookups
+- `idx_supplier_inventory_items_inventory_id` - Inventory relationship lookups
+- `idx_supplier_inventory_items_is_preferred` - Preferred supplier filtering
+- `idx_supplier_inventory_items_is_active` - Active relationship filtering
+- `idx_supplier_inventory_items_unique` - Composite unique index (supplier_id, inventory_item_id)
+
+### Settings Table Indexes
+
+- `idx_settings_category` - Category-based filtering
 
 ## Auto-Update Triggers
 
@@ -341,16 +459,23 @@ let status = Migrator::status(&db).await?;
 
 ```
 db/migration/
-├── Cargo.toml                                    # Migration crate config
-├── README.md                                     # This file
+├── Cargo.toml                                                # Migration crate config
+├── README.md                                                 # This file
+├── QUICK_START.md                                            # Quick start guide
 └── src/
-    ├── lib.rs                                    # Migration registry
-    ├── main.rs                                   # CLI binary
-    ├── m20250130_000001_create_enums.rs         # ENUM types
-    ├── m20250130_000002_create_staff_table.rs   # Staff table
-    ├── m20250130_000003_create_roles_table.rs   # Roles table
-    ├── m20250130_000004_create_users_table.rs   # Users table
-    └── m20250130_000005_create_indexes.rs       # Indexes
+    ├── lib.rs                                                # Migration registry
+    ├── main.rs                                               # CLI binary
+    ├── m20250130_000001_create_enums.rs                     # ENUM types
+    ├── m20250130_000002_create_staff_table.rs               # Staff table
+    ├── m20250130_000003_create_roles_table.rs               # Roles table
+    ├── m20250130_000004_create_users_table.rs               # Users table
+    ├── m20250131_000001_create_customers_table.rs           # Customers table
+    ├── m20250131_000002_create_inventory_items_table.rs     # Inventory items table
+    ├── m20250131_000003_create_suppliers_table.rs           # Suppliers table
+    ├── m20250131_000004_create_special_orders_table.rs      # Special orders table
+    ├── m20250131_000005_create_special_order_items_table.rs # Special order items table
+    ├── m20250131_000006_create_supplier_inventory_items_table.rs # Supplier-inventory junction
+    └── m20250131_000007_create_settings_table.rs            # Settings table
 ```
 
 ## Next Steps

@@ -1,18 +1,46 @@
 //! Entity models for the pharmacy management system
 
+pub mod customer;
 pub mod id;
+pub mod inventory_item;
 pub mod role;
+pub mod setting;
+pub mod special_order;
+pub mod special_order_item;
 pub mod staff;
+pub mod supplier;
+pub mod supplier_inventory_item;
 pub mod user;
 
 pub mod prelude {
+    pub use super::customer;
+    pub use super::customer::Entity as Customer;
+    pub use super::customer::dto as customer_dto;
     pub use super::id::Id;
+    pub use super::inventory_item;
+    pub use super::inventory_item::Entity as InventoryItem;
+    pub use super::inventory_item::dto as inventory_item_dto;
     pub use super::role;
     pub use super::role::Entity as Role;
     pub use super::role::dto as role_dto;
+    pub use super::setting;
+    pub use super::setting::Entity as Setting;
+    pub use super::setting::dto as setting_dto;
+    pub use super::special_order;
+    pub use super::special_order::Entity as SpecialOrder;
+    pub use super::special_order::dto as special_order_dto;
+    pub use super::special_order_item;
+    pub use super::special_order_item::Entity as SpecialOrderItem;
+    pub use super::special_order_item::dto as special_order_item_dto;
     pub use super::staff;
     pub use super::staff::Entity as Staff;
     pub use super::staff::dto as staff_dto;
+    pub use super::supplier;
+    pub use super::supplier::Entity as Supplier;
+    pub use super::supplier::dto as supplier_dto;
+    pub use super::supplier_inventory_item;
+    pub use super::supplier_inventory_item::Entity as SupplierInventoryItem;
+    pub use super::supplier_inventory_item::dto as supplier_inventory_item_dto;
     pub use super::user;
     pub use super::user::Entity as User;
     pub use super::user::dto as user_dto;

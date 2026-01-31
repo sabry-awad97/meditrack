@@ -101,6 +101,111 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // Create indexes
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_staff_id")
+                    .table(Users::Table)
+                    .col(Users::StaffId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_username")
+                    .table(Users::Table)
+                    .col(Users::Username)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_email")
+                    .table(Users::Table)
+                    .col(Users::Email)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_role_id")
+                    .table(Users::Table)
+                    .col(Users::RoleId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_supervisor_id")
+                    .table(Users::Table)
+                    .col(Users::SupervisorId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_status")
+                    .table(Users::Table)
+                    .col(Users::Status)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_is_active")
+                    .table(Users::Table)
+                    .col(Users::IsActive)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_users_last_login_at")
+                    .table(Users::Table)
+                    .col(Users::LastLoginAt)
+                    .to_owned(),
+            )
+            .await?;
+
+        // Partial index for active users (soft delete)
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "CREATE INDEX idx_users_active ON users (id) WHERE deleted_at IS NULL;",
+            )
+            .await?;
+
+        // Composite index for active users by status
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "CREATE INDEX idx_users_status_active ON users (status, is_active) WHERE deleted_at IS NULL;",
+            )
+            .await?;
+
+        // Composite index for role-based queries
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "CREATE INDEX idx_users_role_active ON users (role_id, is_active) WHERE deleted_at IS NULL;",
+            )
+            .await?;
+
         // Create trigger to auto-update updated_at
         manager
             .get_connection()

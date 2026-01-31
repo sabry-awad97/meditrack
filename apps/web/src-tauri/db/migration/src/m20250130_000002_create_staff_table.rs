@@ -70,18 +70,85 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // Create indexes
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_staff_employee_id")
+                    .table(Staff::Table)
+                    .col(Staff::EmployeeId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_staff_employment_status")
+                    .table(Staff::Table)
+                    .col(Staff::EmploymentStatus)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_staff_department")
+                    .table(Staff::Table)
+                    .col(Staff::Department)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_staff_position")
+                    .table(Staff::Table)
+                    .col(Staff::Position)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_staff_email")
+                    .table(Staff::Table)
+                    .col(Staff::Email)
+                    .to_owned(),
+            )
+            .await?;
+
+        // Partial index for active staff (soft delete)
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "CREATE INDEX idx_staff_active ON staff (id) WHERE deleted_at IS NULL;",
+            )
+            .await?;
+
+        // Composite index for active employed staff
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "CREATE INDEX idx_staff_employment_active ON staff (employment_status) WHERE deleted_at IS NULL AND employment_status = 'active';",
+            )
+            .await?;
+
         // Create trigger to auto-update updated_at
         manager
             .get_connection()
             .execute_unprepared(
                 r#"
                 CREATE OR REPLACE FUNCTION update_updated_at_column()
-                RETURNS TRIGGER AS $$
+                RETURNS TRIGGER AS $
                 BEGIN
                     NEW.updated_at = CURRENT_TIMESTAMP;
                     RETURN NEW;
                 END;
-                $$ language 'plpgsql';
+                $ language 'plpgsql';
 
                 CREATE TRIGGER update_staff_updated_at
                     BEFORE UPDATE ON staff
@@ -101,7 +168,7 @@ impl MigrationTrait for Migration {
             .execute_unprepared("DROP TRIGGER IF EXISTS update_staff_updated_at ON staff;")
             .await?;
 
-        // Drop table
+        // Drop table (indexes will be dropped automatically)
         manager
             .drop_table(Table::drop().table(Staff::Table).to_owned())
             .await?;
