@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  TrendingUp,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useTranslation, useDirection } from "@meditrack/i18n";
@@ -18,12 +19,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import type { InventoryItemWithStockResponse } from "@/api/inventory.api";
 
@@ -42,6 +44,12 @@ export function ItemDetailsDialog({
   const { isRTL } = useDirection();
 
   if (!item) return null;
+
+  const unitPrice =
+    typeof item.unit_price === "string"
+      ? parseFloat(item.unit_price)
+      : item.unit_price;
+  const totalValue = item.stock_quantity * unitPrice;
 
   const stockStatus =
     item.stock_quantity === 0
@@ -63,306 +71,396 @@ export function ItemDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl h-[90vh] flex flex-col p-0 gap-0">
-        <div className={cn("p-6 border-b shrink-0", isRTL ? "pl-14" : "pr-14")}>
-          <DialogHeader className={cn(isRTL && "text-right")}>
-            <div
-              className={cn(
-                "flex items-start gap-4",
-                isRTL && "flex-row-reverse",
-              )}
-            >
-              <div className={cn("flex-1", isRTL && "text-right")}>
-                <DialogTitle className="text-2xl">{item.name}</DialogTitle>
-                {item.generic_name && (
-                  <DialogDescription className="text-base mt-1">
-                    {item.generic_name}
-                  </DialogDescription>
-                )}
-              </div>
-            </div>
-          </DialogHeader>
-          <Badge
-            variant={
-              stockStatus === "out_of_stock"
-                ? "destructive"
-                : stockStatus === "low_stock"
-                  ? "secondary"
-                  : "default"
-            }
+      <DialogContent className="sm:max-w-5xl h-[85vh] flex flex-col p-0 gap-0">
+        {/* Header */}
+        <div
+          className={cn(
+            "px-6 py-4 border-b shrink-0 bg-muted/30",
+            isRTL ? "pl-14" : "pr-14",
+          )}
+        >
+          <div
             className={cn(
-              "absolute top-4 text-sm px-3 py-1",
-              isRTL ? "left-12" : "right-12",
+              "flex items-center gap-4",
+              isRTL ? "flex-row-reverse" : "justify-between",
             )}
           >
-            {getStockStatusLabel()}
-          </Badge>
+            <Badge
+              variant={
+                stockStatus === "out_of_stock"
+                  ? "destructive"
+                  : stockStatus === "low_stock"
+                    ? "secondary"
+                    : "default"
+              }
+              className={cn(
+                "text-sm px-4 py-1.5 font-medium",
+                isRTL ? "order-first" : "order-last",
+              )}
+            >
+              {getStockStatusLabel()}
+            </Badge>
+            <div className={cn("flex-1", isRTL && "text-right")}>
+              <DialogTitle className="text-2xl font-bold">
+                {item.name}
+              </DialogTitle>
+              {item.generic_name && (
+                <DialogDescription className="text-base mt-1">
+                  {item.generic_name}
+                </DialogDescription>
+              )}
+            </div>
+          </div>
         </div>
 
-        <ScrollArea className="flex-1 h-0 px-6">
-          <div className="space-y-6 py-4">
-            {/* Stock Overview */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="p-4 rounded-lg bg-linear-to-br from-primary/5 to-primary/10 border border-primary/20"
-            >
-              <h3
-                className={cn(
-                  "font-semibold mb-4 flex items-center gap-2",
-                  isRTL && "flex-row-reverse",
-                )}
-              >
-                <Package className="h-5 w-5" />
-                {t("itemDetails.stockInfo")}
-              </h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">
-                    {t("itemDetails.currentStock")}
-                  </p>
-                  <p className="text-3xl font-bold">{item.stock_quantity}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">
-                    {t("itemDetails.minLevel")}
-                  </p>
-                  <p className="text-3xl font-bold">{item.min_stock_level}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">
-                    {t("itemDetails.totalValue")}
-                  </p>
-                  <p className="text-3xl font-bold">
-                    ${(item.stock_quantity * item.unit_price).toFixed(2)}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-center justify-between mb-2 text-sm">
-                  <span className="text-muted-foreground">
-                    {t("itemDetails.stockLevel")}
-                  </span>
-                  <span className="font-medium">
-                    {stockPercentage.toFixed(0)}%
-                  </span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <motion.div
-                    className={cn(
-                      "h-full",
-                      stockStatus === "out_of_stock"
-                        ? "bg-red-500"
-                        : stockStatus === "low_stock"
-                          ? "bg-yellow-500"
-                          : "bg-green-500",
-                    )}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${stockPercentage}%` }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Basic Information */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-4"
-            >
-              <h3
-                className={cn(
-                  "font-semibold flex items-center gap-2",
-                  isRTL && "flex-row-reverse",
-                )}
-              >
-                <FileText className="h-5 w-5" />
-                {t("itemDetails.basicInfo")}
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <DetailField
-                  label={t("itemDetails.concentration")}
-                  value={item.concentration}
-                />
-                <DetailField label={t("itemDetails.form")} value={item.form} />
-                {item.manufacturer && (
-                  <DetailField
-                    label={t("itemDetails.manufacturer")}
-                    value={item.manufacturer}
-                    icon={Building2}
-                  />
-                )}
-                {item.barcode && (
-                  <DetailField
-                    label={t("itemDetails.barcode")}
-                    value={item.barcode}
-                    icon={Barcode}
-                    className="font-mono"
-                  />
-                )}
-              </div>
-            </motion.div>
-
-            <Separator />
-
-            {/* Pricing */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="space-y-4"
-            >
-              <h3
-                className={cn(
-                  "font-semibold flex items-center gap-2",
-                  isRTL && "flex-row-reverse",
-                )}
-              >
-                <DollarSign className="h-5 w-5" />
-                {t("itemDetails.pricing")}
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <DetailField
-                  label={t("itemDetails.unitPrice")}
-                  value={`$${item.unit_price.toFixed(2)}`}
-                />
-                <DetailField
-                  label={t("itemDetails.totalInventoryValue")}
-                  value={`$${(item.stock_quantity * item.unit_price).toFixed(2)}`}
-                />
-              </div>
-            </motion.div>
-
-            <Separator />
-
-            {/* Classification */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-4"
-            >
-              <h3
-                className={cn(
-                  "font-semibold flex items-center gap-2",
-                  isRTL && "flex-row-reverse",
-                )}
-              >
-                <Shield className="h-5 w-5" />
-                {t("itemDetails.classification")}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                <Badge
-                  variant={item.requires_prescription ? "secondary" : "outline"}
-                  className="gap-1"
-                >
-                  {item.requires_prescription ? (
-                    <CheckCircle2 className="h-3 w-3" />
-                  ) : (
-                    <XCircle className="h-3 w-3" />
-                  )}
-                  {item.requires_prescription
-                    ? t("itemDetails.prescriptionRequired")
-                    : t("itemDetails.overTheCounter")}
-                </Badge>
-                {item.is_controlled && (
-                  <Badge variant="destructive" className="gap-1">
-                    <AlertTriangle className="h-3 w-3" />
-                    {t("itemDetails.controlledSubstance")}
-                  </Badge>
-                )}
-                <Badge variant={item.is_active ? "default" : "outline"}>
-                  {item.is_active
-                    ? t("itemDetails.active")
-                    : t("itemDetails.inactive")}
-                </Badge>
-              </div>
-            </motion.div>
-
-            {/* Storage & Notes */}
-            {(item.storage_instructions || item.notes) && (
-              <>
-                <Separator />
+        <ScrollArea className="flex-1 h-0">
+          <div className="p-6">
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Stock & Pricing */}
+              <div className="space-y-6">
+                {/* Stock Overview Card */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="space-y-4"
+                  initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
                 >
-                  {item.storage_instructions && (
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">
-                        {t("itemDetails.storageInstructions")}
-                      </h4>
-                      <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50">
-                        {item.storage_instructions}
-                      </p>
-                    </div>
-                  )}
-                  {item.notes && (
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">
-                        {t("itemDetails.additionalNotes")}
-                      </h4>
-                      <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/50">
-                        {item.notes}
-                      </p>
-                    </div>
-                  )}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle
+                        className={cn(
+                          "flex items-center gap-2 text-lg",
+                          isRTL && "flex-row-reverse",
+                        )}
+                      >
+                        <Package className="h-5 w-5 text-primary" />
+                        {t("itemDetails.stockInfo")}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="text-center space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("itemDetails.currentStock")}
+                          </p>
+                          <p className="text-2xl font-bold">
+                            {item.stock_quantity}
+                          </p>
+                        </div>
+                        <div className="text-center space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("itemDetails.minLevel")}
+                          </p>
+                          <p className="text-2xl font-bold text-muted-foreground">
+                            {item.min_stock_level}
+                          </p>
+                        </div>
+                        <div className="text-center space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("itemDetails.totalValue")}
+                          </p>
+                          <p className="text-2xl font-bold text-primary">
+                            ${totalValue.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">
+                            {t("itemDetails.stockLevel")}
+                          </span>
+                          <span className="font-medium">
+                            {stockPercentage.toFixed(0)}%
+                          </span>
+                        </div>
+                        <Progress
+                          value={stockPercentage}
+                          className={cn(
+                            "h-2",
+                            stockStatus === "out_of_stock" &&
+                              "[&>div]:bg-destructive",
+                            stockStatus === "low_stock" &&
+                              "[&>div]:bg-yellow-500",
+                          )}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
                 </motion.div>
-              </>
-            )}
 
-            <Separator />
+                {/* Pricing Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle
+                        className={cn(
+                          "flex items-center gap-2 text-lg",
+                          isRTL && "flex-row-reverse",
+                        )}
+                      >
+                        <DollarSign className="h-5 w-5 text-green-600 dark:text-green-500" />
+                        {t("itemDetails.pricing")}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("itemDetails.unitPrice")}
+                          </p>
+                          <p className="text-3xl font-bold text-green-600 dark:text-green-500">
+                            ${unitPrice.toFixed(2)}
+                          </p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">
+                            {t("itemDetails.totalInventoryValue")}
+                          </p>
+                          <p className="text-3xl font-bold text-green-600 dark:text-green-500">
+                            ${totalValue.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
 
-            {/* Timestamps */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="space-y-4"
-            >
-              <h3
-                className={cn(
-                  "font-semibold flex items-center gap-2",
-                  isRTL && "flex-row-reverse",
-                )}
-              >
-                <Calendar className="h-5 w-5" />
-                {t("itemDetails.timeline")}
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-1">
-                  <p className="text-muted-foreground">
-                    {t("itemDetails.created")}
-                  </p>
-                  <p className="font-medium">
-                    {format(new Date(item.created_at), "PPp")}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-muted-foreground">
-                    {t("itemDetails.lastUpdated")}
-                  </p>
-                  <p className="font-medium">
-                    {format(new Date(item.updated_at), "PPp")}
-                  </p>
-                </div>
-                {item.last_restocked_at && (
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground">
-                      {t("itemDetails.lastRestocked")}
-                    </p>
-                    <p className="font-medium">
-                      {format(new Date(item.last_restocked_at), "PPp")}
-                    </p>
-                  </div>
-                )}
+                {/* Classification Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle
+                        className={cn(
+                          "flex items-center gap-2 text-lg",
+                          isRTL && "flex-row-reverse",
+                        )}
+                      >
+                        <Shield className="h-5 w-5 text-blue-600 dark:text-blue-500" />
+                        {t("itemDetails.classification")}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge
+                          variant={
+                            item.requires_prescription ? "default" : "secondary"
+                          }
+                        >
+                          {item.requires_prescription
+                            ? t("itemDetails.prescriptionRequired")
+                            : t("itemDetails.overTheCounter")}
+                        </Badge>
+                        {item.is_controlled && (
+                          <Badge variant="destructive" className="gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {t("itemDetails.controlledSubstance")}
+                          </Badge>
+                        )}
+                        <Badge
+                          variant={item.is_active ? "default" : "outline"}
+                          className="gap-1"
+                        >
+                          {item.is_active ? (
+                            <>
+                              <CheckCircle2 className="h-3 w-3" />
+                              {t("itemDetails.active")}
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-3 w-3" />
+                              {t("itemDetails.inactive")}
+                            </>
+                          )}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </div>
-            </motion.div>
+
+              {/* Right Column - Details & Information */}
+              <div className="space-y-6">
+                {/* Basic Information Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle
+                        className={cn(
+                          "flex items-center gap-2 text-lg",
+                          isRTL && "flex-row-reverse",
+                        )}
+                      >
+                        <FileText className="h-5 w-5 text-purple-600 dark:text-purple-500" />
+                        {t("itemDetails.basicInfo")}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <DetailField
+                        icon={<FileText className="h-4 w-4" />}
+                        label={t("itemDetails.concentration")}
+                        value={item.concentration || t("table.na")}
+                        isRTL={isRTL}
+                      />
+                      <Separator />
+                      <DetailField
+                        icon={<Package className="h-4 w-4" />}
+                        label={t("itemDetails.form")}
+                        value={item.form}
+                        isRTL={isRTL}
+                      />
+                      <Separator />
+                      <DetailField
+                        icon={<Building2 className="h-4 w-4" />}
+                        label={t("itemDetails.manufacturer")}
+                        value={item.manufacturer || t("table.na")}
+                        isRTL={isRTL}
+                      />
+                      <Separator />
+                      <DetailField
+                        icon={<Barcode className="h-4 w-4" />}
+                        label={t("itemDetails.barcode")}
+                        value={item.barcode || t("table.na")}
+                        isRTL={isRTL}
+                      />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Storage & Notes Card */}
+                {(item.storage_instructions || item.notes) && (
+                  <motion.div
+                    initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Card>
+                      <CardHeader>
+                        <CardTitle
+                          className={cn(
+                            "flex items-center gap-2 text-lg",
+                            isRTL && "flex-row-reverse",
+                          )}
+                        >
+                          <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-500" />
+                          {t("itemDetails.storageInstructions")}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {item.storage_instructions && (
+                          <div className="space-y-2">
+                            <p
+                              className={cn(
+                                "text-sm text-muted-foreground leading-relaxed",
+                                isRTL && "text-right",
+                              )}
+                            >
+                              {item.storage_instructions}
+                            </p>
+                          </div>
+                        )}
+                        {item.storage_instructions && item.notes && (
+                          <Separator />
+                        )}
+                        {item.notes && (
+                          <div className="space-y-2">
+                            <h4
+                              className={cn(
+                                "font-medium text-sm flex items-center gap-2",
+                                isRTL && "flex-row-reverse",
+                              )}
+                            >
+                              <FileText className="h-4 w-4" />
+                              {t("itemDetails.additionalNotes")}
+                            </h4>
+                            <p
+                              className={cn(
+                                "text-sm text-muted-foreground leading-relaxed",
+                                isRTL && "text-right",
+                              )}
+                            >
+                              {item.notes}
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+
+                {/* Timeline Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle
+                        className={cn(
+                          "flex items-center gap-2 text-lg",
+                          isRTL && "flex-row-reverse",
+                        )}
+                      >
+                        <Calendar className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                        {t("itemDetails.timeline")}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <TimelineItem
+                        icon={<Calendar className="h-4 w-4 text-primary" />}
+                        label={t("itemDetails.created")}
+                        value={format(new Date(item.created_at), "PPp")}
+                        isRTL={isRTL}
+                      />
+                      {item.updated_at && (
+                        <>
+                          <Separator />
+                          <TimelineItem
+                            icon={
+                              <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-500" />
+                            }
+                            label={t("itemDetails.lastUpdated")}
+                            value={format(new Date(item.updated_at), "PPp")}
+                            isRTL={isRTL}
+                          />
+                        </>
+                      )}
+                      {item.last_restocked_at && (
+                        <>
+                          <Separator />
+                          <TimelineItem
+                            icon={
+                              <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-500" />
+                            }
+                            label={t("itemDetails.lastRestocked")}
+                            value={format(
+                              new Date(item.last_restocked_at),
+                              "PPp",
+                            )}
+                            isRTL={isRTL}
+                          />
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+            </div>
           </div>
         </ScrollArea>
       </DialogContent>
@@ -370,34 +468,51 @@ export function ItemDetailsDialog({
   );
 }
 
-// Detail Field Component
+// Helper Components
 interface DetailFieldProps {
   label: string;
   value: string;
-  icon?: React.ElementType;
-  className?: string;
+  icon?: React.ReactNode;
+  isRTL?: boolean;
 }
 
-function DetailField({
-  label,
-  value,
-  icon: Icon,
-  className,
-}: DetailFieldProps) {
-  const { isRTL } = useDirection();
-
+function DetailField({ label, value, icon, isRTL }: DetailFieldProps) {
   return (
-    <div className="space-y-1">
+    <div
+      className={cn(
+        "flex items-center justify-between gap-4",
+        isRTL && "flex-row-reverse",
+      )}
+    >
       <p
         className={cn(
-          "text-sm text-muted-foreground flex items-center gap-1",
-          isRTL && "flex-row-reverse justify-end",
+          "text-sm text-muted-foreground flex items-center gap-2",
+          isRTL && "flex-row-reverse",
         )}
       >
-        {Icon && <Icon className="h-3 w-3" />}
+        {icon}
         {label}
       </p>
-      <p className={cn("font-medium", className)}>{value}</p>
+      <p className="font-medium text-sm">{value}</p>
+    </div>
+  );
+}
+
+interface TimelineItemProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  isRTL?: boolean;
+}
+
+function TimelineItem({ icon, label, value, isRTL }: TimelineItemProps) {
+  return (
+    <div className={cn("flex items-start gap-3", isRTL && "flex-row-reverse")}>
+      <div className="p-2 rounded-lg bg-muted">{icon}</div>
+      <div className={cn("flex-1 space-y-1", isRTL && "text-right")}>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm font-medium">{value}</p>
+      </div>
     </div>
   );
 }
