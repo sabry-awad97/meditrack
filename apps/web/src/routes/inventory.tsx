@@ -210,6 +210,8 @@ function InventoryComponent() {
   const { data: items = [], isLoading } = useInventoryItems();
   const { data: stats } = useInventoryStatistics();
   const createInventoryItem = useCreateInventoryItem();
+  const adjustStock = useAdjustInventoryStock();
+  const deleteItem = useDeleteInventoryItem();
 
   // Direction for RTL/LTR support
   const { isRTL } = useDirection();
@@ -232,11 +234,48 @@ function InventoryComponent() {
   >(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedItem, setSelectedItem] =
+    useState<InventoryItemWithStockResponse | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isStockAdjustOpen, setIsStockAdjustOpen] = useState(false);
 
   // Handle create inventory item
   const handleCreateItem = (data: CreateInventoryItemWithStock) => {
     createInventoryItem.mutate(data);
     setIsFormOpen(false);
+  };
+
+  // Handle stock adjustment
+  const handleStockAdjust = (
+    itemId: string,
+    adjustment: number,
+    reason?: string,
+  ) => {
+    adjustStock.mutate({
+      id: itemId,
+      data: { adjustment, reason },
+    });
+    setIsStockAdjustOpen(false);
+    setSelectedItem(null);
+  };
+
+  // Handle delete
+  const handleDelete = (item: InventoryItemWithStockResponse) => {
+    if (confirm(`Are you sure you want to archive "${item.name}"?`)) {
+      deleteItem.mutate(item.id);
+    }
+  };
+
+  // Handle view details
+  const handleViewDetails = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsDetailsOpen(true);
+  };
+
+  // Handle adjust stock
+  const handleOpenStockAdjust = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsStockAdjustOpen(true);
   };
 
   // Toggle view mode
@@ -438,11 +477,7 @@ function InventoryComponent() {
                 }
               />
               <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Viewing details for ${item.name}`);
-                  }}
-                >
+                <DropdownMenuItem onClick={() => handleViewDetails(item)}>
                   <Eye className="h-4 w-4" />
                   <span>View Details</span>
                 </DropdownMenuItem>
@@ -463,21 +498,9 @@ function InventoryComponent() {
                   <span>Duplicate</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Adding stock for ${item.name}`);
-                  }}
-                >
+                <DropdownMenuItem onClick={() => handleOpenStockAdjust(item)}>
                   <TrendingUp className="h-4 w-4" />
-                  <span>Add Stock</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Reducing stock for ${item.name}`);
-                  }}
-                >
-                  <TrendingDown className="h-4 w-4" />
-                  <span>Reduce Stock</span>
+                  <span>Adjust Stock</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -490,9 +513,7 @@ function InventoryComponent() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"
-                  onClick={() => {
-                    toast.info(`Archiving ${item.name}`);
-                  }}
+                  onClick={() => handleDelete(item)}
                 >
                   <Archive className="h-4 w-4" />
                   <span>Archive</span>
@@ -503,7 +524,7 @@ function InventoryComponent() {
         },
       },
     ],
-    [],
+    [handleViewDetails, handleOpenStockAdjust, handleDelete],
   );
 
   // Table instance
@@ -540,45 +561,27 @@ function InventoryComponent() {
             Manage your pharmacy's medicine inventory
           </PageHeaderDescription>
         </PageHeaderContent>
-        <PageHeaderActions>
+        <PageHeaderActions className="flex gap-2">
           {/* View toggle - responsive sizing */}
           <Button
             onClick={toggleViewMode}
             variant="outline"
-            size="lg"
-            className="gap-2 relative overflow-hidden group"
+            size="default"
+            className="gap-2"
           >
-            <div className="relative w-5 h-5">
-              <LayoutGrid
-                className={cn(
-                  "absolute inset-0 h-5 w-5 transition-all duration-300",
-                  viewMode === "table"
-                    ? "opacity-100 scale-100 rotate-0"
-                    : "opacity-0 scale-50 rotate-90",
-                )}
-              />
-              <TableIcon
-                className={cn(
-                  "absolute inset-0 h-5 w-5 transition-all duration-300",
-                  viewMode === "grid"
-                    ? "opacity-100 scale-100 rotate-0"
-                    : "opacity-0 scale-50 -rotate-90",
-                )}
-              />
-            </div>
-            <span className="relative hidden sm:inline">
+            <LayoutGrid className="h-4 w-4" />
+            <span className="hidden sm:inline">
               {viewMode === "table" ? "Grid View" : "Table View"}
             </span>
-            <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </Button>
 
-          {/* Add Item - always prominent */}
+          {/* Add Item - primary action */}
           <Button
-            size="lg"
-            className="gap-2 rounded-md"
+            size="default"
+            className="gap-2"
             onClick={() => setIsFormOpen(true)}
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Add Item</span>
           </Button>
         </PageHeaderActions>
@@ -1194,7 +1197,13 @@ function InventoryComponent() {
               >
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-w-[2000px] mx-auto">
                   {filteredItems.map((item) => (
-                    <InventoryItemCard key={item.id} item={item} />
+                    <InventoryItemCard
+                      key={item.id}
+                      item={item}
+                      onViewDetails={handleViewDetails}
+                      onAdjustStock={handleOpenStockAdjust}
+                      onDelete={handleDelete}
+                    />
                   ))}
                 </div>
               </div>
@@ -1203,12 +1212,25 @@ function InventoryComponent() {
         </PageContentInner>
       </PageContent>
 
-      {/* Inventory Form Dialog */}
+      {/* Dialogs */}
       <InventoryForm
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         onSubmit={handleCreateItem}
         mode="create"
+      />
+
+      <ItemDetailsDialog
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        item={selectedItem}
+      />
+
+      <StockAdjustmentDialog
+        open={isStockAdjustOpen}
+        onOpenChange={setIsStockAdjustOpen}
+        item={selectedItem}
+        onAdjust={handleStockAdjust}
       />
     </Page>
   );
@@ -1243,9 +1265,17 @@ function StatsCard({ title, value, icon: Icon, color }: StatsCardProps) {
 // Inventory Item Card Component
 interface InventoryItemCardProps {
   item: InventoryItem;
+  onViewDetails: (item: InventoryItem) => void;
+  onAdjustStock: (item: InventoryItem) => void;
+  onDelete: (item: InventoryItem) => void;
 }
 
-function InventoryItemCard({ item }: InventoryItemCardProps) {
+function InventoryItemCard({
+  item,
+  onViewDetails,
+  onAdjustStock,
+  onDelete,
+}: InventoryItemCardProps) {
   const stockStatus = getStockStatus(item.stock_quantity, item.min_stock_level);
   const stockColor = getStockStatusColor(stockStatus);
   const stockLabel = getStockStatusLabel(stockStatus);
@@ -1284,7 +1314,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.info(`Viewing details for ${item.name}`);
+                    onViewDetails(item);
                   }}
                 >
                   <Eye className="h-4 w-4" />
@@ -1312,20 +1342,11 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.info(`Adding stock for ${item.name}`);
+                    onAdjustStock(item);
                   }}
                 >
                   <TrendingUp className="h-4 w-4" />
-                  <span>Add Stock</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toast.info(`Reducing stock for ${item.name}`);
-                  }}
-                >
-                  <TrendingDown className="h-4 w-4" />
-                  <span>Reduce Stock</span>
+                  <span>Adjust Stock</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1341,7 +1362,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   variant="destructive"
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.info(`Archiving ${item.name}`);
+                    onDelete(item);
                   }}
                 >
                   <Archive className="h-4 w-4" />

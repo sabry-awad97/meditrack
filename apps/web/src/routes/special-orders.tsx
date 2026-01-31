@@ -178,26 +178,26 @@ function SpecialOrdersComponent() {
           <PageHeaderTitle>{t("page.title")}</PageHeaderTitle>
           <PageHeaderDescription>{t("page.description")}</PageHeaderDescription>
         </PageHeaderContent>
-        <PageHeaderActions>
+        <PageHeaderActions className="gap-3">
           {isDev && (
             <>
               <Button
                 onClick={() => seedData.mutate()}
                 variant="outline"
-                size="lg"
+                size="default"
                 className="gap-2"
               >
-                <Database className="h-5 w-5" />
+                <Database className="h-4 w-4" />
                 {t("page.testData")}
               </Button>
               {orders.length > 0 && (
                 <Button
                   onClick={() => clearData.mutate()}
                   variant="outline"
-                  size="lg"
+                  size="default"
                   className="gap-2 text-destructive hover:text-destructive"
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4" />
                   {t("page.deleteAll")}
                 </Button>
               )}
@@ -205,10 +205,10 @@ function SpecialOrdersComponent() {
           )}
           <Button
             onClick={handleOpenCreateForm}
-            size="lg"
-            className="gap-2 rounded-md"
+            size="default"
+            className="gap-2"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4 w-4" />
             {t("page.addOrder")}
           </Button>
         </PageHeaderActions>

@@ -158,33 +158,37 @@ function SuppliersPage() {
           <PageHeaderTitle>{t("title")}</PageHeaderTitle>
           <PageHeaderDescription>{t("description")}</PageHeaderDescription>
         </PageHeaderContent>
-        <PageHeaderActions>
+        <PageHeaderActions className="gap-3">
           {isDev && (
             <>
               <Button
                 onClick={() => seedData.mutate()}
                 variant="outline"
-                size="lg"
+                size="default"
                 className="gap-2"
               >
-                <Database className="h-5 w-5" />
+                <Database className="h-4 w-4" />
                 {t("testData")}
               </Button>
               {suppliers.length > 0 && (
                 <Button
                   onClick={() => clearData.mutate()}
                   variant="outline"
-                  size="lg"
+                  size="default"
                   className="gap-2 text-destructive hover:text-destructive"
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4" />
                   {t("deleteAll")}
                 </Button>
               )}
             </>
           )}
-          <Button onClick={handleOpenCreateForm} size="lg" className="gap-2">
-            <Plus className="h-5 w-5" />
+          <Button
+            onClick={handleOpenCreateForm}
+            size="default"
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
             {t("addSupplier")}
           </Button>
         </PageHeaderActions>
