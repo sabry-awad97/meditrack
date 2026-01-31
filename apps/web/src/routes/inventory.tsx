@@ -25,6 +25,7 @@ import {
   TrendingDown,
   BarChart3,
 } from "lucide-react";
+import { useDirection } from "@meditrack/i18n";
 import {
   useReactTable,
   getCoreRowModel,
@@ -168,6 +169,9 @@ function InventoryComponent() {
   const { data: stats } = useInventoryStatistics();
   const resetInventory = useResetInventory();
   const clearInventory = useClearInventory();
+
+  // Direction for RTL/LTR support
+  const { isRTL } = useDirection();
 
   // Settings
   const enableDevMode = useSettingValue<boolean>("enableDevMode", false);
@@ -396,7 +400,7 @@ function InventoryComponent() {
                   }}
                 >
                   <Eye className="h-4 w-4" />
-                  View Details
+                  <span>View Details</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -404,7 +408,7 @@ function InventoryComponent() {
                   }}
                 >
                   <Edit className="h-4 w-4" />
-                  Edit Item
+                  <span>Edit Item</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -412,7 +416,7 @@ function InventoryComponent() {
                   }}
                 >
                   <Copy className="h-4 w-4" />
-                  Duplicate
+                  <span>Duplicate</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -421,7 +425,7 @@ function InventoryComponent() {
                   }}
                 >
                   <TrendingUp className="h-4 w-4" />
-                  Add Stock
+                  <span>Add Stock</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -429,7 +433,7 @@ function InventoryComponent() {
                   }}
                 >
                   <TrendingDown className="h-4 w-4" />
-                  Reduce Stock
+                  <span>Reduce Stock</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -437,7 +441,7 @@ function InventoryComponent() {
                   }}
                 >
                   <BarChart3 className="h-4 w-4" />
-                  Stock History
+                  <span>Stock History</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -447,7 +451,7 @@ function InventoryComponent() {
                   }}
                 >
                   <Archive className="h-4 w-4" />
-                  Archive
+                  <span>Archive</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -503,7 +507,7 @@ function InventoryComponent() {
                 className="gap-2 hidden lg:flex"
               >
                 <Database className="h-5 w-5" />
-                Reset Data
+                <span>Reset Data</span>
               </Button>
               {items.length > 0 && (
                 <Button
@@ -513,7 +517,7 @@ function InventoryComponent() {
                   className="gap-2 text-destructive hover:text-destructive hidden lg:flex"
                 >
                   <Trash2 className="h-5 w-5" />
-                  Clear All
+                  <span>Clear All</span>
                 </Button>
               )}
 
@@ -534,7 +538,7 @@ function InventoryComponent() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => resetInventory.mutate()}>
                     <Database className="h-4 w-4" />
-                    Reset Data
+                    <span>Reset Data</span>
                   </DropdownMenuItem>
                   {items.length > 0 && (
                     <DropdownMenuItem
@@ -542,7 +546,7 @@ function InventoryComponent() {
                       onClick={() => clearInventory.mutate()}
                     >
                       <Trash2 className="h-4 w-4" />
-                      Clear All
+                      <span>Clear All</span>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -593,8 +597,8 @@ function InventoryComponent() {
         <PageContentInner className="flex-1 flex flex-col min-h-0">
           {/* Statistics */}
           {stats && (
-            <PageSection className="mb-6 border-b-2 border-dashed pb-6 shrink-0">
-              <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            <PageSection className="mb-4 border-b border-dashed pb-4 shrink-0">
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                 <StatsCard
                   title="Total Items"
                   value={stats.total}
@@ -632,34 +636,135 @@ function InventoryComponent() {
           {/* Filters */}
           {items.length > 0 && (
             <div className="mb-6 flex flex-col gap-4 shrink-0">
-              {/* Search and Filter Button Row */}
-              <div className="flex items-center gap-3">
-                {/* Search - always visible */}
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {/* Search and Filters Row */}
+              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                {/* Search - fixed width on desktop */}
+                <div className="relative w-full md:w-[400px]">
+                  <Search
+                    className={cn(
+                      "absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground",
+                      isRTL ? "right-3" : "left-3",
+                    )}
+                  />
                   <Input
                     placeholder="Search by name, generic name, or barcode..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className={isRTL ? "pr-10" : "pl-10"}
                   />
                 </div>
 
-                {/* Mobile: Filter Sheet */}
-                <Sheet>
-                  <SheetTrigger className="md:hidden">
-                    <Button variant="outline" className="gap-2 shrink-0">
-                      <Filter className="h-4 w-4" />
-                      Filters
-                      {activeFiltersCount > 0 && (
-                        <Badge
-                          variant="secondary"
-                          className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center"
-                        >
-                          {activeFiltersCount}
-                        </Badge>
-                      )}
+                {/* Desktop: Inline Filters on same row */}
+                <div className="hidden md:flex flex-row items-center gap-3 flex-1">
+                  {/* Form Filter */}
+                  <Select
+                    items={[
+                      { value: null, label: "Filter by Form" },
+                      { value: "all", label: "All Forms" },
+                      ...MEDICINE_FORMS.map((form) => ({
+                        value: form,
+                        label: form,
+                      })),
+                    ]}
+                    value={formFilter}
+                    onValueChange={setFormFilter}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="All Forms" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Forms</SelectItem>
+                      {MEDICINE_FORMS.map((form) => (
+                        <SelectItem key={form} value={form}>
+                          {form}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Stock Filter */}
+                  <Select
+                    items={[
+                      { value: null, label: "Filter by Stock" },
+                      { value: "all", label: "All Stock" },
+                      { value: "in_stock", label: "In Stock" },
+                      { value: "low_stock", label: "Low Stock" },
+                      { value: "out_of_stock", label: "Out of Stock" },
+                    ]}
+                    value={stockFilter}
+                    onValueChange={setStockFilter}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="All Stock" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Stock</SelectItem>
+                      <SelectItem value="in_stock">In Stock</SelectItem>
+                      <SelectItem value="low_stock">Low Stock</SelectItem>
+                      <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Prescription Filter */}
+                  <Select
+                    items={[
+                      { value: null, label: "Filter by Type" },
+                      { value: "all", label: "All Types" },
+                      { value: "prescription", label: "Prescription" },
+                      { value: "otc", label: "OTC" },
+                    ]}
+                    value={prescriptionFilter}
+                    onValueChange={setPrescriptionFilter}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="prescription">Prescription</SelectItem>
+                      <SelectItem value="otc">OTC</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Clear Filters */}
+                  {activeFiltersCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFormFilter(null);
+                        setStockFilter(null);
+                        setPrescriptionFilter(null);
+                      }}
+                      className="gap-2"
+                    >
+                      <XCircle className="h-4 w-4" />
+                      <span>Clear ({activeFiltersCount})</span>
                     </Button>
+                  )}
+                </div>
+
+                {/* Mobile: Filter Sheet Button */}
+                <Sheet>
+                  <SheetTrigger
+                    render={
+                      <Button variant="outline" className="gap-2 shrink-0" />
+                    }
+                    className="md:hidden"
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span>Filters</span>
+                    {activeFiltersCount > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "h-5 w-5 rounded-full p-0 flex items-center justify-center",
+                          isRTL ? "mr-1" : "ml-1",
+                        )}
+                      >
+                        {activeFiltersCount}
+                      </Badge>
+                    )}
                   </SheetTrigger>
                   <SheetContent side="bottom" className="h-[80vh]">
                     <SheetHeader>
@@ -777,96 +882,6 @@ function InventoryComponent() {
                 </Sheet>
               </div>
 
-              {/* Desktop: Inline Filters */}
-              <div className="hidden md:flex flex-row gap-4">
-                {/* Form Filter */}
-                <Select
-                  items={[
-                    { value: null, label: "Filter by Form" },
-                    { value: "all", label: "All Forms" },
-                    ...MEDICINE_FORMS.map((form) => ({
-                      value: form,
-                      label: form,
-                    })),
-                  ]}
-                  value={formFilter}
-                  onValueChange={setFormFilter}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="All Forms" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Forms</SelectItem>
-                    {MEDICINE_FORMS.map((form) => (
-                      <SelectItem key={form} value={form}>
-                        {form}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Stock Filter */}
-                <Select
-                  items={[
-                    { value: null, label: "Filter by Stock" },
-                    { value: "all", label: "All Stock" },
-                    { value: "in_stock", label: "In Stock" },
-                    { value: "low_stock", label: "Low Stock" },
-                    { value: "out_of_stock", label: "Out of Stock" },
-                  ]}
-                  value={stockFilter}
-                  onValueChange={setStockFilter}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="All Stock" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Stock</SelectItem>
-                    <SelectItem value="in_stock">In Stock</SelectItem>
-                    <SelectItem value="low_stock">Low Stock</SelectItem>
-                    <SelectItem value="out_of_stock">Out of Stock</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Prescription Filter */}
-                <Select
-                  items={[
-                    { value: null, label: "Filter by Type" },
-                    { value: "all", label: "All Types" },
-                    { value: "prescription", label: "Prescription" },
-                    { value: "otc", label: "OTC" },
-                  ]}
-                  value={prescriptionFilter}
-                  onValueChange={setPrescriptionFilter}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="All Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="prescription">Prescription</SelectItem>
-                    <SelectItem value="otc">OTC</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Clear Filters */}
-                {activeFiltersCount > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setFormFilter(null);
-                      setStockFilter(null);
-                      setPrescriptionFilter(null);
-                    }}
-                    className="gap-2"
-                  >
-                    <XCircle className="h-4 w-4" />
-                    Clear ({activeFiltersCount})
-                  </Button>
-                )}
-              </div>
-
               {/* Active Filters Summary */}
               {(searchQuery ||
                 (formFilter && formFilter !== "all") ||
@@ -910,7 +925,7 @@ function InventoryComponent() {
                     (!prescriptionFilter || prescriptionFilter === "all") && (
                       <Button className="gap-2">
                         <Plus className="h-4 w-4" />
-                        Add Item
+                        <span>Add Item</span>
                       </Button>
                     )}
                 </div>
@@ -980,8 +995,17 @@ function InventoryComponent() {
                       disabled={!table.getCanPreviousPage()}
                       className="gap-1"
                     >
-                      <ChevronLeftIcon className="h-4 w-4" />
-                      Previous
+                      {isRTL ? (
+                        <>
+                          <span>Previous</span>
+                          <ChevronRightIcon className="h-4 w-4" />
+                        </>
+                      ) : (
+                        <>
+                          <ChevronLeftIcon className="h-4 w-4" />
+                          <span>Previous</span>
+                        </>
+                      )}
                     </Button>
                     <span className="text-sm font-medium">
                       Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -994,8 +1018,17 @@ function InventoryComponent() {
                       disabled={!table.getCanNextPage()}
                       className="gap-1"
                     >
-                      Next
-                      <ChevronRightIcon className="h-4 w-4" />
+                      {isRTL ? (
+                        <>
+                          <ChevronLeftIcon className="h-4 w-4" />
+                          <span>Next</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Next</span>
+                          <ChevronRightIcon className="h-4 w-4" />
+                        </>
+                      )}
                     </Button>
                   </div>
 
@@ -1066,7 +1099,11 @@ function InventoryComponent() {
                               onClick={() => table.setPageIndex(0)}
                               disabled={!table.getCanPreviousPage()}
                             >
-                              <ChevronsLeft className="h-4 w-4" />
+                              {isRTL ? (
+                                <ChevronsRight className="h-4 w-4" />
+                              ) : (
+                                <ChevronsLeft className="h-4 w-4" />
+                              )}
                               <span className="sr-only">First page</span>
                             </Button>
                           </PaginationItem>
@@ -1080,7 +1117,11 @@ function InventoryComponent() {
                               onClick={() => table.previousPage()}
                               disabled={!table.getCanPreviousPage()}
                             >
-                              <ChevronLeftIcon className="h-4 w-4" />
+                              {isRTL ? (
+                                <ChevronRightIcon className="h-4 w-4" />
+                              ) : (
+                                <ChevronLeftIcon className="h-4 w-4" />
+                              )}
                               <span className="sr-only">Previous page</span>
                             </Button>
                           </PaginationItem>
@@ -1121,7 +1162,11 @@ function InventoryComponent() {
                               onClick={() => table.nextPage()}
                               disabled={!table.getCanNextPage()}
                             >
-                              <ChevronRightIcon className="h-4 w-4" />
+                              {isRTL ? (
+                                <ChevronLeftIcon className="h-4 w-4" />
+                              ) : (
+                                <ChevronRightIcon className="h-4 w-4" />
+                              )}
                               <span className="sr-only">Next page</span>
                             </Button>
                           </PaginationItem>
@@ -1137,7 +1182,11 @@ function InventoryComponent() {
                               }
                               disabled={!table.getCanNextPage()}
                             >
-                              <ChevronsRight className="h-4 w-4" />
+                              {isRTL ? (
+                                <ChevronsLeft className="h-4 w-4" />
+                              ) : (
+                                <ChevronsRight className="h-4 w-4" />
+                              )}
                               <span className="sr-only">Last page</span>
                             </Button>
                           </PaginationItem>
@@ -1176,15 +1225,17 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, icon: Icon, color }: StatsCardProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <div className={cn("p-2 rounded-lg", color, "bg-opacity-10")}>
-          <Icon className={cn("h-4 w-4", color.replace("bg-", "text-"))} />
+    <Card className="p-0 border-none shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 px-3 py-2">
+        <CardTitle className="text-xs font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+        <div className={cn("p-1 rounded-md", color, "bg-opacity-10")}>
+          <Icon className={cn("h-3.5 w-3.5", color.replace("bg-", "text-"))} />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+      <CardContent className="px-3 pb-2 pt-0">
+        <div className="text-xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );
@@ -1238,7 +1289,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <Eye className="h-4 w-4" />
-                  View Details
+                  <span>View Details</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1247,7 +1298,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <Edit className="h-4 w-4" />
-                  Edit Item
+                  <span>Edit Item</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1256,7 +1307,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <Copy className="h-4 w-4" />
-                  Duplicate
+                  <span>Duplicate</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -1266,7 +1317,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <TrendingUp className="h-4 w-4" />
-                  Add Stock
+                  <span>Add Stock</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1275,7 +1326,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <TrendingDown className="h-4 w-4" />
-                  Reduce Stock
+                  <span>Reduce Stock</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -1284,7 +1335,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <BarChart3 className="h-4 w-4" />
-                  Stock History
+                  <span>Stock History</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -1295,7 +1346,7 @@ function InventoryItemCard({ item }: InventoryItemCardProps) {
                   }}
                 >
                   <Archive className="h-4 w-4" />
-                  Archive
+                  <span>Archive</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
