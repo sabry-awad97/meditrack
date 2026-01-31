@@ -33,7 +33,10 @@ export interface SettingDefinition {
   category: SettingCategory;
   key: SettingKey;
   label: string;
-  description: string;
+  description: {
+    en: string;
+    ar: string;
+  };
   type: SettingType;
   defaultValue: unknown;
   options?: SettingOption[]; // For select and multiselect
@@ -201,7 +204,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "general",
     key: SETTING_PHARMACY_NAME,
     label: "fields.pharmacyName.label",
-    description: "fields.pharmacyName.description",
+    description: {
+      en: "The name of your pharmacy or medical facility",
+      ar: "اسم الصيدلية أو المنشأة الطبية الخاصة بك",
+    },
     type: "text",
     defaultValue: "Pharmacy",
     required: true,
@@ -211,7 +217,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "general",
     key: SETTING_PHARMACY_PHONE,
     label: "fields.pharmacyPhone.label",
-    description: "fields.pharmacyPhone.description",
+    description: {
+      en: "Contact phone number for your pharmacy",
+      ar: "رقم الهاتف للتواصل مع الصيدلية",
+    },
     type: "text",
     defaultValue: "",
   },
@@ -220,7 +229,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "general",
     key: SETTING_PHARMACY_ADDRESS,
     label: "fields.pharmacyAddress.label",
-    description: "fields.pharmacyAddress.description",
+    description: {
+      en: "Physical address of your pharmacy",
+      ar: "العنوان الفعلي للصيدلية",
+    },
     type: "text",
     defaultValue: "",
   },
@@ -229,7 +241,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "general",
     key: SETTING_WORKING_HOURS,
     label: "fields.workingHours.label",
-    description: "fields.workingHours.description",
+    description: {
+      en: "Operating hours of your pharmacy",
+      ar: "ساعات عمل الصيدلية",
+    },
     type: "text",
     defaultValue: "9 AM - 10 PM",
   },
@@ -240,7 +255,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "orders",
     key: SETTING_DEFAULT_ORDER_STATUS,
     label: "fields.defaultOrderStatus.label",
-    description: "fields.defaultOrderStatus.description",
+    description: {
+      en: "Default status for new orders",
+      ar: "الحالة الافتراضية للطلبات الجديدة",
+    },
     type: "select",
     defaultValue: "pending",
     options: [
@@ -260,7 +278,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "orders",
     key: SETTING_AUTO_ARCHIVE_DAYS,
     label: "fields.autoArchiveDays.label",
-    description: "fields.autoArchiveDays.description",
+    description: {
+      en: "Number of days before delivered orders are automatically archived",
+      ar: "عدد الأيام قبل أرشفة الطلبات المسلمة تلقائياً",
+    },
     type: "number",
     defaultValue: 30,
     min: 0,
@@ -271,7 +292,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "orders",
     key: SETTING_REQUIRE_CUSTOMER_PHONE,
     label: "fields.requireCustomerPhone.label",
-    description: "fields.requireCustomerPhone.description",
+    description: {
+      en: "Require customer phone number when creating orders",
+      ar: "طلب رقم هاتف العميل عند إنشاء الطلبات",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -280,7 +304,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "orders",
     key: SETTING_ALLOWED_MEDICINE_FORMS,
     label: "fields.allowedMedicineForms.label",
-    description: "fields.allowedMedicineForms.description",
+    description: {
+      en: "Allowed pharmaceutical forms for medicines",
+      ar: "الأشكال الصيدلانية المسموح بها للأدوية",
+    },
     type: "multiselect",
     defaultValue: MEDICINE_FORMS,
     options: MEDICINE_FORMS.map((form) => ({ value: form, label: form })),
@@ -290,7 +317,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "orders",
     key: SETTING_MAX_MEDICINES_PER_ORDER,
     label: "fields.maxMedicinesPerOrder.label",
-    description: "fields.maxMedicinesPerOrder.description",
+    description: {
+      en: "Maximum number of medicines allowed per order",
+      ar: "الحد الأقصى لعدد الأدوية المسموح بها في الطلب الواحد",
+    },
     type: "number",
     defaultValue: 10,
     min: 1,
@@ -303,7 +333,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "suppliers",
     key: SETTING_MIN_SUPPLIER_RATING,
     label: "fields.minSupplierRating.label",
-    description: "fields.minSupplierRating.description",
+    description: {
+      en: "Minimum acceptable rating for suppliers",
+      ar: "الحد الأدنى للتقييم المقبول للموردين",
+    },
     type: "number",
     defaultValue: 3,
     min: 1,
@@ -314,7 +347,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "suppliers",
     key: SETTING_MAX_DELIVERY_DAYS,
     label: "fields.maxDeliveryDays.label",
-    description: "fields.maxDeliveryDays.description",
+    description: {
+      en: "Maximum delivery time in days",
+      ar: "الحد الأقصى لوقت التسليم بالأيام",
+    },
     type: "number",
     defaultValue: 7,
     min: 1,
@@ -325,7 +361,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "suppliers",
     key: SETTING_REQUIRE_SUPPLIER_EMAIL,
     label: "fields.requireSupplierEmail.label",
-    description: "fields.requireSupplierEmail.description",
+    description: {
+      en: "Require email address when adding suppliers",
+      ar: "طلب عنوان البريد الإلكتروني عند إضافة الموردين",
+    },
     type: "boolean",
     defaultValue: false,
   },
@@ -336,7 +375,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "alerts",
     key: SETTING_ENABLE_ALERTS,
     label: "fields.enableAlerts.label",
-    description: "fields.enableAlerts.description",
+    description: {
+      en: "Enable system alerts for orders",
+      ar: "تفعيل تنبيهات النظام للطلبات",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -345,7 +387,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "alerts",
     key: SETTING_OLD_ORDER_THRESHOLD,
     label: "fields.oldOrderThreshold.label",
-    description: "fields.oldOrderThreshold.description",
+    description: {
+      en: "Number of days before an order is considered old",
+      ar: "عدد الأيام قبل اعتبار الطلب قديماً",
+    },
     type: "number",
     defaultValue: 7,
     min: 1,
@@ -356,7 +401,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "alerts",
     key: SETTING_PICKUP_REMINDER_DAYS,
     label: "fields.pickupReminderDays.label",
-    description: "fields.pickupReminderDays.description",
+    description: {
+      en: "Days before sending pickup reminder",
+      ar: "الأيام قبل إرسال تذكير الاستلام",
+    },
     type: "number",
     defaultValue: 3,
     min: 1,
@@ -367,7 +415,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "alerts",
     key: SETTING_ALERT_CHECK_INTERVAL,
     label: "fields.alertCheckInterval.label",
-    description: "fields.alertCheckInterval.description",
+    description: {
+      en: "Alert check interval in minutes",
+      ar: "فترة فحص التنبيهات بالدقائق",
+    },
     type: "number",
     defaultValue: 30,
     min: 5,
@@ -380,7 +431,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "notifications",
     key: SETTING_ENABLE_NOTIFICATIONS,
     label: "fields.enableNotifications.label",
-    description: "fields.enableNotifications.description",
+    description: {
+      en: "Enable browser notifications",
+      ar: "تفعيل إشعارات المتصفح",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -389,7 +443,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "notifications",
     key: SETTING_NOTIFICATION_SOUND,
     label: "fields.notificationSound.label",
-    description: "fields.notificationSound.description",
+    description: {
+      en: "Play sound with notifications",
+      ar: "تشغيل الصوت مع الإشعارات",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -398,7 +455,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "notifications",
     key: SETTING_NOTIFY_ON_NEW_ORDER,
     label: "fields.notifyOnNewOrder.label",
-    description: "fields.notifyOnNewOrder.description",
+    description: {
+      en: "Notify when a new order is created",
+      ar: "الإشعار عند إنشاء طلب جديد",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -407,7 +467,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "notifications",
     key: SETTING_NOTIFY_ON_STATUS_CHANGE,
     label: "fields.notifyOnStatusChange.label",
-    description: "fields.notifyOnStatusChange.description",
+    description: {
+      en: "Notify when order status changes",
+      ar: "الإشعار عند تغيير حالة الطلب",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -418,7 +481,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "appearance",
     key: SETTING_DEFAULT_THEME,
     label: "fields.defaultTheme.label",
-    description: "fields.defaultTheme.description",
+    description: {
+      en: "Default color theme for the application",
+      ar: "المظهر الافتراضي للتطبيق",
+    },
     type: "select",
     defaultValue: "system",
     options: [
@@ -432,7 +498,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "appearance",
     key: SETTING_DEFAULT_LANGUAGE,
     label: "fields.defaultLanguage.label",
-    description: "fields.defaultLanguage.description",
+    description: {
+      en: "Default language for the application",
+      ar: "اللغة الافتراضية للتطبيق",
+    },
     type: "select",
     defaultValue: "en",
     options: [
@@ -445,7 +514,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "appearance",
     key: SETTING_SIDEBAR_DEFAULT_STATE,
     label: "fields.sidebarDefaultState.label",
-    description: "fields.sidebarDefaultState.description",
+    description: {
+      en: "Default state of the sidebar",
+      ar: "الحالة الافتراضية للشريط الجانبي",
+    },
     type: "select",
     defaultValue: "open",
     options: [
@@ -464,7 +536,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "appearance",
     key: SETTING_ITEMS_PER_PAGE,
     label: "fields.itemsPerPage.label",
-    description: "fields.itemsPerPage.description",
+    description: {
+      en: "Number of items to display per page",
+      ar: "عدد العناصر المعروضة في كل صفحة",
+    },
     type: "number",
     defaultValue: 20,
     min: 10,
@@ -477,7 +552,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "system",
     key: SETTING_ENABLE_DEV_MODE,
     label: "fields.enableDevMode.label",
-    description: "fields.enableDevMode.description",
+    description: {
+      en: "Enable developer mode with additional debugging features",
+      ar: "تفعيل وضع المطور مع ميزات التصحيح الإضافية",
+    },
     type: "boolean",
     defaultValue: false,
   },
@@ -486,7 +564,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "system",
     key: SETTING_AUTO_BACKUP,
     label: "fields.autoBackup.label",
-    description: "fields.autoBackup.description",
+    description: {
+      en: "Automatically backup database",
+      ar: "النسخ الاحتياطي التلقائي لقاعدة البيانات",
+    },
     type: "boolean",
     defaultValue: true,
   },
@@ -495,7 +576,10 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     category: "system",
     key: SETTING_BACKUP_INTERVAL_DAYS,
     label: "fields.backupIntervalDays.label",
-    description: "fields.backupIntervalDays.description",
+    description: {
+      en: "Number of days between automatic backups",
+      ar: "عدد الأيام بين النسخ الاحتياطية التلقائية",
+    },
     type: "number",
     defaultValue: 7,
     min: 1,

@@ -186,14 +186,9 @@ function SettingsPage() {
     }
   }, [defaultTheme, theme, setTheme]);
 
-  const handleChange = (
-    key: string,
-    value: unknown,
-    category?: string,
-    description?: string,
-  ) => {
+  const handleChange = (key: string, value: unknown, category?: string) => {
     // Update setting immediately (upsert: create if not exists, update if exists)
-    upsertSettingValue.mutate({ key, value, category, description });
+    upsertSettingValue.mutate({ key, value, category });
 
     // If language is changed, update i18n immediately for better UX
     if (
@@ -230,7 +225,7 @@ function SettingsPage() {
           (s) => s.category === category,
         ).some((setting) => {
           const label = t(setting.label).toLowerCase();
-          const desc = t(setting.description).toLowerCase();
+          const desc = setting.description[locale].toLowerCase();
           return label.includes(query) || desc.includes(query);
         });
 
@@ -241,7 +236,7 @@ function SettingsPage() {
         );
       },
     );
-  }, [searchQuery, t]);
+  }, [searchQuery, t, locale]);
 
   const getFilteredSettings = (category: SettingCategory) => {
     const settingsList = SETTINGS_DEFINITIONS.filter(
@@ -255,7 +250,7 @@ function SettingsPage() {
     const query = searchQuery.toLowerCase();
     return settingsList.filter((setting) => {
       const label = t(setting.label).toLowerCase();
-      const desc = t(setting.description).toLowerCase();
+      const desc = setting.description[locale].toLowerCase();
       return label.includes(query) || desc.includes(query);
     });
   };
@@ -342,12 +337,7 @@ function SettingsPage() {
                             key={setting.id}
                             setting={setting}
                             onChange={(value) =>
-                              handleChange(
-                                setting.key,
-                                value,
-                                setting.category,
-                                setting.description,
-                              )
+                              handleChange(setting.key, value, setting.category)
                             }
                             searchQuery={searchQuery}
                           />
@@ -430,10 +420,11 @@ function SettingField({
   searchQuery,
 }: SettingFieldProps) {
   const { t } = useTranslation("settings");
+  const { locale } = useLocale();
   const [isFocused, setIsFocused] = useState(false);
 
   const label = t(setting.label);
-  const description = t(setting.description);
+  const description = setting.description[locale];
 
   // Highlight matching text
   const highlightText = (text: string) => {

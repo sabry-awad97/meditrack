@@ -23,7 +23,6 @@ export function ModeToggle() {
       key: SETTING_DEFAULT_THEME,
       value: theme,
       category: def?.category,
-      description: def?.description,
     });
   };
 

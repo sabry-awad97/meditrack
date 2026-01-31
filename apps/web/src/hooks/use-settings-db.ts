@@ -26,6 +26,7 @@ import {
   type SetSetting,
   type SettingId,
   type SettingsStatistics,
+  type MultilingualDescription,
 } from "@/api/settings.api";
 
 const logger = createLogger("SettingsDB");
@@ -307,11 +308,7 @@ export function useSearchSettings(searchQuery: string) {
       return q
         .from({ setting: settingsCollection })
         .where(({ setting }) =>
-          or(
-            ilike(setting.key, pattern),
-            ilike(setting.description, pattern),
-            ilike(setting.category, pattern),
-          ),
+          or(ilike(setting.key, pattern), ilike(setting.category, pattern)),
         );
     },
     [searchQuery], // Re-run when search query changes
@@ -531,7 +528,7 @@ export function useUpsertSettingValue() {
         key: string;
         value: any;
         category?: string;
-        description?: string;
+        description?: MultilingualDescription;
       },
       options?: { onSuccess?: () => void; onError?: (error: Error) => void },
     ) => {

@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Setting::Value).json_binary().not_null())
                     .col(ColumnDef::new(Setting::Category).string_len(50).null())
-                    .col(ColumnDef::new(Setting::Description).text().null())
+                    .col(ColumnDef::new(Setting::Description).json_binary().null())
                     .col(ColumnDef::new(Setting::UpdatedBy).uuid().null())
                     .col(
                         ColumnDef::new(Setting::CreatedAt)

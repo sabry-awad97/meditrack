@@ -147,7 +147,6 @@ pub struct FirstRunSetupDto {
     pub password: String,
     pub first_name: String,
     pub last_name: String,
-    pub organization_name: Option<String>,
 }
 
 impl From<super::Model> for UserResponseDto {

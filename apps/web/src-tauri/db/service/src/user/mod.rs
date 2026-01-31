@@ -741,7 +741,7 @@ impl UserService {
             password_hash: Set(password_hash),
             first_name: Set(dto.first_name),
             last_name: Set(dto.last_name),
-            display_name: Set(dto.organization_name),
+            display_name: Set(None),
             avatar_url: Set(None),
             npi_number: Set(None),
             supervisor_id: Set(None),

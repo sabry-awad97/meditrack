@@ -61,12 +61,17 @@ impl SettingsService {
 
         let now = chrono::Utc::now();
 
+        // Convert MultilingualDescription to Json
+        let description_json = dto.description.map(|desc| {
+            serde_json::to_value(desc).expect("Failed to serialize MultilingualDescription")
+        });
+
         let result = if let Some(existing) = existing {
             // Update existing setting
             let mut setting: setting::ActiveModel = existing.into();
             setting.value = Set(dto.value);
             setting.category = Set(dto.category);
-            setting.description = Set(dto.description);
+            setting.description = Set(description_json);
             setting.updated_by = Set(dto.updated_by);
             setting.updated_at = Set(now.into());
 
@@ -82,7 +87,7 @@ impl SettingsService {
                 key: Set(dto.key.clone()),
                 value: Set(dto.value),
                 category: Set(dto.category),
-                description: Set(dto.description),
+                description: Set(description_json),
                 updated_by: Set(dto.updated_by),
                 created_at: Set(now.into()),
                 updated_at: Set(now.into()),
@@ -125,7 +130,13 @@ impl SettingsService {
         setting.key = Set(dto.key);
         setting.value = Set(dto.value);
         setting.category = Set(dto.category);
-        setting.description = Set(dto.description);
+
+        // Convert MultilingualDescription to Json
+        let description_json = dto.description.map(|desc| {
+            serde_json::to_value(desc).expect("Failed to serialize MultilingualDescription")
+        });
+        setting.description = Set(description_json);
+
         setting.updated_by = Set(dto.updated_by);
         setting.updated_at = Set(chrono::Utc::now().into());
 

@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -33,6 +34,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useCompleteFirstRunSetup } from "@/hooks/use-onboarding-db";
 import { FirstRunSetupSchema, type FirstRunSetup } from "@/api/onboarding.api";
+import { useUpsertSettingValue } from "@/hooks";
+import { SETTING_PHARMACY_NAME } from "@/lib/constants";
 
 export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
@@ -40,10 +43,12 @@ export const Route = createFileRoute("/onboarding")({
 
 type OnboardingFormData = FirstRunSetup & {
   confirmPassword: string;
+  organization_name?: string;
 };
 
 const onboardingFormSchema = FirstRunSetupSchema.extend({
   confirmPassword: FirstRunSetupSchema.shape.password,
+  organization_name: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -60,6 +65,7 @@ function OnboardingPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const completeSetup = useCompleteFirstRunSetup();
+  const upsertSetting = useUpsertSettingValue();
   const [currentStep, setCurrentStep] = useState(0);
   const { t } = useTranslation("onboarding");
   const { locale, setLocale } = useLocale();
@@ -76,10 +82,23 @@ function OnboardingPage() {
   });
 
   const onSubmit = async (data: OnboardingFormData) => {
-    const { confirmPassword, ...setupData } = data;
+    const { confirmPassword, organization_name, ...setupData } = data;
 
     completeSetup.mutate(setupData, {
       onSuccess: async (response) => {
+        // Save organization name to settings if provided
+        if (organization_name) {
+          upsertSetting.mutate({
+            key: SETTING_PHARMACY_NAME,
+            value: organization_name,
+            category: "general",
+            description: {
+              en: "The name of your pharmacy",
+              ar: "اسم الصيدلية الخاصة بك",
+            },
+          });
+        }
+
         if (response.token) {
           await login({
             username: data.username,

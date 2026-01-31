@@ -149,7 +149,6 @@ export function AppSidebar() {
         key: SETTING_SIDEBAR_DEFAULT_STATE,
         value: newState,
         category: def?.category,
-        description: def?.description,
       });
     }
   }, [open, sidebarDefaultState, upsertSettingValue]);
@@ -262,7 +261,6 @@ export function AppSidebar() {
                       key: SETTING_DEFAULT_THEME,
                       value: newTheme,
                       category: def?.category,
-                      description: def?.description,
                     });
                   }}
                   tooltip={
@@ -302,7 +300,6 @@ export function AppSidebar() {
                       key: SETTING_DEFAULT_LANGUAGE,
                       value: newLocale,
                       category: def?.category,
-                      description: def?.description,
                     });
                   }}
                   tooltip={

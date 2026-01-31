@@ -4,6 +4,13 @@ use super::id::Id;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
+/// Multilingual description for settings
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MultilingualDescription {
+    pub en: String,
+    pub ar: String,
+}
+
 /// Setting entity - represents application settings as key-value pairs
 /// Optimized for PostgreSQL with native types
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
@@ -25,9 +32,9 @@ pub struct Model {
     #[sea_orm(column_type = "String(StringLen::N(50))", nullable)]
     pub category: Option<String>,
 
-    /// Setting description - TEXT (nullable)
-    #[sea_orm(column_type = "Text", nullable)]
-    pub description: Option<String>,
+    /// Setting description - JSONB (nullable) for multilingual support
+    #[sea_orm(column_type = "JsonBinary", nullable)]
+    pub description: Option<Json>,
 
     // === Audit & Compliance ===
     /// User who last modified this setting - UUID (nullable)

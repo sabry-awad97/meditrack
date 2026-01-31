@@ -24,6 +24,17 @@ export const SettingIdSchema = z.string().uuid();
 export type SettingId = z.infer<typeof SettingIdSchema>;
 
 /**
+ * Multilingual description schema
+ */
+export const MultilingualDescriptionSchema = z.object({
+  en: z.string(),
+  ar: z.string(),
+});
+export type MultilingualDescription = z.infer<
+  typeof MultilingualDescriptionSchema
+>;
+
+/**
  * Setting response schema
  */
 export const SettingResponseSchema = z.object({
@@ -31,7 +42,7 @@ export const SettingResponseSchema = z.object({
   key: z.string(),
   value: z.any(), // JSONB can be any valid JSON
   category: z.string().nullable(),
-  description: z.string().nullable(),
+  description: MultilingualDescriptionSchema.nullable(),
   updated_by: SettingIdSchema.nullable(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -45,7 +56,7 @@ export const SetSettingSchema = z.object({
   key: z.string().min(1).max(100),
   value: z.any(), // JSONB can be any valid JSON
   category: z.string().max(50).optional(),
-  description: z.string().optional(),
+  description: MultilingualDescriptionSchema.optional(),
   updated_by: SettingIdSchema.optional(),
 });
 export type SetSetting = z.infer<typeof SetSettingSchema>;

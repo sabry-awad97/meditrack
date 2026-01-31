@@ -35,7 +35,6 @@ export function LanguageSwitcher() {
         key: SETTING_DEFAULT_LANGUAGE,
         value: newLocale,
         category: def?.category,
-        description: def?.description,
       });
       console.log("✅ Settings database updated");
     } catch (error) {

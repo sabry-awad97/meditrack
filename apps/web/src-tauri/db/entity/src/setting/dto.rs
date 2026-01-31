@@ -1,4 +1,4 @@
-use super::Model;
+use super::{Model, MultilingualDescription};
 use crate::id::Id;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
@@ -13,7 +13,7 @@ pub struct SetSettingDto {
     pub key: String,
     pub value: JsonValue,
     pub category: Option<String>,
-    pub description: Option<String>,
+    pub description: Option<MultilingualDescription>,
     pub updated_by: Option<Id>,
 }
 
@@ -46,7 +46,7 @@ pub struct SettingResponseDto {
     pub key: String,
     pub value: JsonValue,
     pub category: Option<String>,
-    pub description: Option<String>,
+    pub description: Option<MultilingualDescription>,
     pub updated_by: Option<Id>,
     pub created_at: String,
     pub updated_at: String,
@@ -54,12 +54,17 @@ pub struct SettingResponseDto {
 
 impl From<Model> for SettingResponseDto {
     fn from(model: Model) -> Self {
+        // Convert Json to MultilingualDescription
+        let description = model
+            .description
+            .and_then(|json| serde_json::from_value(json).ok());
+
         Self {
             id: model.id,
             key: model.key,
             value: model.value,
             category: model.category,
-            description: model.description,
+            description,
             updated_by: model.updated_by,
             created_at: model.created_at.to_string(),
             updated_at: model.updated_at.to_string(),
