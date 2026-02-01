@@ -81,7 +81,7 @@ function MedicineFormsComponent() {
   }, [statusFilter]);
 
   // Fetch data with pagination
-  const { data, isLoading } = useMedicineForms(filters, {
+  const { isLoading } = useMedicineForms(filters, {
     page: currentPage,
     page_size: pageSize,
   });

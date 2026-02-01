@@ -16,6 +16,7 @@
   },
   "filters": {
     "searchPlaceholder": "Search by code or name...",
+    "filterByStatus": "Filter by Status",
     "allStatus": "All Status",
     "active": "Active",
     "inactive": "Inactive",

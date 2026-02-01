@@ -29,6 +29,7 @@ export function MedicineFormFilters({
   const { t } = useTranslation("medicine-forms");
 
   const statusFilterItems: FilterOption[] = [
+    { value: null, label: t("filters.filterByStatus") },
     { value: "all", label: t("filters.allStatus") },
     { value: "active", label: t("filters.active") },
     { value: "inactive", label: t("filters.inactive") },
@@ -47,13 +48,9 @@ export function MedicineFormFilters({
       <div className="flex flex-wrap gap-2 items-center">
         <FilterSelect
           items={statusFilterItems}
-          value={statusFilter || "all"}
-          onValueChange={(value) =>
-            onStatusFilterChange(
-              value === "all" ? null : (value as "active" | "inactive"),
-            )
-          }
-          placeholder={t("filters.allStatus")}
+          value={statusFilter}
+          onValueChange={onStatusFilterChange}
+          placeholder={t("filters.filterByStatus")}
         />
 
         {activeFiltersCount > 0 && (
