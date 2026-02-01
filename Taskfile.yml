@@ -440,3 +440,43 @@ tasks:
           {{.PSQL}} -c "DELETE FROM staff WHERE employee_id LIKE 'TEST%' OR email LIKE 'test%';"
           echo "✅ Test data removed"
         prompt: "⚠️  This will delete all test data. Continue?"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  #  🌱 Database Seeding
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  seed:
+    desc: "🌱 Run database seeder (interactive TUI)"
+    dir: apps/web/src-tauri/crates/seeder
+    cmds:
+      - cargo run
+
+  seed:check:
+    desc: "✅ Check seeder code compiles"
+    dir: apps/web/src-tauri/crates/seeder
+    cmds:
+      - cargo check --all-targets
+
+  seed:build:
+    desc: "🔨 Build seeder binary"
+    dir: apps/web/src-tauri/crates/seeder
+    cmds:
+      - cargo build --bin app_seeder
+
+  seed:build:release:
+    desc: "📦 Build seeder binary (release)"
+    dir: apps/web/src-tauri/crates/seeder
+    cmds:
+      - cargo build --bin app_seeder --release
+
+  seed:run:
+    desc: "🚀 Run seeder in release mode"
+    dir: apps/web/src-tauri/crates/seeder
+    cmds:
+      - cargo run --release
+
+  seed:watch:
+    desc: "👀 Watch and rebuild seeder on changes"
+    dir: apps/web/src-tauri/crates/seeder
+    cmds:
+      - cargo watch -x run
