@@ -27,6 +27,7 @@ import {
   useInventoryItems,
   useInventoryStatistics,
   useCreateInventoryItem,
+  useUpdateInventoryItem,
   useAdjustInventoryStock,
   useDeleteInventoryItem,
   usePriceHistory,
@@ -66,6 +67,7 @@ function InventoryComponent() {
   const { data: items = [], isLoading } = useInventoryItems();
   const { data: stats } = useInventoryStatistics();
   const createInventoryItem = useCreateInventoryItem();
+  const updateInventoryItem = useUpdateInventoryItem();
   const adjustStock = useAdjustInventoryStock();
   const deleteItem = useDeleteInventoryItem();
 
@@ -87,6 +89,7 @@ function InventoryComponent() {
   >(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [selectedItem, setSelectedItem] =
     useState<InventoryItemWithStockResponse | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -96,8 +99,40 @@ function InventoryComponent() {
     useState<InventoryItemWithStockResponse | null>(null);
 
   // Handlers
-  const handleCreateItem = (data: CreateInventoryItemWithStock) => {
-    createInventoryItem.mutate(data);
+  const handleOpenCreateForm = () => {
+    setSelectedItem(null);
+    setFormMode("create");
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setFormMode("edit");
+    setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = (data: CreateInventoryItemWithStock) => {
+    if (formMode === "create") {
+      createInventoryItem.mutate(data);
+    } else if (selectedItem) {
+      // For edit mode, we need to update both catalog and stock
+      updateInventoryItem.mutate({
+        id: selectedItem.id,
+        data: {
+          name: data.name,
+          generic_name: data.generic_name,
+          concentration: data.concentration,
+          form: data.form,
+          manufacturer_id: data.manufacturer_id,
+          requires_prescription: data.requires_prescription,
+          is_controlled: data.is_controlled,
+          storage_instructions: data.storage_instructions,
+          notes: data.notes,
+        },
+      });
+      // Note: Stock updates should be done via stock adjustment dialog
+      // to maintain proper audit trail
+    }
     setIsFormOpen(false);
   };
 
@@ -255,6 +290,7 @@ function InventoryComponent() {
     t,
     isRTL,
     onViewDetails: handleViewDetails,
+    onEdit: handleEdit,
     onAdjustStock: handleOpenStockAdjust,
     onDelete: handleDelete,
   });
@@ -288,7 +324,7 @@ function InventoryComponent() {
           <Button
             size="default"
             className="gap-2"
-            onClick={() => setIsFormOpen(true)}
+            onClick={handleOpenCreateForm}
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">{t("page.addItem")}</span>
@@ -341,7 +377,7 @@ function InventoryComponent() {
                   !hasActiveFilters
                     ? {
                         label: t("page.addItem"),
-                        onClick: () => setIsFormOpen(true),
+                        onClick: handleOpenCreateForm,
                         icon: Plus,
                       }
                     : undefined
@@ -373,6 +409,7 @@ function InventoryComponent() {
               <InventoryGrid
                 items={filteredItems}
                 onViewDetails={handleViewDetails}
+                onEdit={handleEdit}
                 onAdjustStock={handleOpenStockAdjust}
                 onDelete={handleDelete}
               />
@@ -385,8 +422,9 @@ function InventoryComponent() {
       <InventoryForm
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
-        onSubmit={handleCreateItem}
-        mode="create"
+        onSubmit={handleFormSubmit}
+        mode={formMode}
+        item={selectedItem}
       />
 
       <ItemDetailsDialog

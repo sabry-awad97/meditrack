@@ -27,7 +27,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { InventoryItemWithStockResponse } from "@/api/inventory.api";
-import { getStockStatus, getStockStatusColor, getStockStatusLabel } from "./utils";
+import {
+  getStockStatus,
+  getStockStatusColor,
+  getStockStatusLabel,
+} from "./utils";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -37,6 +41,7 @@ type InventoryItem = InventoryItemWithStockResponse;
 interface InventoryItemCardProps {
   item: InventoryItem;
   onViewDetails: (item: InventoryItem) => void;
+  onEdit: (item: InventoryItem) => void;
   onAdjustStock: (item: InventoryItem) => void;
   onDelete: (item: InventoryItem) => void;
 }
@@ -44,6 +49,7 @@ interface InventoryItemCardProps {
 export function InventoryItemCard({
   item,
   onViewDetails,
+  onEdit,
   onAdjustStock,
   onDelete,
 }: InventoryItemCardProps) {
@@ -95,7 +101,7 @@ export function InventoryItemCard({
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.info(`Editing ${item.name}`);
+                    onEdit(item);
                   }}
                 >
                   <Edit className="h-4 w-4" />

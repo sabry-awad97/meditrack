@@ -4,6 +4,7 @@ import { InventoryItemCard } from "./inventory-item-card";
 interface InventoryGridProps {
   items: InventoryItemWithStockResponse[];
   onViewDetails: (item: InventoryItemWithStockResponse) => void;
+  onEdit: (item: InventoryItemWithStockResponse) => void;
   onAdjustStock: (item: InventoryItemWithStockResponse) => void;
   onDelete: (item: InventoryItemWithStockResponse) => void;
 }
@@ -11,6 +12,7 @@ interface InventoryGridProps {
 export function InventoryGrid({
   items,
   onViewDetails,
+  onEdit,
   onAdjustStock,
   onDelete,
 }: InventoryGridProps) {
@@ -22,6 +24,7 @@ export function InventoryGrid({
             key={item.id}
             item={item}
             onViewDetails={onViewDetails}
+            onEdit={onEdit}
             onAdjustStock={onAdjustStock}
             onDelete={onDelete}
           />

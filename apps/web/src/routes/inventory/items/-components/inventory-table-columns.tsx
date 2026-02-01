@@ -32,6 +32,7 @@ interface UseInventoryColumnsProps {
   t: (key: string) => string;
   isRTL: boolean;
   onViewDetails: (item: InventoryItemWithStockResponse) => void;
+  onEdit: (item: InventoryItemWithStockResponse) => void;
   onAdjustStock: (item: InventoryItemWithStockResponse) => void;
   onDelete: (item: InventoryItemWithStockResponse) => void;
 }
@@ -40,6 +41,7 @@ export function useInventoryColumns({
   t,
   isRTL,
   onViewDetails,
+  onEdit,
   onAdjustStock,
   onDelete,
 }: UseInventoryColumnsProps) {
@@ -200,11 +202,7 @@ export function useInventoryColumns({
                   <Eye className="h-4 w-4" />
                   <span>{t("actions.viewDetails")}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Editing ${item.name}`);
-                  }}
-                >
+                <DropdownMenuItem onClick={() => onEdit(item)}>
                   <Edit className="h-4 w-4" />
                   <span>{t("actions.editItem")}</span>
                 </DropdownMenuItem>
@@ -243,6 +241,6 @@ export function useInventoryColumns({
         },
       },
     ],
-    [t, isRTL, onViewDetails, onAdjustStock, onDelete],
+    [t, isRTL, onViewDetails, onEdit, onAdjustStock, onDelete],
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Package,
@@ -22,7 +22,10 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useActiveManufacturers } from "@/hooks";
-import type { CreateInventoryItemWithStock } from "@/api/inventory.api";
+import type {
+  CreateInventoryItemWithStock,
+  InventoryItemWithStockResponse,
+} from "@/api/inventory.api";
 import {
   BasicInfoStep,
   StockPricingStep,
@@ -37,6 +40,7 @@ interface InventoryFormProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateInventoryItemWithStock) => void;
   mode?: "create" | "edit";
+  item?: InventoryItemWithStockResponse | null;
 }
 
 const getSteps = (t: (key: string) => string) => [
@@ -71,6 +75,7 @@ export function InventoryForm({
   onOpenChange,
   onSubmit,
   mode = "create",
+  item = null,
 }: InventoryFormProps) {
   const { isRTL } = useDirection();
   const { t } = useTranslation("inventory");
@@ -97,6 +102,46 @@ export function InventoryForm({
     storage_instructions: "",
     notes: "",
   });
+
+  // Populate form when editing
+  useEffect(() => {
+    if (open && mode === "edit" && item) {
+      setFormData({
+        name: item.name,
+        generic_name: item.generic_name || "",
+        concentration: item.concentration,
+        form: item.form,
+        manufacturer_id: item.manufacturer_id || "",
+        barcode:
+          item.barcodes.find((b) => b.is_primary)?.barcode ||
+          item.barcodes[0]?.barcode ||
+          "",
+        stock_quantity: item.stock_quantity.toString(),
+        min_stock_level: item.min_stock_level.toString(),
+        unit_price: item.unit_price.toString(),
+        requires_prescription: item.requires_prescription,
+        is_controlled: item.is_controlled,
+        storage_instructions: item.storage_instructions || "",
+        notes: item.notes || "",
+      });
+    } else if (open && mode === "create") {
+      setFormData({
+        name: "",
+        generic_name: "",
+        concentration: "",
+        form: "",
+        manufacturer_id: "",
+        barcode: "",
+        stock_quantity: "0",
+        min_stock_level: "10",
+        unit_price: "0",
+        requires_prescription: false,
+        is_controlled: false,
+        storage_instructions: "",
+        notes: "",
+      });
+    }
+  }, [open, mode, item]);
 
   const updateField = (
     field: keyof FormData,
