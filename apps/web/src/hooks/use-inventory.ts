@@ -45,6 +45,10 @@ export const inventoryKeys = {
     [...inventoryKeys.all, "latestPrice", id] as const,
   priceStatistics: (id: InventoryItemId) =>
     [...inventoryKeys.all, "priceStatistics", id] as const,
+  stockHistory: (id: InventoryItemId, limit?: number) =>
+    [...inventoryKeys.all, "stockHistory", id, limit] as const,
+  stockHistoryStatistics: (id: InventoryItemId) =>
+    [...inventoryKeys.all, "stockHistoryStatistics", id] as const,
 };
 
 // ============================================================================
@@ -185,6 +189,41 @@ export function usePriceStatistics(
   return useQuery({
     queryKey: inventoryKeys.priceStatistics(id),
     queryFn: () => inventoryApi.getPriceStatistics(id),
+    enabled: options?.enabled ?? !!id,
+    staleTime: 1000 * 30, // 30 seconds
+  });
+}
+
+// ============================================================================
+// Stock History Query Hooks
+// ============================================================================
+
+/**
+ * Get stock history for an inventory item
+ */
+export function useStockHistory(
+  id: InventoryItemId,
+  limit?: number,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: inventoryKeys.stockHistory(id, limit),
+    queryFn: () => inventoryApi.getStockHistory(id, limit),
+    enabled: options?.enabled ?? !!id,
+    staleTime: 1000 * 30, // 30 seconds
+  });
+}
+
+/**
+ * Get stock history statistics for an inventory item
+ */
+export function useStockHistoryStatistics(
+  id: InventoryItemId,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: inventoryKeys.stockHistoryStatistics(id),
+    queryFn: () => inventoryApi.getStockHistoryStatistics(id),
     enabled: options?.enabled ?? !!id,
     staleTime: 1000 * 30, // 30 seconds
   });

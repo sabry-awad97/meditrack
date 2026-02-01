@@ -233,6 +233,53 @@ export const PriceStatisticsSchema = z.object({
 });
 export type PriceStatistics = z.infer<typeof PriceStatisticsSchema>;
 
+/**
+ * Stock adjustment type schema
+ */
+export const StockAdjustmentTypeSchema = z.enum([
+  "manual_adjustment",
+  "order_arrival",
+  "sale",
+  "damage",
+  "expiry",
+  "return",
+  "transfer",
+  "initial_stock",
+]);
+export type StockAdjustmentType = z.infer<typeof StockAdjustmentTypeSchema>;
+
+/**
+ * Stock history entry schema (matches backend StockHistoryResponse)
+ */
+export const StockHistoryEntrySchema = z.object({
+  id: z.string().uuid(),
+  inventory_item_id: z.string().uuid(),
+  adjustment_type: StockAdjustmentTypeSchema,
+  quantity_before: z.number().int(),
+  quantity_after: z.number().int(),
+  adjustment_amount: z.number().int(),
+  reason: z.string().nullable(),
+  reference_id: z.string().uuid().nullable(),
+  reference_type: z.string().nullable(),
+  recorded_at: z.string(),
+  recorded_by: z.string().uuid().nullable(),
+});
+export type StockHistoryEntry = z.infer<typeof StockHistoryEntrySchema>;
+
+/**
+ * Stock history statistics schema (matches backend StockHistoryStatistics)
+ */
+export const StockHistoryStatisticsSchema = z.object({
+  total_adjustments: z.number(),
+  total_added: z.number(),
+  total_removed: z.number(),
+  net_change: z.number(),
+  most_common_adjustment_type: StockAdjustmentTypeSchema.nullable(),
+});
+export type StockHistoryStatistics = z.infer<
+  typeof StockHistoryStatisticsSchema
+>;
+
 // ============================================================================
 // CRUD Operations (Catalog + Stock Combined)
 // ============================================================================
@@ -538,6 +585,60 @@ export async function updateBarcode(
 }
 
 // ============================================================================
+// Stock History Operations
+// ============================================================================
+
+/**
+ * Get stock history for an inventory item
+ */
+export async function getStockHistory(
+  id: InventoryItemId,
+  limit?: number,
+): Promise<StockHistoryEntry[]> {
+  logger.info("Getting stock history for item:", { id, limit });
+  return invokeCommand("get_stock_history", z.array(StockHistoryEntrySchema), {
+    params: {
+      filter: {
+        inventory_item_id: id,
+        limit: limit,
+      },
+    },
+  });
+}
+
+/**
+ * Get the latest stock adjustment for an inventory item
+ */
+export async function getLatestStockAdjustment(
+  id: InventoryItemId,
+): Promise<StockHistoryEntry | null> {
+  logger.info("Getting latest stock adjustment for item:", id);
+  return invokeCommand(
+    "get_latest_stock_adjustment",
+    StockHistoryEntrySchema.nullable(),
+    {
+      params: { id },
+    },
+  );
+}
+
+/**
+ * Get stock history statistics for an inventory item
+ */
+export async function getStockHistoryStatistics(
+  id: InventoryItemId,
+): Promise<StockHistoryStatistics> {
+  logger.info("Getting stock history statistics for item:", id);
+  return invokeCommand(
+    "get_stock_history_statistics",
+    StockHistoryStatisticsSchema,
+    {
+      params: { id },
+    },
+  );
+}
+
+// ============================================================================
 // Exports
 // ============================================================================
 
@@ -567,6 +668,11 @@ export const inventoryApi = {
   getPriceHistory: getPriceHistory,
   getLatestPrice: getLatestPrice,
   getPriceStatistics: getPriceStatistics,
+
+  // Stock History
+  getStockHistory: getStockHistory,
+  getLatestStockAdjustment: getLatestStockAdjustment,
+  getStockHistoryStatistics: getStockHistoryStatistics,
 
   // Barcode Management
   getBarcodes: getItemBarcodes,

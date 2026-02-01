@@ -1,4 +1,5 @@
 pub mod price_history;
+pub mod stock_history;
 
 use std::sync::Arc;
 

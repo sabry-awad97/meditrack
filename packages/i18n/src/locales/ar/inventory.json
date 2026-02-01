@@ -206,6 +206,36 @@
     "trendingUp": "ارتفاع بنسبة",
     "trendingDown": "انخفاض بنسبة"
   },
+  "stockHistory": {
+    "title": "سجل المخزون",
+    "noHistory": "لا يوجد سجل للمخزون",
+    "noHistoryDescription": "لم يتم تسجيل أي تعديلات على المخزون لهذا الصنف بعد. ستظهر التغييرات في المخزون هنا تلقائياً.",
+    "stockAdjustments": "تعديلات المخزون",
+    "recentAdjustments": "التعديلات الأخيرة",
+    "units": "وحدة",
+    "minStock": "الحد الأدنى للمخزون",
+    "avgStock": "متوسط المخزون",
+    "maxStock": "الحد الأقصى للمخزون",
+    "trendingUpBy": "ارتفاع بنسبة",
+    "trendingDownBy": "انخفاض بنسبة",
+    "stable": "مستقر",
+    "statistics": {
+      "totalAdjustments": "إجمالي التعديلات",
+      "totalAdded": "إجمالي المضاف",
+      "totalRemoved": "إجمالي المحذوف",
+      "netChange": "صافي التغيير"
+    },
+    "adjustmentTypes": {
+      "manual_adjustment": "تعديل يدوي",
+      "order_arrival": "وصول طلبية",
+      "sale": "بيع",
+      "damage": "تلف",
+      "expiry": "انتهاء صلاحية",
+      "return": "إرجاع",
+      "transfer": "نقل",
+      "initial_stock": "مخزون أولي"
+    }
+  },
   "stockStatus": {
     "inStock": "متوفر",
     "lowStock": "مخزون منخفض",

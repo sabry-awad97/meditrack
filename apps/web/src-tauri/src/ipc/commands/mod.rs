@@ -70,11 +70,15 @@ pub use inventory::{
     get_item_barcodes,
     // Price history
     get_latest_price,
+    // Stock history
+    get_latest_stock_adjustment,
     // Listing & filtering
     get_low_stock_items,
     get_out_of_stock_items,
     get_price_history,
     get_price_statistics,
+    get_stock_history,
+    get_stock_history_statistics,
     list_active_inventory_items,
     remove_barcode,
     restore_inventory_item,

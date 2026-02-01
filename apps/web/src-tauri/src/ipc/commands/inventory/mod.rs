@@ -7,6 +7,9 @@ use db_entity::inventory_price_history::dto::{
     PriceHistoryQueryDto, PriceHistoryResponse, PriceStatistics,
 };
 use db_entity::inventory_stock::dto::{AdjustStock, UpdateInventoryStock};
+use db_entity::inventory_stock_history::dto::{
+    StockHistoryQueryDto, StockHistoryResponse, StockHistoryStatistics,
+};
 use db_service::InventoryStatistics;
 use tap::TapFallible;
 use tauri::{AppHandle, Manager};
@@ -536,6 +539,113 @@ pub async fn get_price_statistics(
             .tap_err(|e| {
                 tracing::error!(
                     "Failed to get price statistics for item {}: {}",
+                    params.id(),
+                    e
+                )
+            })
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+// ============================================================================
+// Stock History Operations
+// ============================================================================
+
+/// Helper to get stock history service from app state
+#[inline]
+fn get_stock_history_service(app: &AppHandle) -> std::sync::Arc<db_service::StockHistoryService> {
+    let state = app.state::<AppState>();
+    let service_manager = state.service_manager();
+    service_manager.stock_history().clone()
+}
+
+/// Get stock history for an inventory item
+#[tauri::command]
+pub async fn get_stock_history(
+    app: AppHandle,
+    params: ListParams<StockHistoryQueryDto>,
+) -> IpcResponse<Vec<StockHistoryResponse>> {
+    let result: AppResult<Vec<StockHistoryResponse>> = async {
+        let query = params.filter().clone().unwrap_or_default();
+
+        get_stock_history_service(&app)
+            .get_stock_history(query.inventory_item_id, query.limit)
+            .await
+            .tap_ok(|entries| {
+                tracing::debug!(
+                    "Retrieved {} stock history entries for item {}",
+                    entries.len(),
+                    query.inventory_item_id
+                )
+            })
+            .tap_err(|e| {
+                tracing::error!(
+                    "Failed to get stock history for item {}: {}",
+                    query.inventory_item_id,
+                    e
+                )
+            })
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// Get the latest stock adjustment for an inventory item
+#[tauri::command]
+pub async fn get_latest_stock_adjustment(
+    app: AppHandle,
+    params: GetParams,
+) -> IpcResponse<Option<StockHistoryResponse>> {
+    let result: AppResult<Option<StockHistoryResponse>> = async {
+        get_stock_history_service(&app)
+            .get_latest_adjustment(*params.id())
+            .await
+            .tap_ok(|entry| {
+                if entry.is_some() {
+                    tracing::debug!("Retrieved latest stock adjustment for item {}", params.id());
+                } else {
+                    tracing::debug!("No stock history found for item {}", params.id());
+                }
+            })
+            .tap_err(|e| {
+                tracing::error!(
+                    "Failed to get latest stock adjustment for item {}: {}",
+                    params.id(),
+                    e
+                )
+            })
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// Get stock history statistics for an inventory item
+#[tauri::command]
+pub async fn get_stock_history_statistics(
+    app: AppHandle,
+    params: GetParams,
+) -> IpcResponse<StockHistoryStatistics> {
+    let result: AppResult<StockHistoryStatistics> = async {
+        get_stock_history_service(&app)
+            .get_stock_history_statistics(*params.id())
+            .await
+            .tap_ok(|stats| {
+                tracing::debug!(
+                    "Retrieved stock history statistics for item {}: total={}, added={}, removed={}, net={}",
+                    params.id(),
+                    stats.total_adjustments,
+                    stats.total_added,
+                    stats.total_removed,
+                    stats.net_change
+                )
+            })
+            .tap_err(|e| {
+                tracing::error!(
+                    "Failed to get stock history statistics for item {}: {}",
                     params.id(),
                     e
                 )

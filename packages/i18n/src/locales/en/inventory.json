@@ -206,6 +206,36 @@
     "trendingUp": "Trending up by",
     "trendingDown": "Trending down by"
   },
+  "stockHistory": {
+    "title": "Stock History",
+    "noHistory": "No Stock History",
+    "noHistoryDescription": "No stock adjustments have been recorded for this item yet. Stock changes will appear here automatically.",
+    "stockAdjustments": "stock adjustments",
+    "recentAdjustments": "Recent Adjustments",
+    "units": "units",
+    "minStock": "Min Stock",
+    "avgStock": "Avg Stock",
+    "maxStock": "Max Stock",
+    "trendingUpBy": "Trending up by",
+    "trendingDownBy": "Trending down by",
+    "stable": "Stable",
+    "statistics": {
+      "totalAdjustments": "Total Adjustments",
+      "totalAdded": "Total Added",
+      "totalRemoved": "Total Removed",
+      "netChange": "Net Change"
+    },
+    "adjustmentTypes": {
+      "manual_adjustment": "Manual Adjustment",
+      "order_arrival": "Order Arrival",
+      "sale": "Sale",
+      "damage": "Damage",
+      "expiry": "Expiry",
+      "return": "Return",
+      "transfer": "Transfer",
+      "initial_stock": "Initial Stock"
+    }
+  },
   "stockStatus": {
     "inStock": "In Stock",
     "lowStock": "Low Stock",

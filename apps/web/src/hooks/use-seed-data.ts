@@ -161,8 +161,72 @@ export function useSeedData() {
           }
         }
 
+        // Create stock history by performing various stock adjustments
+        // This simulates real-world stock movements
+        logger.info("Creating stock history for inventory items...");
+
+        const adjustmentReasons = [
+          "Received new shipment from supplier",
+          "Sold to customer",
+          "Damaged during handling",
+          "Expired items removed",
+          "Customer return",
+          "Stock count adjustment",
+          "Transfer to another location",
+          "Initial inventory count",
+        ];
+
+        for (const itemId of createdItems) {
+          try {
+            // Get the current item to know its current stock
+            const currentItem = await inventoryApi.get(itemId);
+            const baseStock = currentItem.stock_quantity;
+
+            // Create 3-6 historical stock adjustments
+            const stockAdjustments = Math.floor(Math.random() * 4) + 3; // 3-6 adjustments
+
+            for (let i = 0; i < stockAdjustments; i++) {
+              // Randomly decide if this is an addition or removal
+              const isAddition = Math.random() > 0.4; // 60% additions, 40% removals
+
+              // Calculate adjustment amount
+              let adjustmentAmount;
+              if (isAddition) {
+                // Add 10-100 units
+                adjustmentAmount = Math.floor(Math.random() * 91) + 10;
+              } else {
+                // Remove 5-30 units (but not more than current stock)
+                const maxRemoval = Math.min(30, Math.floor(baseStock * 0.3));
+                adjustmentAmount = -(
+                  Math.floor(Math.random() * maxRemoval) + 5
+                );
+              }
+
+              // Pick a random reason
+              const reason =
+                adjustmentReasons[
+                  Math.floor(Math.random() * adjustmentReasons.length)
+                ];
+
+              // Perform the stock adjustment
+              await inventoryApi.adjustStock(itemId, {
+                adjustment: adjustmentAmount,
+                reason: reason,
+              });
+
+              // Small delay between adjustments
+              await delay(40);
+            }
+          } catch (error) {
+            logger.error("Error creating stock history for item:", {
+              itemId,
+              error,
+            });
+          }
+        }
+
         toast.success(
-          `تم إضافة ${orders.length} طلب، ${suppliers.length} مورد، ${manufacturersCount} شركة مصنعة، و ${inventoryCount} صنف للمخزون مع تاريخ الأسعار بنجاح`,
+          `تم إضافة ${orders.length} طلب، ${suppliers.length} مورد، ${manufacturersCount} شركة مصنعة، و ${inventoryCount} صنف للمخزون مع تاريخ الأسعار والمخزون بنجاح`,
         );
         options?.onSuccess?.();
       } catch (error) {

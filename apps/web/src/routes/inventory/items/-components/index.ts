@@ -9,6 +9,7 @@ export { StockHistoryDialog } from "./stock-history-dialog";
 // Display Components
 export { InventoryItemCard } from "./inventory-item-card";
 export { PriceHistoryChart } from "./price-history-chart";
+export { StockHistoryChart } from "./stock-history-chart";
 
 // Page Section Components
 export { InventoryFilters } from "./inventory-filters";

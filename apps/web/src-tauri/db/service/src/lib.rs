@@ -47,6 +47,9 @@ pub use manufacturer::ManufacturerService;
 // Export Price History service
 pub use inventory::price_history::PriceHistoryService;
 
+// Export Stock History service
+pub use inventory::stock_history::StockHistoryService;
+
 /// Database connection configuration
 pub struct DatabaseConfig {
     pub url: String,
@@ -102,6 +105,10 @@ pub struct ServiceManager {
     /// Price history service
     #[builder(setter(into))]
     price_history: Arc<PriceHistoryService>,
+
+    /// Stock history service
+    #[builder(setter(into))]
+    stock_history: Arc<StockHistoryService>,
 }
 
 impl ServiceManager {
@@ -157,6 +164,7 @@ impl ServiceManager {
         let inventory = Arc::new(InventoryService::new(db.clone()));
         let manufacturer = Arc::new(ManufacturerService::new(db.clone()));
         let price_history = Arc::new(PriceHistoryService::new(db.clone()));
+        let stock_history = Arc::new(StockHistoryService::new(db.clone()));
 
         Ok(Self::builder()
             .db(db.clone())
@@ -168,6 +176,7 @@ impl ServiceManager {
             .inventory(inventory)
             .manufacturer(manufacturer)
             .price_history(price_history)
+            .stock_history(stock_history)
             .build())
     }
 }

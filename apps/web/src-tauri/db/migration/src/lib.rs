@@ -17,6 +17,7 @@ mod m20250131_000005_create_special_order_items_table;
 mod m20250131_000006_create_supplier_inventory_items_table;
 mod m20250131_000007_create_settings_table;
 mod m20250131_000008_create_sessions_table;
+mod m20250201_000001_create_inventory_stock_history_table;
 
 pub struct Migrator;
 
@@ -34,6 +35,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20250131_000002_1_create_inventory_stock_table::Migration),
             Box::new(m20250131_000002_2_create_inventory_price_history_table::Migration),
             Box::new(m20250131_000002_3_create_inventory_item_barcodes_table::Migration),
+            Box::new(m20250201_000001_create_inventory_stock_history_table::Migration),
             Box::new(m20250131_000003_create_suppliers_table::Migration),
             Box::new(m20250131_000004_create_special_orders_table::Migration),
             Box::new(m20250131_000005_create_special_order_items_table::Migration),

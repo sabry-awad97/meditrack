@@ -143,6 +143,9 @@ export {
   usePriceHistory,
   useLatestPrice,
   usePriceStatistics,
+  // Stock History Query Hooks
+  useStockHistory,
+  useStockHistoryStatistics,
   // Mutation Hooks
   useCreateInventoryItem,
   useUpdateInventoryItem,

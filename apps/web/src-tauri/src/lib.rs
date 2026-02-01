@@ -133,6 +133,10 @@ pub async fn run() {
         ipc::commands::inventory::get_price_history,
         ipc::commands::inventory::get_latest_price,
         ipc::commands::inventory::get_price_statistics,
+        // Inventory Stock History
+        ipc::commands::inventory::get_stock_history,
+        ipc::commands::inventory::get_latest_stock_adjustment,
+        ipc::commands::inventory::get_stock_history_statistics,
         // Manufacturer CRUD operations
         ipc::commands::manufacturer::create_manufacturer,
         ipc::commands::manufacturer::create_manufacturers_bulk,
