@@ -1,0 +1,56 @@
+{
+  "title": "تعديلات المخزون",
+  "description": "إدارة وتتبع مستويات مخزون الأصناف",
+  "loading": "جاري تحميل تعديلات المخزون...",
+  "searchPlaceholder": "البحث بالاسم أو الاسم العام أو الباركود...",
+  "noItemsFound": "لم يتم العثور على أصناف",
+  "noItemsAvailable": "لا توجد أصناف متاحة",
+  "tryDifferentSearch": "جرب البحث بكلمات مختلفة",
+  "addInventoryItems": "أضف أصناف المخزون لإدارة مستويات المخزون",
+  "stats": {
+    "totalItems": "إجمالي الأصناف",
+    "lowStock": "مخزون منخفض",
+    "outOfStock": "نفذ من المخزون",
+    "needsAttention": "يحتاج إلى انتباه"
+  },
+  "filters": {
+    "filterByStock": "تصفية حسب المخزون",
+    "allStock": "جميع المخزون",
+    "inStock": "متوفر",
+    "lowStock": "مخزون منخفض",
+    "outOfStock": "نفذ من المخزون"
+  },
+  "table": {
+    "medicineName": "اسم الدواء",
+    "concentration": "التركيز",
+    "form": "الشكل",
+    "stock": "المخزون",
+    "minLevel": "الحد الأدنى",
+    "status": "الحالة",
+    "actions": "الإجراءات",
+    "units": "وحدة",
+    "na": "غير متوفر"
+  },
+  "actions": {
+    "adjustStock": "تعديل المخزون",
+    "viewHistory": "عرض السجل"
+  },
+  "stockStatus": {
+    "inStock": "متوفر",
+    "lowStock": "مخزون منخفض",
+    "outOfStock": "نفذ من المخزون"
+  },
+  "pagination": {
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "items": "أصناف",
+    "rowsPerPage": "عدد الصفوف في الصفحة",
+    "previous": "السابق",
+    "next": "التالي",
+    "firstPage": "الصفحة الأولى",
+    "lastPage": "الصفحة الأخيرة",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية"
+  }
+}

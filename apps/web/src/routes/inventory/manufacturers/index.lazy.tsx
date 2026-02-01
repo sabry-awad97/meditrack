@@ -32,6 +32,7 @@ import {
   useManufacturerColumns,
   ManufacturerDetailsDialog,
   ManufacturerFormDialog,
+  ManufacturerFilters,
 } from "./-components";
 
 // Generic components
@@ -49,8 +50,10 @@ function ManufacturersComponent() {
   const { isRTL } = useDirection();
 
   // Local state
-  const [searchQuery] = useState("");
-  const [statusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "inactive" | null
+  >(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [currentPage] = useState(1);
   const [pageSize] = useState(20);
@@ -71,7 +74,7 @@ function ManufacturersComponent() {
       filterObj.name = searchQuery;
     }
 
-    if (statusFilter !== "all") {
+    if (statusFilter && statusFilter !== "all") {
       filterObj.is_active = statusFilter === "active";
     }
 
@@ -85,6 +88,47 @@ function ManufacturersComponent() {
   });
 
   const manufacturers = data?.items || [];
+
+  // Fetch all manufacturers for stats (without filters)
+  const { data: allManufacturersData } = useManufacturers();
+  const allManufacturers = allManufacturersData?.items || [];
+
+  // Filter manufacturers locally for accurate counts
+  const filteredManufacturers = useMemo(() => {
+    return allManufacturers.filter((manufacturer) => {
+      const matchesSearch =
+        !searchQuery ||
+        manufacturer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        manufacturer.short_name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        manufacturer.country
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        manufacturer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        manufacturer.phone?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus =
+        !statusFilter ||
+        statusFilter === "all" ||
+        (statusFilter === "active" && manufacturer.is_active) ||
+        (statusFilter === "inactive" && !manufacturer.is_active);
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [allManufacturers, searchQuery, statusFilter]);
+
+  // Count active filters
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (statusFilter && statusFilter !== "all") count++;
+    return count;
+  }, [statusFilter]);
+
+  const clearFilters = () => {
+    setStatusFilter(null);
+    setSearchQuery("");
+  };
 
   const createManufacturer = useCreateManufacturer();
   const updateManufacturer = useUpdateManufacturer();
@@ -138,9 +182,6 @@ function ManufacturersComponent() {
   };
 
   // Calculate stats from all manufacturers (not filtered)
-  const { data: allManufacturersData } = useManufacturers();
-  const allManufacturers = allManufacturersData?.items || [];
-
   const statsItems: StatItem[] = useMemo(() => {
     const activeCount = allManufacturers.filter((m) => m.is_active).length;
     const inactiveCount = allManufacturers.length - activeCount;
@@ -227,23 +268,37 @@ function ManufacturersComponent() {
             />
           )}
 
+          {/* Filters */}
+          {allManufacturers.length > 0 && (
+            <ManufacturerFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              activeFiltersCount={activeFiltersCount}
+              onClearFilters={clearFilters}
+              totalItems={allManufacturers.length}
+              filteredItemsCount={filteredManufacturers.length}
+            />
+          )}
+
           {/* Items Display */}
           <div className="flex-1 min-h-0">
-            {manufacturers.length === 0 && !isLoading ? (
+            {filteredManufacturers.length === 0 && !isLoading ? (
               <EmptyState
                 icon={Building2}
                 title={
-                  searchQuery || statusFilter !== "all"
+                  searchQuery || (statusFilter && statusFilter !== "all")
                     ? t("noManufacturersFound")
                     : t("noManufacturers")
                 }
                 description={
-                  searchQuery || statusFilter !== "all"
+                  searchQuery || (statusFilter && statusFilter !== "all")
                     ? t("adjustFilters")
                     : t("getStarted")
                 }
                 action={
-                  !searchQuery && statusFilter === "all"
+                  !searchQuery && (!statusFilter || statusFilter === "all")
                     ? {
                         label: t("addManufacturer"),
                         onClick: handleOpenCreateForm,
@@ -254,7 +309,7 @@ function ManufacturersComponent() {
               />
             ) : (
               <DataTable
-                data={manufacturers}
+                data={filteredManufacturers}
                 columns={columns}
                 sorting={sorting}
                 onSortingChange={setSorting}

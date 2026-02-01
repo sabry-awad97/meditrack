@@ -20,6 +20,9 @@ import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
 
 const OnboardingIndexLazyRouteImport = createFileRoute('/onboarding/')()
+const InventoryStockAdjustmentsIndexLazyRouteImport = createFileRoute(
+  '/inventory/stock-adjustments/',
+)()
 const InventoryManufacturersIndexLazyRouteImport = createFileRoute(
   '/inventory/manufacturers/',
 )()
@@ -68,6 +71,16 @@ const OnboardingIndexLazyRoute = OnboardingIndexLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/onboarding/index.lazy').then((d) => d.Route),
 )
+const InventoryStockAdjustmentsIndexLazyRoute =
+  InventoryStockAdjustmentsIndexLazyRouteImport.update({
+    id: '/inventory/stock-adjustments/',
+    path: '/inventory/stock-adjustments/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/inventory/stock-adjustments/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const InventoryManufacturersIndexLazyRoute =
   InventoryManufacturersIndexLazyRouteImport.update({
     id: '/inventory/manufacturers/',
@@ -95,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexLazyRoute
   '/inventory/items/': typeof InventoryItemsIndexLazyRoute
   '/inventory/manufacturers/': typeof InventoryManufacturersIndexLazyRoute
+  '/inventory/stock-adjustments/': typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,6 +121,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexLazyRoute
   '/inventory/items': typeof InventoryItemsIndexLazyRoute
   '/inventory/manufacturers': typeof InventoryManufacturersIndexLazyRoute
+  '/inventory/stock-adjustments': typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -120,6 +135,7 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexLazyRoute
   '/inventory/items/': typeof InventoryItemsIndexLazyRoute
   '/inventory/manufacturers/': typeof InventoryManufacturersIndexLazyRoute
+  '/inventory/stock-adjustments/': typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -134,6 +150,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/inventory/items/'
     | '/inventory/manufacturers/'
+    | '/inventory/stock-adjustments/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -146,6 +163,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/inventory/items'
     | '/inventory/manufacturers'
+    | '/inventory/stock-adjustments'
   id:
     | '__root__'
     | '/'
@@ -158,6 +176,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/inventory/items/'
     | '/inventory/manufacturers/'
+    | '/inventory/stock-adjustments/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +190,7 @@ export interface RootRouteChildren {
   OnboardingIndexLazyRoute: typeof OnboardingIndexLazyRoute
   InventoryItemsIndexLazyRoute: typeof InventoryItemsIndexLazyRoute
   InventoryManufacturersIndexLazyRoute: typeof InventoryManufacturersIndexLazyRoute
+  InventoryStockAdjustmentsIndexLazyRoute: typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -231,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inventory/stock-adjustments/': {
+      id: '/inventory/stock-adjustments/'
+      path: '/inventory/stock-adjustments'
+      fullPath: '/inventory/stock-adjustments/'
+      preLoaderRoute: typeof InventoryStockAdjustmentsIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory/manufacturers/': {
       id: '/inventory/manufacturers/'
       path: '/inventory/manufacturers'
@@ -259,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingIndexLazyRoute: OnboardingIndexLazyRoute,
   InventoryItemsIndexLazyRoute: InventoryItemsIndexLazyRoute,
   InventoryManufacturersIndexLazyRoute: InventoryManufacturersIndexLazyRoute,
+  InventoryStockAdjustmentsIndexLazyRoute:
+    InventoryStockAdjustmentsIndexLazyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

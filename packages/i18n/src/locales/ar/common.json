@@ -14,6 +14,7 @@
     "inventory": "المخزون",
     "allItems": "جميع الأصناف",
     "manufacturers": "الشركات المصنعة",
+    "stockAdjustments": "تعديلات المخزون",
     "lowStock": "مخزون منخفض",
     "outOfStock": "نفذ من المخزون",
     "suppliers": "الموردين",

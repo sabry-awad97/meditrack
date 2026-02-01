@@ -1,0 +1,56 @@
+{
+  "title": "Stock Adjustments",
+  "description": "Manage and track inventory stock levels",
+  "loading": "Loading stock adjustments...",
+  "searchPlaceholder": "Search by name, generic name, or barcode...",
+  "noItemsFound": "No items found",
+  "noItemsAvailable": "No Items Available",
+  "tryDifferentSearch": "Try searching with different words",
+  "addInventoryItems": "Add inventory items to manage stock levels",
+  "stats": {
+    "totalItems": "Total Items",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "needsAttention": "Needs Attention"
+  },
+  "filters": {
+    "filterByStock": "Filter by Stock",
+    "allStock": "All Stock",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "table": {
+    "medicineName": "Medicine Name",
+    "concentration": "Concentration",
+    "form": "Form",
+    "stock": "Stock",
+    "minLevel": "Min Level",
+    "status": "Status",
+    "actions": "Actions",
+    "units": "units",
+    "na": "N/A"
+  },
+  "actions": {
+    "adjustStock": "Adjust Stock",
+    "viewHistory": "View History"
+  },
+  "stockStatus": {
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "items": "items",
+    "rowsPerPage": "Rows per page",
+    "previous": "Previous",
+    "next": "Next",
+    "firstPage": "First page",
+    "lastPage": "Last page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
+}

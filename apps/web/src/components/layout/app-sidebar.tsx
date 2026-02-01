@@ -175,6 +175,11 @@ function useMenuItems(t: (key: string) => string) {
               url: "/inventory/manufacturers",
               icon: Users,
             },
+            {
+              title: t("navigation.stockAdjustments"),
+              url: "/inventory/stock-adjustments",
+              icon: TrendingUp,
+            },
           ],
         },
         {

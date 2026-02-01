@@ -1,7 +1,6 @@
-import { Search, Filter, XCircle } from "lucide-react";
+import { Filter, XCircle } from "lucide-react";
 import { useTranslation, useDirection } from "@meditrack/i18n";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
@@ -12,12 +11,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SearchInput,
+  FilterSelect,
+  type FilterOption,
+} from "@/components/forms";
 import { MEDICINE_FORMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -63,104 +60,70 @@ export function InventoryFilters({
     (stockFilter && stockFilter !== "all") ||
     (prescriptionFilter && prescriptionFilter !== "all");
 
+  const formFilterItems: FilterOption[] = [
+    { value: null, label: t("filters.filterByForm") },
+    { value: "all", label: t("filters.allForms") },
+    ...MEDICINE_FORMS.map((form) => ({
+      value: form,
+      label: form,
+    })),
+  ];
+
+  const stockFilterItems: FilterOption[] = [
+    { value: null, label: t("filters.filterByStock") },
+    { value: "all", label: t("filters.allStock") },
+    { value: "in_stock", label: t("filters.inStock") },
+    { value: "low_stock", label: t("filters.lowStock") },
+    { value: "out_of_stock", label: t("filters.outOfStock") },
+  ];
+
+  const prescriptionFilterItems: FilterOption[] = [
+    { value: null, label: t("filters.filterByType") },
+    { value: "all", label: t("filters.allTypes") },
+    { value: "prescription", label: t("filters.prescription") },
+    { value: "otc", label: t("filters.otc") },
+  ];
+
   return (
     <div className="mb-6 flex flex-col gap-4 shrink-0">
       {/* Search and Filters Row */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
         {/* Search */}
-        <div className="relative w-full md:w-[400px]">
-          <Search
-            className={cn(
-              "absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground",
-              isRTL ? "right-3" : "left-3",
-            )}
-          />
-          <Input
-            placeholder={t("page.searchPlaceholder")}
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className={isRTL ? "pr-10" : "pl-10"}
-          />
-        </div>
+        <SearchInput
+          value={searchQuery}
+          onChange={onSearchChange}
+          placeholder={t("page.searchPlaceholder")}
+          className="w-full md:w-[400px]"
+        />
 
         {/* Desktop: Inline Filters */}
         <div className="hidden md:flex flex-row items-center gap-3 flex-1">
           {/* Form Filter */}
-          <Select
-            items={[
-              { value: null, label: t("filters.filterByForm") },
-              { value: "all", label: t("filters.allForms") },
-              ...MEDICINE_FORMS.map((form) => ({
-                value: form,
-                label: form,
-              })),
-            ]}
+          <FilterSelect
+            items={formFilterItems}
             value={formFilter}
             onValueChange={onFormFilterChange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t("filters.allForms")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("filters.allForms")}</SelectItem>
-              {MEDICINE_FORMS.map((form) => (
-                <SelectItem key={form} value={form}>
-                  {form}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t("filters.allForms")}
+            className="w-[180px]"
+          />
 
           {/* Stock Filter */}
-          <Select
-            items={[
-              { value: null, label: t("filters.filterByStock") },
-              { value: "all", label: t("filters.allStock") },
-              { value: "in_stock", label: t("filters.inStock") },
-              { value: "low_stock", label: t("filters.lowStock") },
-              { value: "out_of_stock", label: t("filters.outOfStock") },
-            ]}
+          <FilterSelect
+            items={stockFilterItems}
             value={stockFilter}
             onValueChange={onStockFilterChange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t("filters.allStock")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("filters.allStock")}</SelectItem>
-              <SelectItem value="in_stock">{t("filters.inStock")}</SelectItem>
-              <SelectItem value="low_stock">{t("filters.lowStock")}</SelectItem>
-              <SelectItem value="out_of_stock">
-                {t("filters.outOfStock")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+            placeholder={t("filters.allStock")}
+            className="w-[180px]"
+          />
 
           {/* Prescription Filter */}
-          <Select
-            items={[
-              { value: null, label: t("filters.filterByType") },
-              { value: "all", label: t("filters.allTypes") },
-              {
-                value: "prescription",
-                label: t("filters.prescription"),
-              },
-              { value: "otc", label: t("filters.otc") },
-            ]}
+          <FilterSelect
+            items={prescriptionFilterItems}
             value={prescriptionFilter}
             onValueChange={onPrescriptionFilterChange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t("filters.allTypes")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("filters.allTypes")}</SelectItem>
-              <SelectItem value="prescription">
-                {t("filters.prescription")}
-              </SelectItem>
-              <SelectItem value="otc">{t("filters.otc")}</SelectItem>
-            </SelectContent>
-          </Select>
+            placeholder={t("filters.allTypes")}
+            className="w-[180px]"
+          />
 
           {/* Clear Filters */}
           {activeFiltersCount > 0 && (
@@ -209,30 +172,13 @@ export function InventoryFilters({
                 <label className="text-sm font-medium">
                   {t("filters.medicineForm")}
                 </label>
-                <Select
-                  items={[
-                    { value: null, label: t("filters.filterByForm") },
-                    { value: "all", label: t("filters.allForms") },
-                    ...MEDICINE_FORMS.map((form) => ({
-                      value: form,
-                      label: form,
-                    })),
-                  ]}
+                <FilterSelect
+                  items={formFilterItems}
                   value={formFilter}
                   onValueChange={onFormFilterChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("filters.allForms")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("filters.allForms")}</SelectItem>
-                    {MEDICINE_FORMS.map((form) => (
-                      <SelectItem key={form} value={form}>
-                        {form}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t("filters.allForms")}
+                  className="w-full"
+                />
               </div>
 
               {/* Stock Filter */}
@@ -240,39 +186,13 @@ export function InventoryFilters({
                 <label className="text-sm font-medium">
                   {t("filters.stockStatus")}
                 </label>
-                <Select
-                  items={[
-                    { value: null, label: t("filters.filterByStock") },
-                    { value: "all", label: t("filters.allStock") },
-                    { value: "in_stock", label: t("filters.inStock") },
-                    {
-                      value: "low_stock",
-                      label: t("filters.lowStock"),
-                    },
-                    {
-                      value: "out_of_stock",
-                      label: t("filters.outOfStock"),
-                    },
-                  ]}
+                <FilterSelect
+                  items={stockFilterItems}
                   value={stockFilter}
                   onValueChange={onStockFilterChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("filters.allStock")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("filters.allStock")}</SelectItem>
-                    <SelectItem value="in_stock">
-                      {t("filters.inStock")}
-                    </SelectItem>
-                    <SelectItem value="low_stock">
-                      {t("filters.lowStock")}
-                    </SelectItem>
-                    <SelectItem value="out_of_stock">
-                      {t("filters.outOfStock")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder={t("filters.allStock")}
+                  className="w-full"
+                />
               </div>
 
               {/* Prescription Filter */}
@@ -280,30 +200,13 @@ export function InventoryFilters({
                 <label className="text-sm font-medium">
                   {t("filters.medicineType")}
                 </label>
-                <Select
-                  items={[
-                    { value: null, label: t("filters.filterByType") },
-                    { value: "all", label: t("filters.allTypes") },
-                    {
-                      value: "prescription",
-                      label: t("filters.prescription"),
-                    },
-                    { value: "otc", label: t("filters.otc") },
-                  ]}
+                <FilterSelect
+                  items={prescriptionFilterItems}
                   value={prescriptionFilter}
                   onValueChange={onPrescriptionFilterChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("filters.allTypes")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("filters.allTypes")}</SelectItem>
-                    <SelectItem value="prescription">
-                      {t("filters.prescription")}
-                    </SelectItem>
-                    <SelectItem value="otc">{t("filters.otc")}</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder={t("filters.allTypes")}
+                  className="w-full"
+                />
               </div>
 
               {/* Clear Filters Button */}

@@ -15,6 +15,7 @@ import onboardingEn from "../locales/en/onboarding.json";
 import inventoryEn from "../locales/en/inventory.json";
 import loginEn from "../locales/en/login.json";
 import manufacturerEn from "../locales/en/manufacturer.json";
+import stockAdjustmentsEn from "../locales/en/stock-adjustments.json";
 
 import commonAr from "../locales/ar/common.json";
 import homeAr from "../locales/ar/home.json";
@@ -27,6 +28,7 @@ import onboardingAr from "../locales/ar/onboarding.json";
 import inventoryAr from "../locales/ar/inventory.json";
 import loginAr from "../locales/ar/login.json";
 import manufacturerAr from "../locales/ar/manufacturer.json";
+import stockAdjustmentsAr from "../locales/ar/stock-adjustments.json";
 
 // Missing translations registry for development
 export const missingTranslations = new Set<string>();
@@ -64,6 +66,7 @@ export async function initializeI18n(initialLocale?: Locale) {
           inventory: inventoryEn,
           login: loginEn,
           manufacturer: manufacturerEn,
+          "stock-adjustments": stockAdjustmentsEn,
         },
         ar: {
           common: commonAr,
@@ -77,6 +80,7 @@ export async function initializeI18n(initialLocale?: Locale) {
           inventory: inventoryAr,
           login: loginAr,
           manufacturer: manufacturerAr,
+          "stock-adjustments": stockAdjustmentsAr,
         },
       },
       lng: locale,

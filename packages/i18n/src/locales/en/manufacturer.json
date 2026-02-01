@@ -10,6 +10,13 @@
   "getStarted": "Get started by adding your first manufacturer",
   "adjustFilters": "Try adjusting your search or filters",
   "loading": "Loading manufacturers...",
+  "searchPlaceholder": "Search by name, country, or contact...",
+  "filters": {
+    "filterByStatus": "Filter by status",
+    "allStatus": "All Status",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
   "stats": {
     "total": "Total Manufacturers",
     "active": "Active",
