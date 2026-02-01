@@ -43,12 +43,7 @@ import {
   useSettingValue,
 } from "@/hooks";
 import type { Supplier, SupplierFormData } from "@/lib/types";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { FormDialog } from "@/components/feedback";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -519,195 +514,158 @@ function SupplierFormDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="sm:max-w-3xl h-[90vh] flex flex-col p-0"
-        dir="rtl"
-      >
-        <div className="p-4 border-b shrink-0">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">
-              {mode === "create" ? t("form.addTitle") : t("form.editTitle")}
-            </DialogTitle>
-          </DialogHeader>
-        </div>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={mode === "create" ? t("form.addTitle") : t("form.editTitle")}
+      size="4xl"
+      fullHeight
+      onSubmit={handleSubmit}
+      onCancel={() => onOpenChange(false)}
+      submitLabel={mode === "create" ? t("form.submit") : t("form.update")}
+      cancelLabel={t("form.cancel")}
+    >
+      <div className="space-y-6">
+        {/* معلومات أساسية */}
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">{t("form.basicInfo")}</h3>
 
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {/* معلومات أساسية */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">{t("form.basicInfo")}</h3>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {t("form.supplierName")}{" "}
+              <span className="text-destructive">*</span>
+            </label>
+            <Input
+              required
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              placeholder={t("form.supplierNamePlaceholder")}
+            />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t("form.supplierName")}{" "}
-                  <span className="text-destructive">*</span>
-                </label>
-                <Input
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder={t("form.supplierNamePlaceholder")}
-                  className="text-right"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t("form.phone")}{" "}
-                    <span className="text-destructive">*</span>
-                  </label>
-                  <Input
-                    required
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    placeholder={t("form.phonePlaceholder")}
-                    className="text-right"
-                    dir="ltr"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t("form.whatsapp")}
-                  </label>
-                  <Input
-                    type="tel"
-                    value={formData.whatsapp}
-                    onChange={(e) =>
-                      setFormData({ ...formData, whatsapp: e.target.value })
-                    }
-                    placeholder={t("form.phonePlaceholder")}
-                    className="text-right"
-                    dir="ltr"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t("form.email")}{" "}
-                  {emailRequired ? (
-                    <span className="text-destructive">*</span>
-                  ) : (
-                    ""
-                  )}
-                </label>
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder={t("form.emailPlaceholder")}
-                  className="text-right"
-                  dir="ltr"
-                  required={emailRequired}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t("form.address")}
-                </label>
-                <Input
-                  value={formData.address}
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
-                  }
-                  placeholder={t("form.addressPlaceholder")}
-                  className="text-right"
-                />
-              </div>
-            </div>
-
-            {/* الأدوية المتوفرة */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">
-                {t("form.availableMedicines")}
-              </h3>
-
-              <div className="flex gap-2">
-                <Input
-                  value={medicineInput}
-                  onChange={(e) => setMedicineInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddMedicine();
-                    }
-                  }}
-                  placeholder={t("form.medicineName")}
-                  className="text-right flex-1"
-                />
-                <Button
-                  type="button"
-                  onClick={handleAddMedicine}
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {formData.commonMedicines.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {formData.commonMedicines.map((med, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="gap-2 cursor-pointer hover:bg-destructive/10"
-                      onClick={() => handleRemoveMedicine(index)}
-                    >
-                      {med}
-                      <span className="text-destructive">×</span>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* ملاحظات */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">
-                {t("form.notes")}
+                {t("form.phone")} <span className="text-destructive">*</span>
               </label>
-              <textarea
-                value={formData.notes}
+              <Input
+                required
+                type="tel"
+                value={formData.phone}
                 onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
+                  setFormData({ ...formData, phone: e.target.value })
                 }
-                placeholder={t("form.notesPlaceholder")}
-                className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background text-right resize-none"
-                dir="rtl"
+                placeholder={t("form.phonePlaceholder")}
+                dir="ltr"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                {t("form.whatsapp")}
+              </label>
+              <Input
+                type="tel"
+                value={formData.whatsapp}
+                onChange={(e) =>
+                  setFormData({ ...formData, whatsapp: e.target.value })
+                }
+                placeholder={t("form.phonePlaceholder")}
+                dir="ltr"
               />
             </div>
           </div>
 
-          {/* الأزرار */}
-          <div className="p-4 border-t shrink-0">
-            <div className="flex gap-3">
-              <Button type="submit" className="flex-1">
-                {mode === "create" ? t("form.submit") : t("form.update")}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="flex-1"
-              >
-                {t("form.cancel")}
-              </Button>
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {t("form.email")}{" "}
+              {emailRequired ? <span className="text-destructive">*</span> : ""}
+            </label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              placeholder={t("form.emailPlaceholder")}
+              dir="ltr"
+              required={emailRequired}
+            />
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {t("form.address")}
+            </label>
+            <Input
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+              placeholder={t("form.addressPlaceholder")}
+            />
+          </div>
+        </div>
+
+        {/* الأدوية المتوفرة */}
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">
+            {t("form.availableMedicines")}
+          </h3>
+
+          <div className="flex gap-2">
+            <Input
+              value={medicineInput}
+              onChange={(e) => setMedicineInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddMedicine();
+                }
+              }}
+              placeholder={t("form.medicineName")}
+              className="flex-1"
+            />
+            <Button type="button" onClick={handleAddMedicine} variant="outline">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {formData.commonMedicines.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {formData.commonMedicines.map((med, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="gap-2 cursor-pointer hover:bg-destructive/10"
+                  onClick={() => handleRemoveMedicine(index)}
+                >
+                  {med}
+                  <span className="text-destructive">×</span>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ملاحظات */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            {t("form.notes")}
+          </label>
+          <textarea
+            value={formData.notes}
+            onChange={(e) =>
+              setFormData({ ...formData, notes: e.target.value })
+            }
+            placeholder={t("form.notesPlaceholder")}
+            className="w-full min-h-[100px] px-3 py-2 text-sm rounded-md border border-input bg-background resize-none"
+          />
+        </div>
+      </div>
+    </FormDialog>
   );
 }
 

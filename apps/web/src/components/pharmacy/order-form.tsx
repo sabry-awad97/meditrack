@@ -1,16 +1,9 @@
 import { useState } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "@meditrack/i18n";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { FormDialog } from "@/components/feedback";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -125,7 +118,7 @@ export function OrderForm({
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData: OrderFormData = {
@@ -163,225 +156,199 @@ export function OrderForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl h-[90vh] flex flex-col p-0">
-        <div className="p-4 border-b shrink-0">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">
-              {mode === "create" ? t("form.addTitle") : t("form.editTitle")}
-            </DialogTitle>
-            <DialogDescription>
-              {mode === "create"
-                ? t("form.addDescription")
-                : t("form.editDescription")}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
-
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 min-h-0 flex flex-col px-4 py-6 space-y-6">
-            {/* بيانات العميل */}
-            <div className="space-y-4 p-4 rounded-lg bg-muted/50 shrink-0">
-              <h3 className="font-semibold text-lg">
-                {t("form.customerInfo")}
-              </h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="customerName">
-                    {t("form.customerNameLabel")} *
-                  </Label>
-                  <Input
-                    id="customerName"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder={t("form.customerNamePlaceholder")}
-                    required
-                    className="text-right"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">
-                    {t("form.phoneLabel")}
-                    {phoneRequired && (
-                      <span className="text-destructive mr-1">*</span>
-                    )}
-                  </Label>
-                  <Input
-                    id="phoneNumber"
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder={t("form.phonePlaceholder")}
-                    dir="ltr"
-                    className="text-left"
-                    required={phoneRequired}
-                  />
-                </div>
-              </div>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={mode === "create" ? t("form.addTitle") : t("form.editTitle")}
+      description={
+        mode === "create" ? t("form.addDescription") : t("form.editDescription")
+      }
+      size="4xl"
+      fullHeight
+      onSubmit={handleSubmit}
+      onCancel={handleClose}
+      submitLabel={
+        mode === "create" ? t("form.saveOrder") : t("form.updateOrder")
+      }
+      cancelLabel={t("form.cancel")}
+    >
+      <div className="flex flex-col flex-1 min-h-0 space-y-6">
+        {/* بيانات العميل */}
+        <div className="space-y-4 p-4 rounded-lg bg-muted/50 shrink-0">
+          <h3 className="font-semibold text-lg">{t("form.customerInfo")}</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="customerName">
+                {t("form.customerNameLabel")} *
+              </Label>
+              <Input
+                id="customerName"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder={t("form.customerNamePlaceholder")}
+                required
+              />
             </div>
-
-            {/* الأدوية المطلوبة */}
-            <div className="flex flex-col flex-1 min-h-0 space-y-4">
-              <div className="flex items-center justify-between shrink-0">
-                <h3 className="font-semibold text-lg">
-                  {t("form.medicinesRequired")}
-                </h3>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddMedicine}
-                  className="gap-2"
-                  disabled={medicines.length >= maxMedicines}
-                  title={
-                    medicines.length >= maxMedicines
-                      ? t("form.maxMedicinesReached", { max: maxMedicines })
-                      : undefined
-                  }
-                >
-                  <Plus className="h-4 w-4" />
-                  {t("medicine.addMedicine")}
-                </Button>
-              </div>
-
-              <ScrollArea className="flex-1 min-h-0">
-                <div className="space-y-3 pl-4">
-                  {medicines.map((medicine, index) => (
-                    <div
-                      key={medicine.tempId}
-                      className="p-4 rounded-lg border bg-card space-y-3"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          {t("form.medicineNumber", { number: index + 1 })}
-                        </span>
-                        {medicines.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              handleRemoveMedicine(medicine.tempId)
-                            }
-                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        <div className="space-y-2 sm:col-span-2">
-                          <Label>{t("form.medicineNameLabel")} *</Label>
-                          <Input
-                            value={medicine.name}
-                            onChange={(e) =>
-                              handleMedicineChange(
-                                medicine.tempId,
-                                "name",
-                                e.target.value,
-                              )
-                            }
-                            placeholder={t("form.medicineNamePlaceholder")}
-                            required
-                            className="text-right"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t("form.concentrationLabel")}</Label>
-                          <Input
-                            value={medicine.concentration}
-                            onChange={(e) =>
-                              handleMedicineChange(
-                                medicine.tempId,
-                                "concentration",
-                                e.target.value,
-                              )
-                            }
-                            placeholder={t("form.concentrationPlaceholder")}
-                            className="text-right"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>{t("form.quantityLabel")} *</Label>
-                          <Input
-                            type="number"
-                            min="1"
-                            value={medicine.quantity}
-                            onChange={(e) =>
-                              handleMedicineChange(
-                                medicine.tempId,
-                                "quantity",
-                                e.target.value,
-                              )
-                            }
-                            required
-                            className="text-center"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>{t("form.formLabel")} *</Label>
-                        <Select
-                          value={medicine.form || undefined}
-                          onValueChange={(value) =>
-                            handleMedicineChange(
-                              medicine.tempId,
-                              "form",
-                              value || "",
-                            )
-                          }
-                        >
-                          <SelectTrigger className="text-right">
-                            <SelectValue
-                              placeholder={t("form.formPlaceholder")}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {allowedForms.map((form: string) => (
-                              <SelectItem key={form} value={form}>
-                                {form}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-
-            {/* ملاحظات */}
-            <div className="space-y-2 shrink-0">
-              <Label htmlFor="notes">{t("form.notesLabel")}</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder={t("form.notesPlaceholder")}
-                rows={3}
-                className="text-right resize-none"
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">
+                {t("form.phoneLabel")}
+                {phoneRequired && (
+                  <span className="text-destructive mx-1">*</span>
+                )}
+              </Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder={t("form.phonePlaceholder")}
+                dir="ltr"
+                required={phoneRequired}
               />
             </div>
           </div>
+        </div>
 
-          <div className="p-4 border-t shrink-0">
-            <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" onClick={handleClose}>
-                <X className="h-4 w-4 ml-2" />
-                {t("form.cancel")}
-              </Button>
-              <Button type="submit">
-                {mode === "create"
-                  ? t("form.saveOrder")
-                  : t("form.updateOrder")}
-              </Button>
-            </DialogFooter>
+        {/* الأدوية المطلوبة */}
+        <div className="flex flex-col flex-1 min-h-0 space-y-4">
+          <div className="flex items-center justify-between shrink-0">
+            <h3 className="font-semibold text-lg">
+              {t("form.medicinesRequired")}
+            </h3>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddMedicine}
+              className="gap-2"
+              disabled={medicines.length >= maxMedicines}
+              title={
+                medicines.length >= maxMedicines
+                  ? t("form.maxMedicinesReached", { max: maxMedicines })
+                  : undefined
+              }
+            >
+              <Plus className="h-4 w-4" />
+              {t("medicine.addMedicine")}
+            </Button>
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="space-y-3 pe-4">
+              {medicines.map((medicine, index) => (
+                <div
+                  key={medicine.tempId}
+                  className="p-4 rounded-lg border bg-card space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {t("form.medicineNumber", { number: index + 1 })}
+                    </span>
+                    {medicines.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveMedicine(medicine.tempId)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label>{t("form.medicineNameLabel")} *</Label>
+                      <Input
+                        value={medicine.name}
+                        onChange={(e) =>
+                          handleMedicineChange(
+                            medicine.tempId,
+                            "name",
+                            e.target.value,
+                          )
+                        }
+                        placeholder={t("form.medicineNamePlaceholder")}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t("form.concentrationLabel")}</Label>
+                      <Input
+                        value={medicine.concentration}
+                        onChange={(e) =>
+                          handleMedicineChange(
+                            medicine.tempId,
+                            "concentration",
+                            e.target.value,
+                          )
+                        }
+                        placeholder={t("form.concentrationPlaceholder")}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t("form.quantityLabel")} *</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={medicine.quantity}
+                        onChange={(e) =>
+                          handleMedicineChange(
+                            medicine.tempId,
+                            "quantity",
+                            e.target.value,
+                          )
+                        }
+                        required
+                        className="text-center"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{t("form.formLabel")} *</Label>
+                    <Select
+                      value={medicine.form || undefined}
+                      onValueChange={(value) =>
+                        handleMedicineChange(
+                          medicine.tempId,
+                          "form",
+                          value || "",
+                        )
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("form.formPlaceholder")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allowedForms.map((form: string) => (
+                          <SelectItem key={form} value={form}>
+                            {form}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* ملاحظات */}
+        <div className="space-y-2 shrink-0">
+          <Label htmlFor="notes">{t("form.notesLabel")}</Label>
+          <Textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder={t("form.notesPlaceholder")}
+            rows={3}
+            className="resize-none"
+          />
+        </div>
+      </div>
+    </FormDialog>
   );
 }

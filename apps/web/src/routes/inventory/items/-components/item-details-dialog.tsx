@@ -77,7 +77,10 @@ export function ItemDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl h-[85vh] flex flex-col p-0 gap-0">
+      <DialogContent
+        className="sm:max-w-5xl h-[85vh] flex flex-col p-0 gap-0"
+        dir={isRTL ? "rtl" : "ltr"}
+      >
         {/* Header */}
         <div
           className={cn(

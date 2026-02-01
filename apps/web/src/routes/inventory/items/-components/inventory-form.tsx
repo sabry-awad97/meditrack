@@ -246,7 +246,10 @@ export function InventoryForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent
+        className="sm:max-w-4xl h-[90vh] flex flex-col p-0 gap-0"
+        dir={isRTL ? "rtl" : "ltr"}
+      >
         {/* Header */}
         <div
           className={cn(
