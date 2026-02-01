@@ -643,7 +643,7 @@ export function generateSeedManufacturers(
  */
 export function generateSeedInventory(
   manufacturerIds: ReturnType<typeof generateManufacturerIds>,
-  formIds: ReturnType<typeof generateMedicineFormIds>,
+  formIds: Record<string, string>,
 ): CreateInventoryItemWithStock[] {
   return [
     // ========== Antibiotics (مضادات حيوية) ==========

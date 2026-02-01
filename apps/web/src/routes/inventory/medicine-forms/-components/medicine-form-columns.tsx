@@ -54,13 +54,6 @@ export function useMedicineFormColumns({
         ),
       },
       {
-        accessorKey: "display_order",
-        header: t("table.displayOrder"),
-        cell: ({ row }) => (
-          <div className="text-center">{row.original.display_order}</div>
-        ),
-      },
-      {
         accessorKey: "is_active",
         header: t("table.status"),
         cell: ({ row }) => (

@@ -7,8 +7,6 @@ import {
   generateSeedInventory,
   generateSeedManufacturers,
   generateManufacturerIds,
-  generateSeedMedicineForms,
-  generateMedicineFormIds,
 } from "@/lib/seed-data";
 import { ordersCollection } from "./use-orders-db";
 import { suppliersCollection } from "./use-suppliers-db";
@@ -35,13 +33,20 @@ export function useSeedData() {
       try {
         // Generate IDs first - these will be used consistently
         const manufacturerIds = generateManufacturerIds();
-        const formIds = generateMedicineFormIds();
 
         // توليد البيانات
         const orders = generateSeedOrders(15);
         const suppliers = generateSeedSuppliers(8);
         const manufacturers = generateSeedManufacturers(manufacturerIds);
-        const medicineForms = generateSeedMedicineForms(formIds);
+
+        // Fetch medicine forms from database (they're already seeded in migration)
+        logger.info("Fetching medicine forms from database...");
+        const medicineForms = await medicineFormsApi.listActive();
+        const formIds: Record<string, string> = {};
+        medicineForms.forEach((form) => {
+          formIds[form.code] = form.id;
+        });
+
         const inventory = generateSeedInventory(manufacturerIds, formIds);
 
         // إضافة الطلبات
@@ -79,31 +84,6 @@ export function useSeedData() {
           );
         } catch (error) {
           logger.error("Error seeding manufacturers:", error);
-        }
-
-        // إضافة أشكال الأدوية (قبل المخزون)
-        logger.info("Seeding medicine forms...");
-        let formsCount = 0;
-
-        // Create a map to store the actual IDs returned from the backend
-        const actualFormIds: Record<string, string> = {};
-
-        try {
-          // Create medicine forms one by one to maintain the mapping
-          for (const form of medicineForms) {
-            const { id: _id, ...formData } = form; // Remove the id field
-            const result = await medicineFormsApi.create(formData);
-
-            // Store the mapping: code -> actual_id
-            actualFormIds[form.code] = result.id;
-            formsCount++;
-
-            await delay(30);
-          }
-
-          logger.info(`Successfully created ${formsCount} medicine forms`);
-        } catch (error) {
-          logger.error("Error seeding medicine forms:", error);
         }
 
         // Now create inventory using the actual manufacturer and form IDs
@@ -154,8 +134,8 @@ export function useSeedData() {
               continue;
             }
 
-            // Get the actual form ID from the backend
-            const actualFormId = actualFormIds[formCode];
+            // Get the actual form ID from the database
+            const actualFormId = formIds[formCode];
 
             if (!actualFormId) {
               logger.error("Could not find actual form ID for:", formCode);
