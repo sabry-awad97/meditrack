@@ -16,6 +16,10 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { enableMapSet } from "immer";
+
+// Enable Immer support for Map and Set
+enableMapSet();
 
 // ============================================================================
 // Types
