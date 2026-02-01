@@ -103,5 +103,10 @@
     "lastPage": "Last page",
     "previousPage": "Previous page",
     "nextPage": "Next page"
+  },
+  "actions": {
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "delete": "Delete"
   }
 }

@@ -369,27 +369,108 @@ export function useRestoreMedicineForm() {
  * ```tsx
  * const reorderForms = useReorderMedicineForms();
  *
- * reorderForms.mutate({
- *   form_ids: [id1, id2, id3],
- * });
+ * // Pass array of form IDs in the desired order
+ * reorderForms.mutate(['id1', 'id2', 'id3']);
  * ```
  */
 export function useReorderMedicineForms() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ReorderMedicineForms) => medicineFormsApi.reorder(data),
-    onSuccess: () => {
-      // Invalidate all lists to reflect new order
-      queryClient.invalidateQueries({ queryKey: medicineFormKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: medicineFormKeys.active() });
+    mutationFn: (formIds: string[]) => {
+      // Convert array of IDs to array of tuples [id, display_order]
+      const orders: ReorderMedicineForms = formIds.map((id, index) => [
+        id,
+        index,
+      ]);
+      return medicineFormsApi.reorder(orders);
+    },
+    onMutate: async (formIds) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: medicineFormKeys.lists() });
+      await queryClient.cancelQueries({ queryKey: medicineFormKeys.active() });
 
+      // Snapshot the previous values
+      const previousLists = queryClient.getQueriesData({
+        queryKey: medicineFormKeys.lists(),
+      });
+      const previousActive = queryClient.getQueryData(
+        medicineFormKeys.active(),
+      );
+
+      // Optimistically update all list queries
+      queryClient.setQueriesData(
+        { queryKey: medicineFormKeys.lists() },
+        (old: any) => {
+          if (!old?.items) return old;
+
+          // Create a map of id to new display_order
+          const orderMap = new Map(formIds.map((id, index) => [id, index]));
+
+          // Update items with new display_order and sort
+          const updatedItems = old.items
+            .map((item: MedicineFormResponse) => ({
+              ...item,
+              display_order: orderMap.get(item.id) ?? item.display_order,
+            }))
+            .sort(
+              (a: MedicineFormResponse, b: MedicineFormResponse) =>
+                a.display_order - b.display_order,
+            );
+
+          return {
+            ...old,
+            items: updatedItems,
+          };
+        },
+      );
+
+      // Optimistically update active forms
+      queryClient.setQueryData(
+        medicineFormKeys.active(),
+        (old: MedicineFormResponse[] | undefined) => {
+          if (!old) return old;
+
+          const orderMap = new Map(formIds.map((id, index) => [id, index]));
+
+          return old
+            .map((item) => ({
+              ...item,
+              display_order: orderMap.get(item.id) ?? item.display_order,
+            }))
+            .sort((a, b) => a.display_order - b.display_order);
+        },
+      );
+
+      logger.info("Optimistically updated medicine forms order");
+
+      return { previousLists, previousActive };
+    },
+    onSuccess: () => {
       toast.success("Medicine forms reordered successfully");
       logger.info("Medicine forms reordered");
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _formIds, context) => {
+      // Rollback on error
+      if (context?.previousLists) {
+        context.previousLists.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      if (context?.previousActive) {
+        queryClient.setQueryData(
+          medicineFormKeys.active(),
+          context.previousActive,
+        );
+      }
+
       toast.error(`Failed to reorder medicine forms: ${error.message}`);
       logger.error("Failed to reorder medicine forms:", error);
+    },
+    onSettled: () => {
+      // Refetch to ensure we're in sync with the server
+      queryClient.invalidateQueries({ queryKey: medicineFormKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: medicineFormKeys.active() });
     },
   });
 }

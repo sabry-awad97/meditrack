@@ -35,8 +35,8 @@ export function MedicineFormFilters({
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-      <div className="flex-1 w-full sm:w-auto">
+    <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center shrink-0">
+      <div className="w-full md:w-[400px]">
         <SearchInput
           value={searchQuery}
           onChange={onSearchChange}

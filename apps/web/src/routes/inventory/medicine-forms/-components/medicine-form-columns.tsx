@@ -91,14 +91,14 @@ export function useMedicineFormColumns({
                   className="cursor-pointer"
                 >
                   <Eye className="h-4 w-4 mr-2" />
-                  View Details
+                  {t("actions.viewDetails")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onEdit(form)}
                   className="cursor-pointer"
                 >
                   <Edit className="h-4 w-4 mr-2" />
-                  Edit
+                  {t("actions.edit")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -106,7 +106,7 @@ export function useMedicineFormColumns({
                   className="cursor-pointer text-destructive focus:text-destructive"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
+                  {t("actions.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

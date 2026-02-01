@@ -103,5 +103,10 @@
     "lastPage": "الصفحة الأخيرة",
     "previousPage": "الصفحة السابقة",
     "nextPage": "الصفحة التالية"
+  },
+  "actions": {
+    "viewDetails": "عرض التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف"
   }
 }

@@ -22,6 +22,7 @@ import {
   useCreateMedicineForm,
   useUpdateMedicineForm,
   useDeleteMedicineForm,
+  useReorderMedicineForms,
 } from "@/hooks/use-medicine-forms";
 import type {
   MedicineFormResponse,
@@ -33,10 +34,10 @@ import {
   MedicineFormDetailsDialog,
   MedicineFormFormDialog,
   MedicineFormFilters,
+  MedicineFormSortableTable,
 } from "./-components";
 
 // Generic components
-import { DataTable } from "@/components/data-display";
 import { EmptyState } from "@/components/feedback";
 import { ConfirmationDialog } from "@/components/feedback";
 import { StatsGrid, type StatItem } from "@/components/data-display";
@@ -85,8 +86,6 @@ function MedicineFormsComponent() {
     page_size: pageSize,
   });
 
-  const forms = data?.items || [];
-
   // Fetch all forms for stats (without filters)
   const { data: allFormsData } = useMedicineForms();
   const allForms = allFormsData?.items || [];
@@ -125,6 +124,7 @@ function MedicineFormsComponent() {
   const createForm = useCreateMedicineForm();
   const updateForm = useUpdateMedicineForm();
   const deleteForm = useDeleteMedicineForm();
+  const reorderForms = useReorderMedicineForms();
 
   // Handlers
   const handleViewDetails = (form: MedicineFormResponse) => {
@@ -171,6 +171,10 @@ function MedicineFormsComponent() {
   const cancelDelete = () => {
     setIsDeleteDialogOpen(false);
     setFormToDelete(null);
+  };
+
+  const handleReorder = (formIds: string[]) => {
+    reorderForms.mutate(formIds);
   };
 
   // Calculate stats from all forms (not filtered)
@@ -290,9 +294,10 @@ function MedicineFormsComponent() {
                 }
               />
             ) : (
-              <DataTable
+              <MedicineFormSortableTable
                 data={filteredForms}
                 columns={columns}
+                onReorder={handleReorder}
                 sorting={sorting}
                 onSortingChange={setSorting}
                 pageSize={pageSize}

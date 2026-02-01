@@ -116,10 +116,11 @@ export type UsageCountResult = z.infer<typeof UsageCountResultSchema>;
 
 /**
  * Reorder medicine forms DTO schema
+ * Backend expects Vec<(Id, i32)> - array of tuples [id, display_order]
  */
-export const ReorderMedicineFormsSchema = z.object({
-  form_ids: z.array(MedicineFormIdSchema),
-});
+export const ReorderMedicineFormsSchema = z.array(
+  z.tuple([MedicineFormIdSchema, z.number().int()]),
+);
 export type ReorderMedicineForms = z.infer<typeof ReorderMedicineFormsSchema>;
 
 // ============================================================================
@@ -287,13 +288,14 @@ export async function getMedicineFormUsageCount(
 
 /**
  * Reorder medicine forms
+ * @param orders - Array of tuples [id, display_order]
  */
 export async function reorderMedicineForms(
-  data: ReorderMedicineForms,
-): Promise<void> {
+  orders: ReorderMedicineForms,
+): Promise<MutationResult> {
   logger.info("Reordering medicine forms");
-  return invokeCommand("reorder_medicine_forms", z.void(), {
-    params: { data },
+  return invokeCommand("reorder_medicine_forms", MutationResultSchema, {
+    orders,
   });
 }
 
