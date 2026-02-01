@@ -1,43 +1,11 @@
 import { useMemo, useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import {
-  Plus,
-  Search,
-  Package,
-  AlertTriangle,
-  XCircle,
-  Shield,
-  Filter,
-  LayoutGrid,
-  Table as TableIcon,
-  ChevronsLeft,
-  ChevronsRight,
-  ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Copy,
-  Archive,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-} from "lucide-react";
+import { Plus, Package, LayoutGrid } from "lucide-react";
 import { useDirection, useTranslation } from "@meditrack/i18n";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  flexRender,
-  type ColumnDef,
-  type SortingState,
-} from "@tanstack/react-table";
-import type { PriceHistoryEntry } from "@/routes/inventory/items/-components";
+import type { SortingState } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Loading } from "@/components/ui/loading";
 import {
   Page,
   PageHeader,
@@ -48,64 +16,7 @@ import {
   PageHeaderActions,
   PageContent,
   PageContentInner,
-  PageSection,
 } from "@/components/ui/page";
-import { Loading } from "@/components/ui/loading";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-} from "@/components/ui/pagination";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   useInventoryItems,
   useInventoryStatistics,
@@ -116,7 +27,7 @@ import {
   useSettingValue,
   useUpsertSettingValue,
 } from "@/hooks";
-import { MEDICINE_FORMS, SETTING_INVENTORY_VIEW_MODE } from "@/lib/constants";
+import { SETTING_INVENTORY_VIEW_MODE } from "@/lib/constants";
 import type {
   InventoryItemWithStockResponse,
   CreateInventoryItemWithStock,
@@ -125,26 +36,23 @@ import {
   InventoryForm,
   StockAdjustmentDialog,
   ItemDetailsDialog,
-  StatsCard,
-  InventoryItemCard,
+  InventoryStats,
+  InventoryFilters,
+  InventoryTable,
+  InventoryGrid,
+  InventoryEmptyState,
+  InventoryDeleteDialog,
+  useInventoryColumns,
   getStockStatus,
-  getStockStatusLabel,
-  getStockStatusColor,
-  generatePaginationItems,
 } from "./-components";
-
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 export const Route = createLazyFileRoute("/inventory/items/")({
   component: InventoryComponent,
 });
 
-// Type alias for convenience
-type InventoryItem = InventoryItemWithStockResponse;
-
 function InventoryComponent() {
   const { t } = useTranslation("inventory");
+  const { isRTL } = useDirection();
 
   // Fetch data
   const { data: items = [], isLoading } = useInventoryItems();
@@ -152,9 +60,6 @@ function InventoryComponent() {
   const createInventoryItem = useCreateInventoryItem();
   const adjustStock = useAdjustInventoryStock();
   const deleteItem = useDeleteInventoryItem();
-
-  // Direction for RTL/LTR support
-  const { isRTL } = useDirection();
 
   // View mode setting
   const viewMode = useSettingValue<"table" | "grid">(
@@ -182,13 +87,12 @@ function InventoryComponent() {
   const [itemToDelete, setItemToDelete] =
     useState<InventoryItemWithStockResponse | null>(null);
 
-  // Handle create inventory item
+  // Handlers
   const handleCreateItem = (data: CreateInventoryItemWithStock) => {
     createInventoryItem.mutate(data);
     setIsFormOpen(false);
   };
 
-  // Handle stock adjustment
   const handleStockAdjust = (
     itemId: string,
     adjustment: number,
@@ -202,13 +106,11 @@ function InventoryComponent() {
     setSelectedItem(null);
   };
 
-  // Handle delete
   const handleDelete = (item: InventoryItemWithStockResponse) => {
     setItemToDelete(item);
     setIsDeleteDialogOpen(true);
   };
 
-  // Confirm delete
   const confirmDelete = () => {
     if (itemToDelete) {
       deleteItem.mutate(itemToDelete.id);
@@ -217,32 +119,21 @@ function InventoryComponent() {
     }
   };
 
-  // Cancel delete
   const cancelDelete = () => {
     setIsDeleteDialogOpen(false);
     setItemToDelete(null);
   };
 
-  // Fetch price history for selected item
-  const { data: priceHistory = [] } = usePriceHistory(
-    selectedItem?.id ?? "",
-    12, // Last 12 entries
-    { enabled: !!selectedItem },
-  );
-
-  // Handle view details
   const handleViewDetails = (item: InventoryItemWithStockResponse) => {
     setSelectedItem(item);
     setIsDetailsOpen(true);
   };
 
-  // Handle adjust stock
   const handleOpenStockAdjust = (item: InventoryItemWithStockResponse) => {
     setSelectedItem(item);
     setIsStockAdjustOpen(true);
   };
 
-  // Toggle view mode
   const toggleViewMode = () => {
     const newMode = viewMode === "table" ? "grid" : "table";
     upsertViewMode.mutate({
@@ -251,10 +142,22 @@ function InventoryComponent() {
     });
   };
 
+  const clearFilters = () => {
+    setFormFilter(null);
+    setStockFilter(null);
+    setPrescriptionFilter(null);
+  };
+
+  // Fetch price history for selected item
+  const { data: priceHistory = [] } = usePriceHistory(
+    selectedItem?.id ?? "",
+    12,
+    { enabled: !!selectedItem },
+  );
+
   // Filter items
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      // Search filter
       const matchesSearch =
         !searchQuery ||
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -263,11 +166,9 @@ function InventoryComponent() {
           b.barcode.toLowerCase().includes(searchQuery.toLowerCase()),
         );
 
-      // Form filter
       const matchesForm =
         !formFilter || formFilter === "all" || item.form === formFilter;
 
-      // Stock filter
       const stockStatus = getStockStatus(
         item.stock_quantity,
         item.min_stock_level,
@@ -275,7 +176,6 @@ function InventoryComponent() {
       const matchesStock =
         !stockFilter || stockFilter === "all" || stockStatus === stockFilter;
 
-      // Prescription filter
       const matchesPrescription =
         !prescriptionFilter ||
         prescriptionFilter === "all" ||
@@ -297,228 +197,22 @@ function InventoryComponent() {
     return count;
   }, [formFilter, stockFilter, prescriptionFilter]);
 
-  // Table columns definition
-  const columns = useMemo<ColumnDef<InventoryItem>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: t("table.medicineName"),
-        cell: ({ row }) => (
-          <div className="min-w-[200px]">
-            <div className="font-medium">{row.original.name}</div>
-            {row.original.generic_name && (
-              <div className="text-xs text-muted-foreground">
-                {row.original.generic_name}
-              </div>
-            )}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "concentration",
-        header: t("table.concentration"),
-        cell: ({ row }) => (
-          <Badge variant="outline" className="font-normal">
-            {row.original.concentration}
-          </Badge>
-        ),
-      },
-      {
-        accessorKey: "form",
-        header: t("table.form"),
-        cell: ({ row }) => (
-          <Badge variant="outline" className="font-normal">
-            {row.original.form}
-          </Badge>
-        ),
-      },
-      {
-        accessorKey: "stock_quantity",
-        header: t("table.stock"),
-        cell: ({ row }) => {
-          const stockStatus = getStockStatus(
-            row.original.stock_quantity,
-            row.original.min_stock_level,
-          );
-          const stockColor = getStockStatusColor(stockStatus);
-          const stockLabel = getStockStatusLabel(stockStatus, t);
-          const percentage = Math.min(
-            (row.original.stock_quantity / row.original.min_stock_level) * 100,
-            100,
-          );
-
-          return (
-            <div className="min-w-[150px]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium whitespace-nowrap">
-                  {row.original.stock_quantity} {t("table.units")}
-                </span>
-                <Badge className={cn("text-xs whitespace-nowrap", stockColor)}>
-                  {stockLabel}
-                </Badge>
-              </div>
-              <div className="w-full bg-muted rounded-full h-1.5">
-                <div
-                  className={cn(
-                    "h-1.5 rounded-full transition-all",
-                    stockStatus === "out_of_stock"
-                      ? "bg-red-500"
-                      : stockStatus === "low_stock"
-                        ? "bg-yellow-500"
-                        : "bg-green-500",
-                  )}
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "unit_price",
-        header: t("table.unitPrice"),
-        cell: ({ row }) => (
-          <span className="font-medium">
-            ${row.original.unit_price.toFixed(2)}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "manufacturer_name",
-        header: t("table.manufacturer"),
-        cell: ({ row }) =>
-          row.original.manufacturer_name ? (
-            <Badge variant="outline" className="font-normal">
-              {row.original.manufacturer_name}
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground text-xs">
-              {t("table.na")}
-            </span>
-          ),
-      },
-      {
-        id: "badges",
-        header: t("table.type"),
-        cell: ({ row }) => (
-          <div className="flex flex-wrap gap-1 min-w-[120px]">
-            {row.original.requires_prescription && (
-              <Badge variant="secondary" className="text-xs">
-                {t("table.rx")}
-              </Badge>
-            )}
-            {row.original.is_controlled && (
-              <Badge variant="destructive" className="text-xs gap-1">
-                <Shield className="h-3 w-3" />
-                {t("table.controlled")}
-              </Badge>
-            )}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "barcode",
-        header: t("table.barcode"),
-        cell: ({ row }) => {
-          const primaryBarcode =
-            row.original.barcodes.find((b) => b.is_primary)?.barcode ||
-            row.original.barcodes[0]?.barcode;
-          return primaryBarcode ? (
-            <span className="font-mono text-xs text-muted-foreground">
-              {primaryBarcode}
-            </span>
-          ) : (
-            <span className="text-muted-foreground text-xs">
-              {t("table.na")}
-            </span>
-          );
-        },
-      },
-      {
-        id: "actions",
-        header: t("table.actions"),
-        cell: ({ row }) => {
-          const item = row.original;
-
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                  </Button>
-                }
-              />
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuItem onClick={() => handleViewDetails(item)}>
-                  <Eye className="h-4 w-4" />
-                  <span>{t("actions.viewDetails")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Editing ${item.name}`);
-                  }}
-                >
-                  <Edit className="h-4 w-4" />
-                  <span>{t("actions.editItem")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Duplicating ${item.name}`);
-                  }}
-                >
-                  <Copy className="h-4 w-4" />
-                  <span>{t("actions.duplicate")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleOpenStockAdjust(item)}>
-                  <TrendingUp className="h-4 w-4" />
-                  <span>{t("actions.adjustStock")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Viewing stock history for ${item.name}`);
-                  }}
-                >
-                  <BarChart3 className="h-4 w-4" />
-                  <span>{t("actions.stockHistory")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => handleDelete(item)}
-                >
-                  <Archive className="h-4 w-4" />
-                  <span>{t("actions.archive")}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
-      },
-    ],
-    [t, isRTL, handleViewDetails, handleOpenStockAdjust, handleDelete],
-  );
-
-  // Table instance
-  const table = useReactTable({
-    data: filteredItems,
-    columns,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 20,
-      },
-    },
+  // Table columns
+  const columns = useInventoryColumns({
+    t,
+    isRTL,
+    onViewDetails: handleViewDetails,
+    onAdjustStock: handleOpenStockAdjust,
+    onDelete: handleDelete,
   });
+
+  // Check if filters are active
+  const hasActiveFilters = Boolean(
+    searchQuery ||
+    (formFilter && formFilter !== "all") ||
+    (stockFilter && stockFilter !== "all") ||
+    (prescriptionFilter && prescriptionFilter !== "all"),
+  );
 
   // Loading state
   if (isLoading) {
@@ -534,7 +228,6 @@ function InventoryComponent() {
           <PageHeaderDescription>{t("page.description")}</PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions className="flex gap-2">
-          {/* View toggle - responsive sizing */}
           <Button
             onClick={toggleViewMode}
             variant="outline"
@@ -547,7 +240,6 @@ function InventoryComponent() {
             </span>
           </Button>
 
-          {/* Add Item - primary action */}
           <Button
             size="default"
             className="gap-2"
@@ -562,672 +254,47 @@ function InventoryComponent() {
       <PageContent>
         <PageContentInner className="flex-1 flex flex-col min-h-0">
           {/* Statistics */}
-          {stats && (
-            <PageSection className="mb-4 border-b border-dashed pb-4 shrink-0">
-              <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-                <StatsCard
-                  title={t("stats.totalItems")}
-                  value={stats.total_items}
-                  icon={Package}
-                  color="bg-blue-500"
-                />
-                <StatsCard
-                  title={t("stats.inStock")}
-                  value={stats.active_items}
-                  icon={Package}
-                  color="bg-green-500"
-                />
-                <StatsCard
-                  title={t("stats.lowStock")}
-                  value={stats.low_stock_count}
-                  icon={AlertTriangle}
-                  color="bg-yellow-500"
-                />
-                <StatsCard
-                  title={t("stats.outOfStock")}
-                  value={stats.out_of_stock_count}
-                  icon={XCircle}
-                  color="bg-red-500"
-                />
-                <StatsCard
-                  title={t("stats.totalValue")}
-                  value={`$${stats.total_inventory_value.toFixed(2)}`}
-                  icon={Package}
-                  color="bg-purple-500"
-                />
-              </div>
-            </PageSection>
-          )}
+          <InventoryStats stats={stats} />
 
           {/* Filters */}
           {items.length > 0 && (
-            <div className="mb-6 flex flex-col gap-4 shrink-0">
-              {/* Search and Filters Row */}
-              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-                {/* Search - fixed width on desktop */}
-                <div className="relative w-full md:w-[400px]">
-                  <Search
-                    className={cn(
-                      "absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground",
-                      isRTL ? "right-3" : "left-3",
-                    )}
-                  />
-                  <Input
-                    placeholder={t("page.searchPlaceholder")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className={isRTL ? "pr-10" : "pl-10"}
-                  />
-                </div>
-
-                {/* Desktop: Inline Filters on same row */}
-                <div className="hidden md:flex flex-row items-center gap-3 flex-1">
-                  {/* Form Filter */}
-                  <Select
-                    items={[
-                      { value: null, label: t("filters.filterByForm") },
-                      { value: "all", label: t("filters.allForms") },
-                      ...MEDICINE_FORMS.map((form) => ({
-                        value: form,
-                        label: form,
-                      })),
-                    ]}
-                    value={formFilter}
-                    onValueChange={setFormFilter}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder={t("filters.allForms")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">
-                        {t("filters.allForms")}
-                      </SelectItem>
-                      {MEDICINE_FORMS.map((form) => (
-                        <SelectItem key={form} value={form}>
-                          {form}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Stock Filter */}
-                  <Select
-                    items={[
-                      { value: null, label: t("filters.filterByStock") },
-                      { value: "all", label: t("filters.allStock") },
-                      { value: "in_stock", label: t("filters.inStock") },
-                      { value: "low_stock", label: t("filters.lowStock") },
-                      { value: "out_of_stock", label: t("filters.outOfStock") },
-                    ]}
-                    value={stockFilter}
-                    onValueChange={setStockFilter}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder={t("filters.allStock")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">
-                        {t("filters.allStock")}
-                      </SelectItem>
-                      <SelectItem value="in_stock">
-                        {t("filters.inStock")}
-                      </SelectItem>
-                      <SelectItem value="low_stock">
-                        {t("filters.lowStock")}
-                      </SelectItem>
-                      <SelectItem value="out_of_stock">
-                        {t("filters.outOfStock")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* Prescription Filter */}
-                  <Select
-                    items={[
-                      { value: null, label: t("filters.filterByType") },
-                      { value: "all", label: t("filters.allTypes") },
-                      {
-                        value: "prescription",
-                        label: t("filters.prescription"),
-                      },
-                      { value: "otc", label: t("filters.otc") },
-                    ]}
-                    value={prescriptionFilter}
-                    onValueChange={setPrescriptionFilter}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder={t("filters.allTypes")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">
-                        {t("filters.allTypes")}
-                      </SelectItem>
-                      <SelectItem value="prescription">
-                        {t("filters.prescription")}
-                      </SelectItem>
-                      <SelectItem value="otc">{t("filters.otc")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* Clear Filters */}
-                  {activeFiltersCount > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setFormFilter(null);
-                        setStockFilter(null);
-                        setPrescriptionFilter(null);
-                      }}
-                      className="gap-2"
-                    >
-                      <XCircle className="h-4 w-4" />
-                      <span>Clear ({activeFiltersCount})</span>
-                    </Button>
-                  )}
-                </div>
-
-                {/* Mobile: Filter Sheet Button */}
-                <Sheet>
-                  <SheetTrigger
-                    render={
-                      <Button variant="outline" className="gap-2 shrink-0" />
-                    }
-                    className="md:hidden"
-                  >
-                    <Filter className="h-4 w-4" />
-                    <span>Filters</span>
-                    {activeFiltersCount > 0 && (
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "h-5 w-5 rounded-full p-0 flex items-center justify-center",
-                          isRTL ? "mr-1" : "ml-1",
-                        )}
-                      >
-                        {activeFiltersCount}
-                      </Badge>
-                    )}
-                  </SheetTrigger>
-                  <SheetContent side="bottom" className="h-[80vh]">
-                    <SheetHeader>
-                      <SheetTitle>{t("filters.filters")}</SheetTitle>
-                      <SheetDescription>
-                        Filter inventory items by form, stock status, and type
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="mt-6 space-y-4">
-                      {/* Form Filter */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          {t("filters.medicineForm")}
-                        </label>
-                        <Select
-                          items={[
-                            { value: null, label: t("filters.filterByForm") },
-                            { value: "all", label: t("filters.allForms") },
-                            ...MEDICINE_FORMS.map((form) => ({
-                              value: form,
-                              label: form,
-                            })),
-                          ]}
-                          value={formFilter}
-                          onValueChange={setFormFilter}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t("filters.allForms")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">
-                              {t("filters.allForms")}
-                            </SelectItem>
-                            {MEDICINE_FORMS.map((form) => (
-                              <SelectItem key={form} value={form}>
-                                {form}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Stock Filter */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          {t("filters.stockStatus")}
-                        </label>
-                        <Select
-                          items={[
-                            { value: null, label: t("filters.filterByStock") },
-                            { value: "all", label: t("filters.allStock") },
-                            { value: "in_stock", label: t("filters.inStock") },
-                            {
-                              value: "low_stock",
-                              label: t("filters.lowStock"),
-                            },
-                            {
-                              value: "out_of_stock",
-                              label: t("filters.outOfStock"),
-                            },
-                          ]}
-                          value={stockFilter}
-                          onValueChange={setStockFilter}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t("filters.allStock")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">
-                              {t("filters.allStock")}
-                            </SelectItem>
-                            <SelectItem value="in_stock">
-                              {t("filters.inStock")}
-                            </SelectItem>
-                            <SelectItem value="low_stock">
-                              {t("filters.lowStock")}
-                            </SelectItem>
-                            <SelectItem value="out_of_stock">
-                              {t("filters.outOfStock")}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Prescription Filter */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          {t("filters.medicineType")}
-                        </label>
-                        <Select
-                          items={[
-                            { value: null, label: t("filters.filterByType") },
-                            { value: "all", label: t("filters.allTypes") },
-                            {
-                              value: "prescription",
-                              label: t("filters.prescription"),
-                            },
-                            { value: "otc", label: t("filters.otc") },
-                          ]}
-                          value={prescriptionFilter}
-                          onValueChange={setPrescriptionFilter}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t("filters.allTypes")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">
-                              {t("filters.allTypes")}
-                            </SelectItem>
-                            <SelectItem value="prescription">
-                              {t("filters.prescription")}
-                            </SelectItem>
-                            <SelectItem value="otc">
-                              {t("filters.otc")}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Clear Filters Button */}
-                      {activeFiltersCount > 0 && (
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => {
-                            setFormFilter(null);
-                            setStockFilter(null);
-                            setPrescriptionFilter(null);
-                          }}
-                        >
-                          Clear All Filters
-                        </Button>
-                      )}
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-
-              {/* Active Filters Summary */}
-              {(searchQuery ||
-                (formFilter && formFilter !== "all") ||
-                (stockFilter && stockFilter !== "all") ||
-                (prescriptionFilter && prescriptionFilter !== "all")) && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Filter className="h-4 w-4" />
-                  <span>
-                    Showing {filteredItems.length} of {items.length} items
-                  </span>
-                </div>
-              )}
-            </div>
+            <InventoryFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              formFilter={formFilter}
+              onFormFilterChange={setFormFilter}
+              stockFilter={stockFilter}
+              onStockFilterChange={setStockFilter}
+              prescriptionFilter={prescriptionFilter}
+              onPrescriptionFilterChange={setPrescriptionFilter}
+              activeFiltersCount={activeFiltersCount}
+              onClearFilters={clearFilters}
+              totalItems={items.length}
+              filteredItemsCount={filteredItems.length}
+            />
           )}
 
           {/* Items Display */}
           <div className="flex-1 min-h-0">
             {filteredItems.length === 0 ? (
-              <div className="h-full flex items-center justify-center border border-dashed rounded-lg">
-                <div className="text-center p-6 sm:p-12">
-                  <Package className="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2">
-                    {searchQuery ||
-                    (formFilter && formFilter !== "all") ||
-                    (stockFilter && stockFilter !== "all") ||
-                    (prescriptionFilter && prescriptionFilter !== "all")
-                      ? t("page.noItemsFound")
-                      : t("page.noItems")}
-                  </h3>
-                  <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
-                    {searchQuery ||
-                    (formFilter && formFilter !== "all") ||
-                    (stockFilter && stockFilter !== "all") ||
-                    (prescriptionFilter && prescriptionFilter !== "all")
-                      ? t("page.tryDifferentSearch")
-                      : t("page.startAdding")}
-                  </p>
-                  {!searchQuery &&
-                    (!formFilter || formFilter === "all") &&
-                    (!stockFilter || stockFilter === "all") &&
-                    (!prescriptionFilter || prescriptionFilter === "all") && (
-                      <Button
-                        className="gap-2"
-                        onClick={() => setIsFormOpen(true)}
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span>{t("page.addItem")}</span>
-                      </Button>
-                    )}
-                </div>
-              </div>
+              <InventoryEmptyState
+                hasFilters={hasActiveFilters}
+                onAddItem={() => setIsFormOpen(true)}
+              />
             ) : viewMode === "table" ? (
-              <div
-                key="table-view"
-                className="h-full flex flex-col animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
-              >
-                <div className="flex-1 overflow-auto border rounded-lg">
-                  <Table>
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => (
-                            <TableHead
-                              key={header.id}
-                              className={cn(isRTL ? "text-right" : "text-left")}
-                            >
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext(),
-                                  )}
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows.length ? (
-                        table.getRowModel().rows.map((row) => (
-                          <TableRow
-                            key={row.id}
-                            data-state={row.getIsSelected() && "selected"}
-                            className="cursor-pointer"
-                          >
-                            {row.getVisibleCells().map((cell) => (
-                              <TableCell
-                                key={cell.id}
-                                className={cn(
-                                  isRTL ? "text-right" : "text-left",
-                                )}
-                              >
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                )}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell
-                            colSpan={columns.length}
-                            className="h-24 text-center"
-                          >
-                            No results.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                {/* Pagination */}
-                <div className="flex flex-col gap-4 py-4 shrink-0 border-t bg-muted/20">
-                  {/* Mobile: Simple pagination */}
-                  <div className="flex sm:hidden items-center justify-between w-full px-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                      className="gap-1"
-                    >
-                      {isRTL ? (
-                        <>
-                          <span>Previous</span>
-                          <ChevronRightIcon className="h-4 w-4" />
-                        </>
-                      ) : (
-                        <>
-                          <ChevronLeftIcon className="h-4 w-4" />
-                          <span>Previous</span>
-                        </>
-                      )}
-                    </Button>
-                    <span className="text-sm font-medium">
-                      Page {table.getState().pagination.pageIndex + 1} of{" "}
-                      {table.getPageCount()}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                      className="gap-1"
-                    >
-                      {isRTL ? (
-                        <>
-                          <ChevronLeftIcon className="h-4 w-4" />
-                          <span>Next</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Next</span>
-                          <ChevronRightIcon className="h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {/* Tablet & Desktop: Full pagination */}
-                  <div className="hidden sm:flex flex-col lg:flex-row items-center justify-between gap-4 px-4">
-                    {/* Items info and page size selector */}
-                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                      <div className="text-sm text-muted-foreground">
-                        {t("pagination.showing")}{" "}
-                        <span className="font-medium text-foreground">
-                          {table.getState().pagination.pageIndex *
-                            table.getState().pagination.pageSize +
-                            1}
-                        </span>{" "}
-                        {t("pagination.to")}{" "}
-                        <span className="font-medium text-foreground">
-                          {Math.min(
-                            (table.getState().pagination.pageIndex + 1) *
-                              table.getState().pagination.pageSize,
-                            filteredItems.length,
-                          )}
-                        </span>{" "}
-                        {t("pagination.of")}{" "}
-                        <span className="font-medium text-foreground">
-                          {filteredItems.length}
-                        </span>{" "}
-                        {t("pagination.items")}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground whitespace-nowrap">
-                          {t("pagination.rowsPerPage")}
-                        </span>
-                        <Select
-                          value={table
-                            .getState()
-                            .pagination.pageSize.toString()}
-                          onValueChange={(value) => {
-                            table.setPageSize(Number(value));
-                          }}
-                        >
-                          <SelectTrigger className="h-8 w-[70px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[10, 20, 30, 50, 100].map((pageSize) => (
-                              <SelectItem
-                                key={pageSize}
-                                value={pageSize.toString()}
-                              >
-                                {pageSize}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {/* Page navigation */}
-                    <div className="flex items-center gap-2">
-                      <Pagination>
-                        <PaginationContent>
-                          {/* First page button */}
-                          <PaginationItem className="hidden md:block">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => table.setPageIndex(0)}
-                              disabled={!table.getCanPreviousPage()}
-                            >
-                              {isRTL ? (
-                                <ChevronsRight className="h-4 w-4" />
-                              ) : (
-                                <ChevronsLeft className="h-4 w-4" />
-                              )}
-                              <span className="sr-only">First page</span>
-                            </Button>
-                          </PaginationItem>
-
-                          {/* Previous page button */}
-                          <PaginationItem>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => table.previousPage()}
-                              disabled={!table.getCanPreviousPage()}
-                            >
-                              {isRTL ? (
-                                <ChevronRightIcon className="h-4 w-4" />
-                              ) : (
-                                <ChevronLeftIcon className="h-4 w-4" />
-                              )}
-                              <span className="sr-only">Previous page</span>
-                            </Button>
-                          </PaginationItem>
-
-                          {/* Page numbers - hidden on small tablets */}
-                          <div className="hidden md:flex items-center gap-1">
-                            {generatePaginationItems(
-                              table.getState().pagination.pageIndex,
-                              table.getPageCount(),
-                            ).map((item, index) => (
-                              <PaginationItem key={index}>
-                                {item === "ellipsis" ? (
-                                  <PaginationEllipsis />
-                                ) : (
-                                  <PaginationLink
-                                    onClick={() =>
-                                      table.setPageIndex(item as number)
-                                    }
-                                    isActive={
-                                      table.getState().pagination.pageIndex ===
-                                      item
-                                    }
-                                    className="h-8 w-8 cursor-pointer"
-                                  >
-                                    {(item as number) + 1}
-                                  </PaginationLink>
-                                )}
-                              </PaginationItem>
-                            ))}
-                          </div>
-
-                          {/* Next page button */}
-                          <PaginationItem>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => table.nextPage()}
-                              disabled={!table.getCanNextPage()}
-                            >
-                              {isRTL ? (
-                                <ChevronLeftIcon className="h-4 w-4" />
-                              ) : (
-                                <ChevronRightIcon className="h-4 w-4" />
-                              )}
-                              <span className="sr-only">Next page</span>
-                            </Button>
-                          </PaginationItem>
-
-                          {/* Last page button */}
-                          <PaginationItem className="hidden md:block">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                table.setPageIndex(table.getPageCount() - 1)
-                              }
-                              disabled={!table.getCanNextPage()}
-                            >
-                              {isRTL ? (
-                                <ChevronsLeft className="h-4 w-4" />
-                              ) : (
-                                <ChevronsRight className="h-4 w-4" />
-                              )}
-                              <span className="sr-only">Last page</span>
-                            </Button>
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <InventoryTable
+                data={filteredItems}
+                columns={columns}
+                sorting={sorting}
+                onSortingChange={setSorting}
+              />
             ) : (
-              <div
-                key="grid-view"
-                className="h-full overflow-y-auto pb-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
-              >
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-w-[2000px] mx-auto">
-                  {filteredItems.map((item) => (
-                    <InventoryItemCard
-                      key={item.id}
-                      item={item}
-                      onViewDetails={handleViewDetails}
-                      onAdjustStock={handleOpenStockAdjust}
-                      onDelete={handleDelete}
-                    />
-                  ))}
-                </div>
-              </div>
+              <InventoryGrid
+                items={filteredItems}
+                onViewDetails={handleViewDetails}
+                onAdjustStock={handleOpenStockAdjust}
+                onDelete={handleDelete}
+              />
             )}
           </div>
         </PageContentInner>
@@ -1255,33 +322,13 @@ function InventoryComponent() {
         onAdjust={handleStockAdjust}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
+      <InventoryDeleteDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className={cn(isRTL && "text-right")}>
-              {t("messages.confirmDelete", { name: itemToDelete?.name || "" })}
-            </AlertDialogTitle>
-            <AlertDialogDescription className={cn(isRTL && "text-right")}>
-              {t("messages.deleteDescription")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className={cn(isRTL && "flex-row-reverse")}>
-            <AlertDialogCancel onClick={cancelDelete}>
-              {t("messages.cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {t("messages.archive")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        item={itemToDelete}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </Page>
   );
 }
