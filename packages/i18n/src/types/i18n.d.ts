@@ -10,6 +10,7 @@ import type settings from "../locales/en/settings.json";
 import type validation from "../locales/en/validation.json";
 import type onboarding from "../locales/en/onboarding.json";
 import type inventory from "../locales/en/inventory.json";
+import type login from "../locales/en/login.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -24,6 +25,7 @@ declare module "i18next" {
       validation: typeof validation;
       onboarding: typeof onboarding;
       inventory: typeof inventory;
+      login: typeof login;
     };
     returnNull: false;
   }

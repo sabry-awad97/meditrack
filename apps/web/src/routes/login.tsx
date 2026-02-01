@@ -46,6 +46,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import { createLogger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
+import { useTranslation, useDirection } from "@meditrack/i18n";
 
 const logger = createLogger("LoginPage");
 
@@ -82,21 +83,19 @@ export const Route = createFileRoute("/login")({
 // Validation Schema
 // ============================================================================
 
-const loginSchema = z.object({
-  username: z
-    .string()
-    .min(1, "Username is required")
-    .min(3, "Username must be at least 3 characters")
-    .max(50, "Username must not exceed 50 characters")
-    .regex(
-      /^[a-zA-Z0-9._-]+$/,
-      "Username can only contain letters, numbers, dots, underscores, and hyphens",
-    ),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters"),
-});
+const createLoginSchema = (t: (key: string) => string) =>
+  z.object({
+    username: z
+      .string()
+      .min(1, t("login:errors.username.required"))
+      .min(3, t("login:errors.username.minLength"))
+      .max(50, t("login:errors.username.maxLength"))
+      .regex(/^[a-zA-Z0-9._-]+$/, t("login:errors.username.invalid")),
+    password: z
+      .string()
+      .min(1, t("login:errors.password.required"))
+      .min(8, t("login:errors.password.minLength")),
+  });
 
 // ============================================================================
 // Component
@@ -106,6 +105,11 @@ function LoginPage() {
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const search = useSearch({ from: "/login" });
+  const { t } = useTranslation("login");
+  const { isRTL } = useDirection();
+
+  // Create validation schema with translations
+  const loginSchema = createLoginSchema(t);
 
   // Form state
   const [username, setUsername] = useState("");
@@ -133,10 +137,10 @@ function LoginPage() {
   useEffect(() => {
     if (search.session_expired) {
       setErrors({
-        general: "Your session has expired. Please login again.",
+        general: t("errors.sessionExpired"),
       });
     }
-  }, [search.session_expired]);
+  }, [search.session_expired, t]);
 
   // ============================================================================
   // Redirect if Already Authenticated
@@ -309,7 +313,7 @@ function LoginPage() {
       setLoginAttempts((prev) => prev + 1);
 
       const errorMessage =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
+        err instanceof Error ? err.message : t("errors.loginFailed");
 
       setErrors({ general: errorMessage });
 
@@ -390,7 +394,7 @@ function LoginPage() {
       <div className="flex h-screen items-center justify-center bg-linear-to-br from-background via-background to-muted/30">
         <div className="flex flex-col items-center gap-4">
           <Spinner className="h-8 w-8" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">{t("loading")}</p>
         </div>
       </div>
     );
@@ -408,18 +412,14 @@ function LoginPage() {
           <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 ring-1 ring-primary/20">
             <Shield className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">MediTrack</h1>
-          <p className="text-sm text-muted-foreground">
-            Professional Pharmacy Management
-          </p>
+          <h1 className="text-2xl font-bold">{t("appName")}</h1>
+          <p className="text-sm text-muted-foreground">{t("appTagline")}</p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl">Welcome Back</CardTitle>
-            <CardDescription>
-              Sign in to your account to continue
-            </CardDescription>
+            <CardTitle className="text-xl">{t("title")}</CardTitle>
+            <CardDescription>{t("subtitle")}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -428,7 +428,7 @@ function LoginPage() {
               {errors.general && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Authentication Failed</AlertTitle>
+                  <AlertTitle>{t("errors.authFailed")}</AlertTitle>
                   <AlertDescription>{errors.general}</AlertDescription>
                 </Alert>
               )}
@@ -437,9 +437,9 @@ function LoginPage() {
               {isLocked && (
                 <Alert variant="destructive">
                   <Lock className="h-4 w-4" />
-                  <AlertTitle>Account Temporarily Locked</AlertTitle>
+                  <AlertTitle>{t("errors.accountLocked")}</AlertTitle>
                   <AlertDescription>
-                    Too many failed login attempts. Please try again in{" "}
+                    {t("errors.accountLockedMessage")}{" "}
                     <strong>{getLockoutTimeRemaining()}</strong>
                   </AlertDescription>
                 </Alert>
@@ -450,9 +450,9 @@ function LoginPage() {
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    {5 - loginAttempts} attempt
-                    {5 - loginAttempts !== 1 ? "s" : ""} remaining before
-                    account lockout
+                    {t("errors.attemptsRemaining", {
+                      count: 5 - loginAttempts,
+                    })}
                   </AlertDescription>
                 </Alert>
               )}
@@ -461,9 +461,9 @@ function LoginPage() {
               <div className="space-y-2">
                 <Label htmlFor="username" className="flex items-center gap-2">
                   <User className="h-3.5 w-3.5" />
-                  Username
+                  {t("form.username.label")}
                   <kbd className="ml-auto text-[10px] px-1 py-0.5 bg-muted rounded opacity-60">
-                    Alt+U
+                    {t("form.username.shortcut")}
                   </kbd>
                 </Label>
                 <div className="relative">
@@ -471,7 +471,7 @@ function LoginPage() {
                     ref={usernameRef}
                     id="username"
                     type="text"
-                    placeholder="Enter your username"
+                    placeholder={t("form.username.placeholder")}
                     value={username}
                     onChange={handleUsernameChange}
                     onBlur={handleUsernameBlur}
@@ -512,9 +512,9 @@ function LoginPage() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="flex items-center gap-2">
                     <KeyRound className="h-3.5 w-3.5" />
-                    Password
+                    {t("form.password.label")}
                     <kbd className="ml-auto text-[10px] px-1 py-0.5 bg-muted rounded opacity-60">
-                      Alt+P
+                      {t("form.password.shortcut")}
                     </kbd>
                   </Label>
                 </div>
@@ -523,7 +523,7 @@ function LoginPage() {
                     ref={passwordRef}
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder={t("form.password.placeholder")}
                     value={password}
                     onChange={handlePasswordChange}
                     onBlur={handlePasswordBlur}
@@ -551,7 +551,9 @@ function LoginPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                     tabIndex={-1}
                     aria-label={
-                      showPassword ? "Hide password" : "Show password"
+                      showPassword
+                        ? t("form.password.hide")
+                        : t("form.password.show")
                     }
                   >
                     {showPassword ? (
@@ -587,7 +589,7 @@ function LoginPage() {
                     htmlFor="remember"
                     className="text-xs font-normal cursor-pointer"
                   >
-                    Remember me
+                    {t("form.rememberMe")}
                   </Label>
                 </div>
                 <button
@@ -599,7 +601,7 @@ function LoginPage() {
                     logger.info("Forgot password clicked");
                   }}
                 >
-                  Forgot password?
+                  {t("form.forgotPassword")}
                 </button>
               </div>
 
@@ -613,12 +615,12 @@ function LoginPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    {t("form.signingIn")}
                   </>
                 ) : (
                   <>
                     <Lock className="mr-2 h-4 w-4" />
-                    Sign In
+                    {t("form.signIn")}
                   </>
                 )}
               </Button>
@@ -628,7 +630,7 @@ function LoginPage() {
           <CardFooter className="flex-col gap-2 text-center">
             {/* Keyboard Shortcuts */}
             <div className="text-xs text-muted-foreground space-y-1">
-              <p className="font-medium">Keyboard Shortcuts:</p>
+              <p className="font-medium">{t("shortcuts.title")}</p>
               <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
                 <span>
                   <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">
@@ -637,8 +639,8 @@ function LoginPage() {
                   {" + "}
                   <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">
                     Enter
-                  </kbd>
-                  {" Sign in"}
+                  </kbd>{" "}
+                  {t("shortcuts.signIn")}
                 </span>
                 <span>
                   <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">
@@ -651,30 +653,34 @@ function LoginPage() {
                   {" + "}
                   <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">
                     P
-                  </kbd>
-                  {" Toggle password"}
+                  </kbd>{" "}
+                  {t("shortcuts.togglePassword")}
                 </span>
               </div>
             </div>
 
             {/* Development Mode Hint */}
             {import.meta.env.DEV && (
-              <div className="mt-2 p-2 bg-muted/50 rounded text-left w-full">
+              <div
+                className={cn(
+                  "mt-2 p-2 bg-muted/50 rounded w-full",
+                  isRTL ? "text-right" : "text-left",
+                )}
+              >
                 <p className="text-xs text-muted-foreground mb-2">
                   <strong className="text-foreground">
-                    Development Mode - Test Credentials:
+                    {t("development.title")}
                   </strong>
                 </p>
                 <div className="space-y-1 text-xs font-mono">
                   <p>
-                    <strong>Username:</strong> admin
+                    <strong>{t("development.username")}</strong> admin
                   </p>
                   <p>
-                    <strong>Password:</strong> admin123
+                    <strong>{t("development.password")}</strong> admin123
                   </p>
                   <p className="text-[10px] text-muted-foreground mt-2">
-                    Note: Complete the onboarding process on first run to create
-                    the admin user
+                    {t("development.note")}
                   </p>
                 </div>
               </div>
@@ -684,8 +690,7 @@ function LoginPage() {
 
         {/* Security Notice */}
         <p className="text-center text-xs text-muted-foreground">
-          Protected by enterprise-grade security. Your data is encrypted and
-          secure.
+          {t("security.notice")}
         </p>
       </div>
     </div>

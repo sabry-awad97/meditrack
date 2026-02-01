@@ -1,0 +1,59 @@
+{
+  "title": "Welcome Back",
+  "subtitle": "Sign in to your account to continue",
+  "appName": "MediTrack",
+  "appTagline": "Professional Pharmacy Management",
+  "form": {
+    "username": {
+      "label": "Username",
+      "placeholder": "Enter your username",
+      "shortcut": "Alt+U"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "shortcut": "Alt+P",
+      "show": "Show password",
+      "hide": "Hide password",
+      "toggle": "Toggle password"
+    },
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "signingIn": "Signing in..."
+  },
+  "errors": {
+    "authFailed": "Authentication Failed",
+    "sessionExpired": "Your session has expired. Please login again.",
+    "accountLocked": "Account Temporarily Locked",
+    "accountLockedMessage": "Too many failed login attempts. Please try again in",
+    "attemptsRemaining": "{{count}} attempt remaining before account lockout",
+    "attemptsRemaining_other": "{{count}} attempts remaining before account lockout",
+    "loginFailed": "Login failed. Please try again.",
+    "username": {
+      "required": "Username is required",
+      "minLength": "Username must be at least 3 characters",
+      "maxLength": "Username must not exceed 50 characters",
+      "invalid": "Username can only contain letters, numbers, dots, underscores, and hyphens"
+    },
+    "password": {
+      "required": "Password is required",
+      "minLength": "Password must be at least 8 characters"
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts:",
+    "signIn": "Sign in",
+    "togglePassword": "Toggle password"
+  },
+  "development": {
+    "title": "Development Mode - Test Credentials:",
+    "username": "Username:",
+    "password": "Password:",
+    "note": "Note: Complete the onboarding process on first run to create the admin user"
+  },
+  "security": {
+    "notice": "Protected by enterprise-grade security. Your data is encrypted and secure."
+  },
+  "loading": "Loading..."
+}
