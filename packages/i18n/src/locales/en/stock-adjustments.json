@@ -33,7 +33,12 @@
   },
   "actions": {
     "adjustStock": "Adjust Stock",
-    "viewHistory": "View History"
+    "viewHistory": "View History",
+    "viewDetails": "View Details",
+    "viewStockHistory": "View Stock History",
+    "viewPriceHistory": "View Price History",
+    "updateMinLevel": "Update Min Level",
+    "quickReorder": "Quick Reorder"
   },
   "stockStatus": {
     "inStock": "In Stock",

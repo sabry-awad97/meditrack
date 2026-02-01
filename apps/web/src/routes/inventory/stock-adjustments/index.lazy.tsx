@@ -15,9 +15,17 @@ import {
   PageContent,
   PageContentInner,
 } from "@/components/ui/page";
-import { useInventoryItems, useAdjustInventoryStock } from "@/hooks";
+import {
+  useInventoryItems,
+  useAdjustInventoryStock,
+  usePriceHistory,
+} from "@/hooks";
 import type { InventoryItemWithStockResponse } from "@/api/inventory.api";
-import { StockAdjustmentDialog } from "@/routes/inventory/items/-components";
+import {
+  StockAdjustmentDialog,
+  ItemDetailsDialog,
+  StockHistoryDialog,
+} from "@/routes/inventory/items/-components";
 import {
   useStockAdjustmentColumns,
   StockAdjustmentFilters,
@@ -47,6 +55,10 @@ function StockAdjustmentsComponent() {
   >(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isAdjustDialogOpen, setIsAdjustDialogOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isStockHistoryOpen, setIsStockHistoryOpen] = useState(false);
+  const [isPriceHistoryOpen, setIsPriceHistoryOpen] = useState(false);
+  const [isMinLevelDialogOpen, setIsMinLevelDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] =
     useState<InventoryItemWithStockResponse | null>(null);
 
@@ -54,6 +66,32 @@ function StockAdjustmentsComponent() {
   const handleOpenAdjustDialog = (item: InventoryItemWithStockResponse) => {
     setSelectedItem(item);
     setIsAdjustDialogOpen(true);
+  };
+
+  const handleViewDetails = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsDetailsOpen(true);
+  };
+
+  const handleViewStockHistory = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsStockHistoryOpen(true);
+  };
+
+  const handleViewPriceHistory = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsPriceHistoryOpen(true);
+  };
+
+  const handleUpdateMinLevel = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsMinLevelDialogOpen(true);
+  };
+
+  const handleQuickReorder = (item: InventoryItemWithStockResponse) => {
+    // TODO: Implement quick reorder functionality
+    // This would create a purchase order for the item
+    console.log("Quick reorder for:", item.name);
   };
 
   const handleStockAdjust = (
@@ -64,7 +102,20 @@ function StockAdjustmentsComponent() {
   ) => {
     adjustStock.mutate({
       id: itemId,
-      data: { adjustment, reason, adjustment_type: adjustmentType },
+      data: {
+        adjustment,
+        reason,
+        adjustment_type: adjustmentType as
+          | "manual_adjustment"
+          | "order_arrival"
+          | "sale"
+          | "damage"
+          | "expiry"
+          | "return"
+          | "transfer"
+          | "initial_stock"
+          | undefined,
+      },
     });
     setIsAdjustDialogOpen(false);
     setSelectedItem(null);
@@ -152,11 +203,23 @@ function StockAdjustmentsComponent() {
     ];
   }, [items, t]);
 
+  // Fetch price history for selected item
+  const { data: priceHistory = [] } = usePriceHistory(
+    selectedItem?.id ?? "",
+    12,
+    { enabled: !!selectedItem },
+  );
+
   // Table columns
   const columns = useStockAdjustmentColumns({
     t,
     isRTL,
     onAdjust: handleOpenAdjustDialog,
+    onViewDetails: handleViewDetails,
+    onViewStockHistory: handleViewStockHistory,
+    onViewPriceHistory: handleViewPriceHistory,
+    onUpdateMinLevel: handleUpdateMinLevel,
+    onQuickReorder: handleQuickReorder,
   });
 
   // Loading state
@@ -246,6 +309,22 @@ function StockAdjustmentsComponent() {
         item={selectedItem}
         onAdjust={handleStockAdjust}
       />
+
+      <ItemDetailsDialog
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        item={selectedItem}
+        priceHistory={priceHistory}
+      />
+
+      <StockHistoryDialog
+        open={isStockHistoryOpen}
+        onOpenChange={setIsStockHistoryOpen}
+        item={selectedItem}
+      />
+
+      {/* TODO: Add PriceHistoryDialog */}
+      {/* TODO: Add MinLevelDialog */}
     </Page>
   );
 }

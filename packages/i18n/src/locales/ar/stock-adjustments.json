@@ -33,7 +33,12 @@
   },
   "actions": {
     "adjustStock": "تعديل المخزون",
-    "viewHistory": "عرض السجل"
+    "viewHistory": "عرض السجل",
+    "viewDetails": "عرض التفاصيل",
+    "viewStockHistory": "عرض سجل المخزون",
+    "viewPriceHistory": "عرض سجل الأسعار",
+    "updateMinLevel": "تحديث الحد الأدنى",
+    "quickReorder": "طلب سريع"
   },
   "stockStatus": {
     "inStock": "متوفر",

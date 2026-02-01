@@ -1,8 +1,25 @@
-import { type ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, TrendingUp } from "lucide-react";
+import { useMemo } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  ArrowUpDown,
+  TrendingUp,
+  MoreHorizontal,
+  Eye,
+  History,
+  Bell,
+  ShoppingCart,
+  BarChart3,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { InventoryItemWithStockResponse } from "@/api/inventory.api";
 import { cn } from "@/lib/utils";
 
@@ -10,12 +27,22 @@ interface UseStockAdjustmentColumnsProps {
   t: (key: string) => string;
   isRTL: boolean;
   onAdjust: (item: InventoryItemWithStockResponse) => void;
+  onViewDetails: (item: InventoryItemWithStockResponse) => void;
+  onViewStockHistory: (item: InventoryItemWithStockResponse) => void;
+  onViewPriceHistory: (item: InventoryItemWithStockResponse) => void;
+  onUpdateMinLevel: (item: InventoryItemWithStockResponse) => void;
+  onQuickReorder: (item: InventoryItemWithStockResponse) => void;
 }
 
 export function useStockAdjustmentColumns({
   t,
   isRTL,
   onAdjust,
+  onViewDetails,
+  onViewStockHistory,
+  onViewPriceHistory,
+  onUpdateMinLevel,
+  onQuickReorder,
 }: UseStockAdjustmentColumnsProps): ColumnDef<InventoryItemWithStockResponse>[] {
   return [
     {
@@ -174,7 +201,7 @@ export function useStockAdjustmentColumns({
         return (
           <div className="flex items-center justify-center gap-2">
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
               onClick={() => onAdjust(item)}
               className="gap-2"
@@ -182,6 +209,40 @@ export function useStockAdjustmentColumns({
               <TrendingUp className="h-4 w-4" />
               {t("actions.adjustStock")}
             </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" />
+                }
+              >
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={isRTL ? "start" : "end"}>
+                <DropdownMenuItem onClick={() => onViewDetails(item)}>
+                  <Eye className="h-4 w-4" />
+                  <span>{t("actions.viewDetails")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onViewStockHistory(item)}>
+                  <History className="h-4 w-4" />
+                  <span>{t("actions.viewStockHistory")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onViewPriceHistory(item)}>
+                  <BarChart3 className="h-4 w-4" />
+                  <span>{t("actions.viewPriceHistory")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onUpdateMinLevel(item)}>
+                  <Bell className="h-4 w-4" />
+                  <span>{t("actions.updateMinLevel")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onQuickReorder(item)}>
+                  <ShoppingCart className="h-4 w-4" />
+                  <span>{t("actions.quickReorder")}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         );
       },
