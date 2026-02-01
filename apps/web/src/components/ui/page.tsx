@@ -51,9 +51,8 @@ function PageHeader({
 }
 
 // Page Header Trigger (Sidebar Toggle)
-interface PageHeaderTriggerProps extends React.ComponentProps<
-  typeof SidebarTrigger
-> {}
+interface PageHeaderTriggerProps
+  extends React.ComponentProps<typeof SidebarTrigger> {}
 
 function PageHeaderTrigger({ className, ...props }: PageHeaderTriggerProps) {
   return <SidebarTrigger className={cn("shrink-0", className)} {...props} />;
@@ -77,7 +76,8 @@ function PageHeaderContent({
 }
 
 // Page Header Title
-interface PageHeaderTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+interface PageHeaderTitleProps
+  extends React.HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode;
 }
 
@@ -97,7 +97,8 @@ function PageHeaderTitle({
 }
 
 // Page Header Description
-interface PageHeaderDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
+interface PageHeaderDescriptionProps
+  extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode;
 }
 
@@ -210,7 +211,8 @@ function PageSectionHeader({
 }
 
 // Page Section Title
-interface PageSectionTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+interface PageSectionTitleProps
+  extends React.HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode;
 }
 

@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SpecialOrdersRouteImport } from './routes/special-orders'
@@ -15,9 +17,10 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
+
+const InventoryIndexLazyRouteImport = createFileRoute('/inventory/')()
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -49,11 +52,6 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const R404Route = R404RouteImport.update({
   id: '/404',
   path: '/404',
@@ -64,87 +62,94 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InventoryIndexLazyRoute = InventoryIndexLazyRouteImport.update({
+  id: '/inventory/',
+  path: '/inventory/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/inventory/index.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/special-orders': typeof SpecialOrdersRoute
   '/suppliers': typeof SuppliersRoute
+  '/inventory/': typeof InventoryIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/special-orders': typeof SpecialOrdersRoute
   '/suppliers': typeof SuppliersRoute
+  '/inventory': typeof InventoryIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/special-orders': typeof SpecialOrdersRoute
   '/suppliers': typeof SuppliersRoute
+  '/inventory/': typeof InventoryIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/404'
-    | '/inventory'
     | '/login'
     | '/onboarding'
     | '/reports'
     | '/settings'
     | '/special-orders'
     | '/suppliers'
+    | '/inventory/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/404'
-    | '/inventory'
     | '/login'
     | '/onboarding'
     | '/reports'
     | '/settings'
     | '/special-orders'
     | '/suppliers'
+    | '/inventory'
   id:
     | '__root__'
     | '/'
     | '/404'
-    | '/inventory'
     | '/login'
     | '/onboarding'
     | '/reports'
     | '/settings'
     | '/special-orders'
     | '/suppliers'
+    | '/inventory/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R404Route: typeof R404Route
-  InventoryRoute: typeof InventoryRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
   SpecialOrdersRoute: typeof SpecialOrdersRoute
   SuppliersRoute: typeof SuppliersRoute
+  InventoryIndexLazyRoute: typeof InventoryIndexLazyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -191,13 +196,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/404': {
       id: '/404'
       path: '/404'
@@ -212,19 +210,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inventory/': {
+      id: '/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory/'
+      preLoaderRoute: typeof InventoryIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R404Route: R404Route,
-  InventoryRoute: InventoryRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
   SpecialOrdersRoute: SpecialOrdersRoute,
   SuppliersRoute: SuppliersRoute,
+  InventoryIndexLazyRoute: InventoryIndexLazyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

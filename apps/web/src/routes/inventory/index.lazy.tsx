@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import {
   Plus,
   Search,
@@ -34,7 +34,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import type { PriceHistoryEntry } from "@/components/inventory";
+import type { PriceHistoryEntry } from "@/routes/inventory/-components";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,12 +125,12 @@ import {
   InventoryForm,
   StockAdjustmentDialog,
   ItemDetailsDialog,
-} from "@/components/inventory";
+} from "./-components";
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/inventory")({
+export const Route = createLazyFileRoute("/inventory/")({
   component: InventoryComponent,
 });
 

@@ -125,7 +125,7 @@
   body {
     @apply font-sans bg-background text-foreground;
   }
-  
+
   /* Prevent white flash on load */
   html,
   body,
