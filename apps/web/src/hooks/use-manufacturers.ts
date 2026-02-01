@@ -16,7 +16,9 @@ import type {
   ManufacturerId,
   CreateManufacturer,
   UpdateManufacturer,
+  ManufacturerQuery,
 } from "@/api/manufacturer.api";
+import type { PaginationParams } from "@/lib/tauri-api";
 
 const logger = createLogger("ManufacturerHooks");
 
@@ -27,8 +29,8 @@ const logger = createLogger("ManufacturerHooks");
 export const manufacturerKeys = {
   all: ["manufacturers"] as const,
   lists: () => [...manufacturerKeys.all, "list"] as const,
-  list: (activeOnly: boolean) =>
-    [...manufacturerKeys.lists(), { activeOnly }] as const,
+  list: (filters?: ManufacturerQuery, pagination?: PaginationParams) =>
+    [...manufacturerKeys.lists(), { filters, pagination }] as const,
   listActive: () => [...manufacturerKeys.lists(), "active"] as const,
   details: () => [...manufacturerKeys.all, "detail"] as const,
   detail: (id: ManufacturerId) => [...manufacturerKeys.details(), id] as const,
@@ -40,12 +42,15 @@ export const manufacturerKeys = {
 // ============================================================================
 
 /**
- * Get all manufacturers with optional filtering
+ * Get manufacturers with filtering and pagination
  */
-export function useManufacturers(activeOnly: boolean = false) {
+export function useManufacturers(
+  filters?: ManufacturerQuery,
+  pagination?: PaginationParams,
+) {
   return useQuery({
-    queryKey: manufacturerKeys.list(activeOnly),
-    queryFn: () => manufacturerApi.list(activeOnly),
+    queryKey: manufacturerKeys.list(filters, pagination),
+    queryFn: () => manufacturerApi.list(filters, pagination),
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 }

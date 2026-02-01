@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { invokeCommand } from "@/lib/tauri-api";
+import { invokeCommand, type PaginationParams } from "@/lib/tauri-api";
 import { createLogger } from "@/lib/logger";
 
 const logger = createLogger("ManufacturerAPI");
@@ -78,6 +78,37 @@ export const MutationResultSchema = z.object({
 });
 export type MutationResult = z.infer<typeof MutationResultSchema>;
 
+/**
+ * Manufacturer query filters schema (matches backend ManufacturerQueryDto)
+ */
+export const ManufacturerQuerySchema = z.object({
+  id: ManufacturerIdSchema.optional(),
+  name: z.string().optional(),
+  country: z.string().optional(),
+  is_active: z.boolean().optional(),
+  include_deleted: z.boolean().optional(),
+});
+export type ManufacturerQuery = z.infer<typeof ManufacturerQuerySchema>;
+
+/**
+ * Pagination result schema
+ */
+export const PaginationResultSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
+  z.object({
+    items: z.array(itemSchema),
+    total: z.number(),
+    page: z.number(),
+    page_size: z.number(),
+    total_pages: z.number(),
+  });
+export type PaginationResult<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+};
+
 // ============================================================================
 // CRUD Operations
 // ============================================================================
@@ -104,7 +135,7 @@ export async function createManufacturersBulk(
   return invokeCommand(
     "create_manufacturers_bulk",
     z.array(MutationResultSchema),
-    { data },
+    { params: { data } },
   );
 }
 
@@ -162,31 +193,35 @@ export async function getManufacturerByName(
 }
 
 /**
- * List all manufacturers with optional filtering
+ * List manufacturers with filtering and pagination
  */
 export async function listManufacturers(
-  activeOnly: boolean = false,
-): Promise<ManufacturerResponse[]> {
-  logger.info("Listing manufacturers, active only:", activeOnly);
+  filter?: ManufacturerQuery,
+  pagination?: PaginationParams,
+): Promise<PaginationResult<ManufacturerResponse>> {
+  logger.info("Listing manufacturers with filter:", filter);
   return invokeCommand(
     "list_manufacturers",
-    z.array(ManufacturerResponseSchema),
-    { active_only: activeOnly },
+    PaginationResultSchema(ManufacturerResponseSchema),
+    {
+      params: {
+        filter: filter || null,
+        pagination: pagination || null,
+      },
+    },
   );
 }
 
 /**
  * List active manufacturers (for dropdowns)
+ * This is a convenience method that uses listManufacturers with is_active filter
  */
 export async function listActiveManufacturers(): Promise<
   ManufacturerResponse[]
 > {
   logger.info("Listing active manufacturers");
-  return invokeCommand(
-    "list_active_manufacturers",
-    z.array(ManufacturerResponseSchema),
-    {},
-  );
+  const result = await listManufacturers({ is_active: true });
+  return result.items;
 }
 
 // ============================================================================

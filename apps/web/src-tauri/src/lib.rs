@@ -142,7 +142,6 @@ pub async fn run() {
         // Manufacturer Retrieval
         ipc::commands::manufacturer::get_manufacturer_by_name,
         ipc::commands::manufacturer::list_manufacturers,
-        ipc::commands::manufacturer::list_active_manufacturers,
         // Manufacturer Management
         ipc::commands::manufacturer::hard_delete_manufacturer,
         // Session Management

@@ -121,27 +121,66 @@ impl ManufacturerService {
         Ok(manufacturer.into())
     }
 
-    /// List all manufacturers with optional filtering
-    pub async fn list(&self, active_only: bool) -> ServiceResult<Vec<ManufacturerResponse>> {
-        let mut query = Manufacturer::find();
+    /// List manufacturers with filtering and pagination
+    pub async fn list(
+        &self,
+        query: ManufacturerQueryDto,
+        pagination: Option<crate::pagination::PaginationParams>,
+    ) -> ServiceResult<crate::pagination::PaginationResult<ManufacturerResponse>> {
+        let mut select = Manufacturer::find();
 
-        if active_only {
-            query = query.filter(db_entity::manufacturer::Column::IsActive.eq(true));
+        // Apply filters
+        if let Some(id) = query.id {
+            select = select.filter(db_entity::manufacturer::Column::Id.eq(id));
+        }
+        if let Some(name) = query.name {
+            select = select.filter(db_entity::manufacturer::Column::Name.contains(&name));
+        }
+        if let Some(country) = query.country {
+            select = select.filter(db_entity::manufacturer::Column::Country.eq(country));
+        }
+        if let Some(is_active) = query.is_active {
+            select = select.filter(db_entity::manufacturer::Column::IsActive.eq(is_active));
         }
 
-        let manufacturers = query
-            .order_by_asc(db_entity::manufacturer::Column::Name)
-            .all(self.db.as_ref())
-            .await
-            .tap_ok(|m| tracing::debug!("Listed {} manufacturers", m.len()))
-            .tap_err(|e| tracing::error!("Failed to list manufacturers: {}", e))?;
+        // Handle soft-deleted records (manufacturers don't have deleted_at, they use is_active)
+        // If include_deleted is false (default), only show active manufacturers
+        if !query.include_deleted.unwrap_or(false) {
+            select = select.filter(db_entity::manufacturer::Column::IsActive.eq(true));
+        }
 
-        Ok(manufacturers.into_iter().map(|m| m.into()).collect())
-    }
+        // Get total count
+        let total = select.clone().count(self.db.as_ref()).await?;
 
-    /// List active manufacturers (for dropdowns)
-    pub async fn list_active(&self) -> ServiceResult<Vec<ManufacturerResponse>> {
-        self.list(true).await
+        // Handle pagination
+        let (response_items, page, page_size) = if let Some(pagination) = pagination {
+            // Extract values before consuming
+            let page = pagination.page();
+            let page_size = pagination.page_size();
+
+            // Apply pagination
+            let paginator = select
+                .order_by_asc(db_entity::manufacturer::Column::Name)
+                .paginate(self.db.as_ref(), page_size);
+            let items = paginator.fetch_page(page - 1).await?;
+            let response_items = items.into_iter().map(|m| m.into()).collect();
+            (response_items, page, page_size)
+        } else {
+            // No pagination - return all results
+            let items = select
+                .order_by_asc(db_entity::manufacturer::Column::Name)
+                .all(self.db.as_ref())
+                .await?;
+            let response_items = items.into_iter().map(|m| m.into()).collect();
+            (response_items, 1u64, total)
+        };
+
+        Ok(crate::pagination::PaginationResult::new(
+            response_items,
+            total,
+            page,
+            page_size,
+        ))
     }
 
     /// Update a manufacturer

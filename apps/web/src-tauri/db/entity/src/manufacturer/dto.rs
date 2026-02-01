@@ -2,6 +2,16 @@ use super::Id;
 use super::Model;
 use serde::{Deserialize, Serialize};
 
+/// DTO for manufacturer query filters
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ManufacturerQueryDto {
+    pub id: Option<Id>,
+    pub name: Option<String>,
+    pub country: Option<String>,
+    pub is_active: Option<bool>,
+    pub include_deleted: Option<bool>, // Include soft-deleted records
+}
+
 /// DTO for creating a new manufacturer
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateManufacturer {

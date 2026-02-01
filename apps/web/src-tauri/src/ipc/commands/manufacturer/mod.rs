@@ -5,7 +5,7 @@ use tauri::{AppHandle, Manager};
 use crate::{
     error::AppResult,
     ipc::{
-        params::{CreateParams, DeleteParams, GetParams, UpdateParams},
+        params::{CreateParams, DeleteParams, GetParams, ListParams, UpdateParams},
         response::{IpcResponse, MutationResult},
     },
     state::AppState,
@@ -56,11 +56,11 @@ pub async fn create_manufacturer(
 #[tauri::command]
 pub async fn create_manufacturers_bulk(
     app: AppHandle,
-    data: Vec<CreateManufacturer>,
+    params: CreateParams<Vec<CreateManufacturer>>,
 ) -> IpcResponse<Vec<MutationResult>> {
     let result: AppResult<Vec<MutationResult>> = async {
         get_manufacturer_service(&app)
-            .create_bulk(data)
+            .create_bulk(params.data().to_vec())
             .await
             .tap_ok(|manufacturers| {
                 tracing::info!("Bulk created {} manufacturers", manufacturers.len())
@@ -96,6 +96,33 @@ pub async fn get_manufacturer(
                 )
             })
             .tap_err(|e| tracing::error!("Failed to get manufacturer {}: {}", params.id(), e))
+            .map_err(Into::into)
+    }
+    .await;
+    result.into()
+}
+
+/// List manufacturers with filtering and optional pagination
+#[tauri::command]
+pub async fn list_manufacturers(
+    app: AppHandle,
+    params: ListParams<ManufacturerQueryDto>,
+) -> IpcResponse<db_service::PaginationResult<ManufacturerResponse>> {
+    let result: AppResult<db_service::PaginationResult<ManufacturerResponse>> = async {
+        let query = params.filter().clone().unwrap_or_default();
+
+        get_manufacturer_service(&app)
+            .list(query, *params.pagination())
+            .await
+            .tap_ok(|result| {
+                tracing::debug!(
+                    "Listed {} manufacturers (page {}/{})",
+                    result.items_ref().len(),
+                    result.page(),
+                    result.total_pages()
+                )
+            })
+            .tap_err(|e| tracing::error!("Failed to list manufacturers: {}", e))
             .map_err(Into::into)
     }
     .await;
@@ -172,41 +199,6 @@ pub async fn get_manufacturer_by_name(
                 )
             })
             .tap_err(|e| tracing::error!("Failed to get manufacturer by name '{}': {}", name, e))
-            .map_err(Into::into)
-    }
-    .await;
-    result.into()
-}
-
-/// List all manufacturers with optional filtering
-#[tauri::command]
-pub async fn list_manufacturers(
-    app: AppHandle,
-    active_only: bool,
-) -> IpcResponse<Vec<ManufacturerResponse>> {
-    let result: AppResult<Vec<ManufacturerResponse>> = async {
-        get_manufacturer_service(&app)
-            .list(active_only)
-            .await
-            .tap_ok(|manufacturers| tracing::debug!("Listed {} manufacturers", manufacturers.len()))
-            .tap_err(|e| tracing::error!("Failed to list manufacturers: {}", e))
-            .map_err(Into::into)
-    }
-    .await;
-    result.into()
-}
-
-/// List active manufacturers (for dropdowns)
-#[tauri::command]
-pub async fn list_active_manufacturers(app: AppHandle) -> IpcResponse<Vec<ManufacturerResponse>> {
-    let result: AppResult<Vec<ManufacturerResponse>> = async {
-        get_manufacturer_service(&app)
-            .list_active()
-            .await
-            .tap_ok(|manufacturers| {
-                tracing::debug!("Listed {} active manufacturers", manufacturers.len())
-            })
-            .tap_err(|e| tracing::error!("Failed to list active manufacturers: {}", e))
             .map_err(Into::into)
     }
     .await;

@@ -187,12 +187,75 @@ async fn test_create_bulk_manufacturers() {
 async fn test_list_manufacturers() {
     let now = chrono::Utc::now().into();
 
+    // Mock count query for total
     let db = MockDatabase::new(DatabaseBackend::Postgres)
-        .append_query_results([vec![
-            db_entity::manufacturer::Model {
+        .append_query_results([
+            // Count query
+            vec![maplit::btreemap! {
+                "num_items" => sea_orm::Value::BigInt(Some(2)),
+            }],
+        ])
+        .append_query_results([
+            // List query
+            vec![
+                db_entity::manufacturer::Model {
+                    id: uuid::Uuid::now_v7().into(),
+                    name: "Manufacturer 1".to_string(),
+                    short_name: Some("M1".to_string()),
+                    country: Some("USA".to_string()),
+                    phone: None,
+                    email: None,
+                    website: None,
+                    notes: None,
+                    is_active: true,
+                    created_at: now,
+                    updated_at: now,
+                },
+                db_entity::manufacturer::Model {
+                    id: uuid::Uuid::now_v7().into(),
+                    name: "Manufacturer 2".to_string(),
+                    short_name: Some("M2".to_string()),
+                    country: Some("Canada".to_string()),
+                    phone: None,
+                    email: None,
+                    website: None,
+                    notes: None,
+                    is_active: true,
+                    created_at: now,
+                    updated_at: now,
+                },
+            ],
+        ])
+        .into_connection();
+
+    let service = ManufacturerService::new(Arc::new(db));
+
+    let query = ManufacturerQueryDto::default();
+    let result = service.list(query, None).await;
+    assert!(result.is_ok());
+    let pagination_result = result.unwrap();
+    assert_eq!(pagination_result.items_ref().len(), 2);
+    assert_eq!(pagination_result.total(), 2);
+}
+
+#[tokio::test]
+async fn test_list_active_manufacturers() {
+    let now = chrono::Utc::now().into();
+
+    // Mock count query for total
+    let db = MockDatabase::new(DatabaseBackend::Postgres)
+        .append_query_results([
+            // Count query
+            vec![maplit::btreemap! {
+                "num_items" => sea_orm::Value::BigInt(Some(1)),
+            }],
+        ])
+        .append_query_results([
+            // List query
+            vec![db_entity::manufacturer::Model {
                 id: uuid::Uuid::now_v7().into(),
-                name: "Manufacturer 1".to_string(),
-                short_name: Some("M1".to_string()),
+                name: "Active Manufacturer".to_string(),
+                short_name: Some("AM".to_string()),
                 country: Some("USA".to_string()),
                 phone: None,
                 email: None,
@@ -201,58 +264,21 @@ async fn test_list_manufacturers() {
                 is_active: true,
                 created_at: now,
                 updated_at: now,
-            },
-            db_entity::manufacturer::Model {
-                id: uuid::Uuid::now_v7().into(),
-                name: "Manufacturer 2".to_string(),
-                short_name: Some("M2".to_string()),
-                country: Some("Canada".to_string()),
-                phone: None,
-                email: None,
-                website: None,
-                notes: None,
-                is_active: true,
-                created_at: now,
-                updated_at: now,
-            },
-        ]])
+            }],
+        ])
         .into_connection();
 
     let service = ManufacturerService::new(Arc::new(db));
 
-    let result = service.list(false).await;
+    let query = ManufacturerQueryDto {
+        is_active: Some(true),
+        ..Default::default()
+    };
+    let result = service.list(query, None).await;
     assert!(result.is_ok());
-    let manufacturers = result.unwrap();
-    assert_eq!(manufacturers.len(), 2);
-}
-
-#[tokio::test]
-async fn test_list_active_manufacturers() {
-    let now = chrono::Utc::now().into();
-
-    let db = MockDatabase::new(DatabaseBackend::Postgres)
-        .append_query_results([vec![db_entity::manufacturer::Model {
-            id: uuid::Uuid::now_v7().into(),
-            name: "Active Manufacturer".to_string(),
-            short_name: Some("AM".to_string()),
-            country: Some("USA".to_string()),
-            phone: None,
-            email: None,
-            website: None,
-            notes: None,
-            is_active: true,
-            created_at: now,
-            updated_at: now,
-        }]])
-        .into_connection();
-
-    let service = ManufacturerService::new(Arc::new(db));
-
-    let result = service.list_active().await;
-    assert!(result.is_ok());
-    let manufacturers = result.unwrap();
-    assert_eq!(manufacturers.len(), 1);
-    assert!(manufacturers[0].is_active);
+    let pagination_result = result.unwrap();
+    assert_eq!(pagination_result.items_ref().len(), 1);
+    assert!(pagination_result.items_ref()[0].is_active);
 }
 
 #[tokio::test]

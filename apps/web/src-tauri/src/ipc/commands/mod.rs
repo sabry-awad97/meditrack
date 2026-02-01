@@ -86,8 +86,8 @@ pub use inventory::{
 };
 
 pub use manufacturer::{
-    create_manufacturer, delete_manufacturer, get_manufacturer, get_manufacturer_by_name,
-    hard_delete_manufacturer, list_active_manufacturers, list_manufacturers, update_manufacturer,
+    create_manufacturer, create_manufacturers_bulk, delete_manufacturer, get_manufacturer,
+    get_manufacturer_by_name, hard_delete_manufacturer, list_manufacturers, update_manufacturer,
 };
 
 pub use session::{
