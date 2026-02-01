@@ -1,13 +1,5 @@
 import { useAppUpdater } from "@/hooks/use-app-updater";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { GenericDialog } from "@/components/feedback";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Download, AlertCircle } from "lucide-react";
@@ -49,21 +41,32 @@ export function UpdateDialog() {
   if (!update) return null;
 
   return (
-    <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5" />
-            {t("update.available")}
-          </DialogTitle>
-          <DialogDescription>
-            {t("update.newVersion", { version: update.version })}
-          </DialogDescription>
-        </DialogHeader>
-
+    <GenericDialog
+      open={isOpen}
+      onOpenChange={() => {}}
+      title={t("update.available")}
+      description={t("update.newVersion", { version: update.version })}
+      icon={Download}
+      size="md"
+      closeOnOverlayClick={false}
+      actions={[
+        {
+          label: t("update.later"),
+          onClick: dismissUpdate,
+          variant: "outline",
+          disabled: downloading || checking,
+        },
+        {
+          label: downloading ? t("update.downloading") : t("update.updateNow"),
+          onClick: downloadAndInstall,
+          disabled: downloading || checking,
+        },
+      ]}
+    >
+      <div className="space-y-4">
         {update.body && (
           <div
-            className="my-4 max-h-60 overflow-y-auto rounded-md bg-muted p-4"
+            className="max-h-60 overflow-y-auto rounded-md bg-muted p-4"
             dir={releaseNotesDir}
           >
             <p className={`text-sm whitespace-pre-wrap ${releaseNotesAlign}`}>
@@ -97,23 +100,7 @@ export function UpdateDialog() {
             </p>
           </div>
         )}
-
-        <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={dismissUpdate}
-            disabled={downloading || checking}
-          >
-            {t("update.later")}
-          </Button>
-          <Button
-            onClick={downloadAndInstall}
-            disabled={downloading || checking}
-          >
-            {downloading ? t("update.downloading") : t("update.updateNow")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </GenericDialog>
   );
 }

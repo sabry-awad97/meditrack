@@ -254,17 +254,12 @@ export function InventoryForm({
             isRTL ? "pl-14 pr-6 py-6" : "pr-14 pl-6 py-6",
           )}
         >
-          <DialogHeader className={cn(isRTL && "text-right")}>
-            <div
-              className={cn(
-                "flex items-center gap-3",
-                isRTL && "flex-row-reverse",
-              )}
-            >
+          <DialogHeader>
+            <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <div className={cn(isRTL && "text-right")}>
+              <div>
                 <DialogTitle className="text-2xl">
                   {mode === "create" ? t("form.addTitle") : t("form.editTitle")}
                 </DialogTitle>

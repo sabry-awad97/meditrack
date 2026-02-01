@@ -42,17 +42,23 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  dir,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
+  dir?: "ltr" | "rtl";
 }) {
   const { isRTL } = useDirection();
+
+  // Use provided dir or auto-detect from current language
+  const direction = dir || (isRTL ? "rtl" : "ltr");
 
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
+        dir={direction}
         className={cn(
           "bg-background data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 ring-foreground/10 grid max-w-[calc(100%-2rem)] gap-4 rounded-none p-4 text-xs/relaxed ring-1 duration-100 sm:max-w-sm fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 outline-none",
           className,
@@ -84,7 +90,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("gap-1 text-left flex flex-col", className)}
+      className={cn("gap-1 flex flex-col", className)}
       {...props}
     />
   );
@@ -118,10 +124,16 @@ function DialogFooter({
 }
 
 function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
+  const { isRTL } = useDirection();
+
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-sm font-medium", className)}
+      className={cn(
+        "text-sm font-medium",
+        isRTL ? "text-right" : "text-left",
+        className,
+      )}
       {...props}
     />
   );
@@ -131,11 +143,14 @@ function DialogDescription({
   className,
   ...props
 }: DialogPrimitive.Description.Props) {
+  const { isRTL } = useDirection();
+
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
         "text-muted-foreground *:[a]:hover:text-foreground text-xs/relaxed *:[a]:underline *:[a]:underline-offset-3",
+        isRTL ? "text-right" : "text-left",
         className,
       )}
       {...props}
