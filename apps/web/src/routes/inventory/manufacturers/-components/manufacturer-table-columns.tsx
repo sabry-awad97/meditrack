@@ -10,6 +10,7 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import { useTranslation } from "@meditrack/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { ManufacturerResponse } from "@/api/manufacturer.api";
-import { toast } from "sonner";
 
 interface UseManufacturerColumnsProps {
   t: (key: string) => string;

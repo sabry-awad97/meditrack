@@ -1,0 +1,59 @@
+{
+  "title": "الشركات المصنعة",
+  "description": "إدارة الشركات المصنعة والموردين الدوائيين",
+  "addManufacturer": "إضافة شركة مصنعة",
+  "editManufacturer": "تعديل شركة مصنعة",
+  "deleteManufacturer": "حذف شركة مصنعة",
+  "viewManufacturer": "عرض شركة مصنعة",
+  "noManufacturers": "لا توجد شركات مصنعة بعد",
+  "noManufacturersFound": "لم يتم العثور على شركات مصنعة",
+  "getStarted": "ابدأ بإضافة أول شركة مصنعة",
+  "adjustFilters": "حاول تعديل البحث أو الفلاتر",
+  "loading": "جاري تحميل الشركات المصنعة...",
+  "stats": {
+    "total": "إجمالي الشركات المصنعة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "withWebsite": "لديها موقع إلكتروني",
+    "withContact": "لديها معلومات اتصال"
+  },
+  "table": {
+    "name": "الاسم",
+    "shortName": "الاسم المختصر",
+    "country": "الدولة",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "website": "الموقع الإلكتروني",
+    "contact": "معلومات الاتصال",
+    "status": "الحالة",
+    "actions": "الإجراءات",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "na": "غير متوفر"
+  },
+  "actions": {
+    "view": "عرض",
+    "viewDetails": "عرض التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف"
+  },
+  "delete": {
+    "title": "حذف {{name}}؟",
+    "description": "سيتم إلغاء تفعيل الشركة المصنعة. يمكنك إعادة تفعيلها لاحقاً إذا لزم الأمر.",
+    "confirm": "حذف",
+    "cancel": "إلغاء"
+  },
+  "pagination": {
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "items": "شركات مصنعة",
+    "rowsPerPage": "عدد الصفوف في الصفحة",
+    "previous": "السابق",
+    "next": "التالي",
+    "firstPage": "الصفحة الأولى",
+    "lastPage": "الصفحة الأخيرة",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية"
+  }
+}

@@ -41,7 +41,8 @@ export const Route = createLazyFileRoute("/inventory/manufacturers/")({
 });
 
 function ManufacturersComponent() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("manufacturer");
+  const { t: tCommon } = useTranslation("common");
   const { isRTL } = useDirection();
 
   // Local state
@@ -131,37 +132,37 @@ function ManufacturersComponent() {
 
     return [
       {
-        title: "Total Manufacturers",
+        title: t("stats.total"),
         value: allManufacturers.length,
         icon: Building2,
         color: "bg-blue-500",
       },
       {
-        title: "Active",
+        title: t("stats.active"),
         value: activeCount,
         icon: Users,
         color: "bg-green-500",
       },
       {
-        title: "Inactive",
+        title: t("stats.inactive"),
         value: inactiveCount,
         icon: Users,
         color: "bg-gray-500",
       },
       {
-        title: "With Website",
+        title: t("stats.withWebsite"),
         value: withWebsite,
         icon: Globe,
         color: "bg-purple-500",
       },
       {
-        title: "With Contact",
+        title: t("stats.withContact"),
         value: withContact,
         icon: MapPin,
         color: "bg-orange-500",
       },
     ];
-  }, [allManufacturers]);
+  }, [allManufacturers, t]);
 
   // Table columns
   const columns = useManufacturerColumns({
@@ -174,7 +175,7 @@ function ManufacturersComponent() {
 
   // Loading state
   if (isLoading) {
-    return <Loading icon={Building2} message="Loading manufacturers..." />;
+    return <Loading icon={Building2} message={t("loading")} />;
   }
 
   return (
@@ -182,10 +183,8 @@ function ManufacturersComponent() {
       <PageHeader>
         <PageHeaderTrigger />
         <PageHeaderContent>
-          <PageHeaderTitle>Manufacturers</PageHeaderTitle>
-          <PageHeaderDescription>
-            Manage pharmaceutical manufacturers and suppliers
-          </PageHeaderDescription>
+          <PageHeaderTitle>{t("title")}</PageHeaderTitle>
+          <PageHeaderDescription>{t("description")}</PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions className="flex gap-2">
           <Button
@@ -194,7 +193,7 @@ function ManufacturersComponent() {
             onClick={() => setIsFormOpen(true)}
           >
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Add Manufacturer</span>
+            <span className="hidden sm:inline">{t("addManufacturer")}</span>
           </Button>
         </PageHeaderActions>
       </PageHeader>
@@ -216,18 +215,18 @@ function ManufacturersComponent() {
                 icon={Building2}
                 title={
                   searchQuery || statusFilter !== "all"
-                    ? "No manufacturers found"
-                    : "No manufacturers yet"
+                    ? t("noManufacturersFound")
+                    : t("noManufacturers")
                 }
                 description={
                   searchQuery || statusFilter !== "all"
-                    ? "Try adjusting your search or filters"
-                    : "Get started by adding your first manufacturer"
+                    ? t("adjustFilters")
+                    : t("getStarted")
                 }
                 action={
                   !searchQuery && statusFilter === "all"
                     ? {
-                        label: "Add Manufacturer",
+                        label: t("addManufacturer"),
                         onClick: () => setIsFormOpen(true),
                         icon: Plus,
                       }
@@ -243,17 +242,17 @@ function ManufacturersComponent() {
                 pageSize={pageSize}
                 pageSizeOptions={[10, 20, 30, 50, 100]}
                 paginationLabels={{
-                  showing: "Showing",
-                  to: "to",
-                  of: "of",
-                  items: "manufacturers",
-                  rowsPerPage: "Rows per page",
-                  previous: "Previous",
-                  next: "Next",
-                  firstPage: "First page",
-                  lastPage: "Last page",
-                  previousPage: "Previous page",
-                  nextPage: "Next page",
+                  showing: t("pagination.showing"),
+                  to: t("pagination.to"),
+                  of: t("pagination.of"),
+                  items: t("pagination.items"),
+                  rowsPerPage: t("pagination.rowsPerPage"),
+                  previous: t("pagination.previous"),
+                  next: t("pagination.next"),
+                  firstPage: t("pagination.firstPage"),
+                  lastPage: t("pagination.lastPage"),
+                  previousPage: t("pagination.previousPage"),
+                  nextPage: t("pagination.nextPage"),
                 }}
               />
             )}
@@ -265,10 +264,12 @@ function ManufacturersComponent() {
       <ConfirmationDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title={`Delete ${manufacturerToDelete?.name || "manufacturer"}?`}
-        description="This will deactivate the manufacturer. You can reactivate it later if needed."
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        title={t("delete.title", {
+          name: manufacturerToDelete?.name || t("deleteManufacturer"),
+        })}
+        description={t("delete.description")}
+        confirmLabel={t("delete.confirm")}
+        cancelLabel={t("delete.cancel")}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
         variant="destructive"
