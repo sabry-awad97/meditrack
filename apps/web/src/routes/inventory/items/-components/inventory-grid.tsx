@@ -5,7 +5,9 @@ interface InventoryGridProps {
   items: InventoryItemWithStockResponse[];
   onViewDetails: (item: InventoryItemWithStockResponse) => void;
   onEdit: (item: InventoryItemWithStockResponse) => void;
+  onDuplicate: (item: InventoryItemWithStockResponse) => void;
   onAdjustStock: (item: InventoryItemWithStockResponse) => void;
+  onViewStockHistory: (item: InventoryItemWithStockResponse) => void;
   onDelete: (item: InventoryItemWithStockResponse) => void;
 }
 
@@ -13,7 +15,9 @@ export function InventoryGrid({
   items,
   onViewDetails,
   onEdit,
+  onDuplicate,
   onAdjustStock,
+  onViewStockHistory,
   onDelete,
 }: InventoryGridProps) {
   return (
@@ -25,7 +29,9 @@ export function InventoryGrid({
             item={item}
             onViewDetails={onViewDetails}
             onEdit={onEdit}
+            onDuplicate={onDuplicate}
             onAdjustStock={onAdjustStock}
+            onViewStockHistory={onViewStockHistory}
             onDelete={onDelete}
           />
         ))}

@@ -42,6 +42,7 @@ import type {
 import {
   InventoryForm,
   StockAdjustmentDialog,
+  StockHistoryDialog,
   ItemDetailsDialog,
   InventoryFilters,
   InventoryGrid,
@@ -89,11 +90,14 @@ function InventoryComponent() {
   >(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const [formMode, setFormMode] = useState<"create" | "edit" | "duplicate">(
+    "create",
+  );
   const [selectedItem, setSelectedItem] =
     useState<InventoryItemWithStockResponse | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isStockAdjustOpen, setIsStockAdjustOpen] = useState(false);
+  const [isStockHistoryOpen, setIsStockHistoryOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] =
     useState<InventoryItemWithStockResponse | null>(null);
@@ -111,8 +115,14 @@ function InventoryComponent() {
     setIsFormOpen(true);
   };
 
+  const handleDuplicate = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setFormMode("duplicate");
+    setIsFormOpen(true);
+  };
+
   const handleFormSubmit = (data: CreateInventoryItemWithStock) => {
-    if (formMode === "create") {
+    if (formMode === "create" || formMode === "duplicate") {
       createInventoryItem.mutate(data);
     } else if (selectedItem) {
       // For edit mode, we need to update both catalog and stock
@@ -175,6 +185,11 @@ function InventoryComponent() {
   const handleOpenStockAdjust = (item: InventoryItemWithStockResponse) => {
     setSelectedItem(item);
     setIsStockAdjustOpen(true);
+  };
+
+  const handleViewStockHistory = (item: InventoryItemWithStockResponse) => {
+    setSelectedItem(item);
+    setIsStockHistoryOpen(true);
   };
 
   const toggleViewMode = () => {
@@ -291,7 +306,9 @@ function InventoryComponent() {
     isRTL,
     onViewDetails: handleViewDetails,
     onEdit: handleEdit,
+    onDuplicate: handleDuplicate,
     onAdjustStock: handleOpenStockAdjust,
+    onViewStockHistory: handleViewStockHistory,
     onDelete: handleDelete,
   });
 
@@ -410,7 +427,9 @@ function InventoryComponent() {
                 items={filteredItems}
                 onViewDetails={handleViewDetails}
                 onEdit={handleEdit}
+                onDuplicate={handleDuplicate}
                 onAdjustStock={handleOpenStockAdjust}
+                onViewStockHistory={handleViewStockHistory}
                 onDelete={handleDelete}
               />
             )}
@@ -439,6 +458,12 @@ function InventoryComponent() {
         onOpenChange={setIsStockAdjustOpen}
         item={selectedItem}
         onAdjust={handleStockAdjust}
+      />
+
+      <StockHistoryDialog
+        open={isStockHistoryOpen}
+        onOpenChange={setIsStockHistoryOpen}
+        item={selectedItem}
       />
 
       <ConfirmationDialog

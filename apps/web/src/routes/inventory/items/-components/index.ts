@@ -4,6 +4,7 @@ export type { PriceHistoryEntry } from "@/api/inventory.api";
 export { InventoryForm } from "./inventory-form";
 export { ItemDetailsDialog } from "./item-details-dialog";
 export { StockAdjustmentDialog } from "./stock-adjustment-dialog";
+export { StockHistoryDialog } from "./stock-history-dialog";
 
 // Display Components
 export { InventoryItemCard } from "./inventory-item-card";

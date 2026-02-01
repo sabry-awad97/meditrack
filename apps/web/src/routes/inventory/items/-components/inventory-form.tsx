@@ -39,7 +39,7 @@ interface InventoryFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateInventoryItemWithStock) => void;
-  mode?: "create" | "edit";
+  mode?: "create" | "edit" | "duplicate";
   item?: InventoryItemWithStockResponse | null;
 }
 
@@ -103,20 +103,23 @@ export function InventoryForm({
     notes: "",
   });
 
-  // Populate form when editing
+  // Populate form when editing or duplicating
   useEffect(() => {
-    if (open && mode === "edit" && item) {
+    if (open && (mode === "edit" || mode === "duplicate") && item) {
       setFormData({
-        name: item.name,
+        name: mode === "duplicate" ? `${item.name} (Copy)` : item.name,
         generic_name: item.generic_name || "",
         concentration: item.concentration,
         form: item.form,
         manufacturer_id: item.manufacturer_id || "",
         barcode:
-          item.barcodes.find((b) => b.is_primary)?.barcode ||
-          item.barcodes[0]?.barcode ||
-          "",
-        stock_quantity: item.stock_quantity.toString(),
+          mode === "duplicate"
+            ? ""
+            : item.barcodes.find((b) => b.is_primary)?.barcode ||
+              item.barcodes[0]?.barcode ||
+              "",
+        stock_quantity:
+          mode === "duplicate" ? "0" : item.stock_quantity.toString(),
         min_stock_level: item.min_stock_level.toString(),
         unit_price: item.unit_price.toString(),
         requires_prescription: item.requires_prescription,
@@ -281,7 +284,11 @@ export function InventoryForm({
               </div>
               <div>
                 <DialogTitle className="text-2xl">
-                  {mode === "create" ? t("form.addTitle") : t("form.editTitle")}
+                  {mode === "create"
+                    ? t("form.addTitle")
+                    : mode === "edit"
+                      ? t("form.editTitle")
+                      : t("form.duplicateTitle")}
                 </DialogTitle>
                 <DialogDescription>
                   {STEPS[currentStep - 1].description}

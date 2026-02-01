@@ -26,14 +26,15 @@ import {
   getStockStatusColor,
 } from "./utils";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 interface UseInventoryColumnsProps {
   t: (key: string) => string;
   isRTL: boolean;
   onViewDetails: (item: InventoryItemWithStockResponse) => void;
   onEdit: (item: InventoryItemWithStockResponse) => void;
+  onDuplicate: (item: InventoryItemWithStockResponse) => void;
   onAdjustStock: (item: InventoryItemWithStockResponse) => void;
+  onViewStockHistory: (item: InventoryItemWithStockResponse) => void;
   onDelete: (item: InventoryItemWithStockResponse) => void;
 }
 
@@ -42,7 +43,9 @@ export function useInventoryColumns({
   isRTL,
   onViewDetails,
   onEdit,
+  onDuplicate,
   onAdjustStock,
+  onViewStockHistory,
   onDelete,
 }: UseInventoryColumnsProps) {
   return useMemo<ColumnDef<InventoryItemWithStockResponse>[]>(
@@ -206,11 +209,7 @@ export function useInventoryColumns({
                   <Edit className="h-4 w-4" />
                   <span>{t("actions.editItem")}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Duplicating ${item.name}`);
-                  }}
-                >
+                <DropdownMenuItem onClick={() => onDuplicate(item)}>
                   <Copy className="h-4 w-4" />
                   <span>{t("actions.duplicate")}</span>
                 </DropdownMenuItem>
@@ -219,11 +218,7 @@ export function useInventoryColumns({
                   <TrendingUp className="h-4 w-4" />
                   <span>{t("actions.adjustStock")}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    toast.info(`Viewing stock history for ${item.name}`);
-                  }}
-                >
+                <DropdownMenuItem onClick={() => onViewStockHistory(item)}>
                   <BarChart3 className="h-4 w-4" />
                   <span>{t("actions.stockHistory")}</span>
                 </DropdownMenuItem>
@@ -241,6 +236,15 @@ export function useInventoryColumns({
         },
       },
     ],
-    [t, isRTL, onViewDetails, onEdit, onAdjustStock, onDelete],
+    [
+      t,
+      isRTL,
+      onViewDetails,
+      onEdit,
+      onDuplicate,
+      onAdjustStock,
+      onViewStockHistory,
+      onDelete,
+    ],
   );
 }

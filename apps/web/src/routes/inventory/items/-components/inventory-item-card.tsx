@@ -33,7 +33,6 @@ import {
   getStockStatusLabel,
 } from "./utils";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 // Type alias for convenience
 type InventoryItem = InventoryItemWithStockResponse;
@@ -42,7 +41,9 @@ interface InventoryItemCardProps {
   item: InventoryItem;
   onViewDetails: (item: InventoryItem) => void;
   onEdit: (item: InventoryItem) => void;
+  onDuplicate: (item: InventoryItem) => void;
   onAdjustStock: (item: InventoryItem) => void;
+  onViewStockHistory: (item: InventoryItem) => void;
   onDelete: (item: InventoryItem) => void;
 }
 
@@ -50,7 +51,9 @@ export function InventoryItemCard({
   item,
   onViewDetails,
   onEdit,
+  onDuplicate,
   onAdjustStock,
+  onViewStockHistory,
   onDelete,
 }: InventoryItemCardProps) {
   const { t } = useTranslation("inventory");
@@ -110,7 +113,7 @@ export function InventoryItemCard({
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.info(`Duplicating ${item.name}`);
+                    onDuplicate(item);
                   }}
                 >
                   <Copy className="h-4 w-4" />
@@ -129,7 +132,7 @@ export function InventoryItemCard({
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.info(`Viewing stock history for ${item.name}`);
+                    onViewStockHistory(item);
                   }}
                 >
                   <BarChart3 className="h-4 w-4" />

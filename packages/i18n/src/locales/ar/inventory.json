@@ -70,6 +70,7 @@
   "form": {
     "addTitle": "إضافة دواء جديد",
     "editTitle": "تعديل الدواء",
+    "duplicateTitle": "نسخ الدواء",
     "step1": {
       "title": "المعلومات الأساسية",
       "description": "تفاصيل الدواء والتعريف"
