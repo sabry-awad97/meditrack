@@ -1,0 +1,1176 @@
+[
+  {
+    "name_en": "Tablet",
+    "name_ar": "أقراص",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Caplet",
+    "name_ar": "قرص على شكل كبسول",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Sublingual Tablet",
+    "name_ar": "أقراص تحت اللسان",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Coated Tablet",
+    "name_ar": "اقراص مغلفة",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Effervescent Tablet",
+    "name_ar": "أقراص فوارة",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Chewable Tablet",
+    "name_ar": "أقراص مضغ",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Lozenges",
+    "name_ar": "أقراص استحلاب",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Capsule",
+    "name_ar": "كبسول",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Spansule",
+    "name_ar": "كبسول طويل المفعول",
+    "category": "Oral Solid Dosage"
+  },
+  {
+    "name_en": "Syrup",
+    "name_ar": "شراب",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Suspension",
+    "name_ar": "معلق",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Emulsion",
+    "name_ar": "مستحلب",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Solution",
+    "name_ar": "محلول",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Aqueous Solution",
+    "name_ar": "محلول مائي",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Oily Solution",
+    "name_ar": "محلول زيتي",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Foaming Solution",
+    "name_ar": "محلول رغوي",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Infusions",
+    "name_ar": "محاليل",
+    "category": "Injectable"
+  },
+  {
+    "name_en": "Liquid",
+    "name_ar": "سائل",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Elixir",
+    "name_ar": "اكسير",
+    "category": "Oral Liquid Dosage"
+  },
+  {
+    "name_en": "Drops",
+    "name_ar": "نقط",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Eye Drops",
+    "name_ar": "نقط عين",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Ear Drops",
+    "name_ar": "نقط للأذن",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Nasal Drops",
+    "name_ar": "نقط للأنف",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Oral Drops",
+    "name_ar": "نقط بالفم",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Eye/Ear Drops",
+    "name_ar": "نقط للعين و الأذن",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Eye/Nose Drops",
+    "name_ar": "نقط للعين والانف",
+    "category": "Drops"
+  },
+  {
+    "name_en": "Oils",
+    "name_ar": "زيوت",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Volatile Oil",
+    "name_ar": "زيت طيار",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Fixed Oil",
+    "name_ar": "زيت ثابت",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Hair Oil",
+    "name_ar": "زيت شعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Extract",
+    "name_ar": "مستخلص",
+    "category": "Herbal & Supplements"
+  },
+  {
+    "name_en": "Injectable",
+    "name_ar": "حقن",
+    "category": "Injectable"
+  },
+  {
+    "name_en": "Ampule",
+    "name_ar": "أمبولات",
+    "category": "Injectable"
+  },
+  {
+    "name_en": "Enema",
+    "name_ar": "حقنة شرجية",
+    "category": "Rectal"
+  },
+  {
+    "name_en": "Syringe",
+    "name_ar": "سرنجات",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Ready Filled Syringe",
+    "name_ar": "سرنجة جاهزة للحقن",
+    "category": "Injectable"
+  },
+  {
+    "name_en": "Catheter",
+    "name_ar": "قسطرة",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Cannula",
+    "name_ar": "كانيولا",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Needle",
+    "name_ar": "ابرة",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Lancet",
+    "name_ar": "شكاكة",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Lancet Needle",
+    "name_ar": "ابرة شكاكة",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Powder",
+    "name_ar": "بودرة",
+    "category": "Powder"
+  },
+  {
+    "name_en": "Powder for Reconstitution",
+    "name_ar": "بودرة للمحلول",
+    "category": "Powder"
+  },
+  {
+    "name_en": "Effervescent Granules/Powder",
+    "name_ar": "حبيبات/بودرة فوارة",
+    "category": "Powder"
+  },
+  {
+    "name_en": "Orahesive Powder/Paint",
+    "name_ar": "بودرة/معجون لاصق للفم",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Insufflations",
+    "name_ar": "نشوق",
+    "category": "Inhalation"
+  },
+  {
+    "name_en": "Suppository",
+    "name_ar": "لبوس شرجى",
+    "category": "Rectal"
+  },
+  {
+    "name_en": "Vaginal Pessaries",
+    "name_ar": "لبوس مهبلي",
+    "category": "Vaginal"
+  }
+,
+  {
+    "name_en": "Cream",
+    "name_ar": "كريم",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Skin Cream",
+    "name_ar": "كريم للجلد",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Vaginal Cream",
+    "name_ar": "كريم مهبلى",
+    "category": "Vaginal"
+  },
+  {
+    "name_en": "Face Cream",
+    "name_ar": "كريم للوجه",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Hair Cream",
+    "name_ar": "كريم للشعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Shaving Cream",
+    "name_ar": "كريم للحلاقة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Massage Cream/Oil",
+    "name_ar": "كريم مساج",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Foundation Cream/Stick",
+    "name_ar": "كريم اساس",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Hand/Body Cream",
+    "name_ar": "كريم للايدى/جسم",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Foot Cream/Scrub/Gel",
+    "name_ar": "كريم / صنفرة قدم",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Depilation Cream/Wax",
+    "name_ar": "كريم ازالة الشعر/واكس",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Ointment",
+    "name_ar": "مرهم",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Eye Ointment",
+    "name_ar": "مرهم للعين",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Gel",
+    "name_ar": "جيل",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Skin Gel",
+    "name_ar": "جيل للجلد",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Oral Gel",
+    "name_ar": "جل للفم",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Nasal Gel",
+    "name_ar": "جيل للانف",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Body/Face Gel",
+    "name_ar": "جيل للجسم",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Hair Gel/Mousse",
+    "name_ar": "جيل للشعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Hand Gel",
+    "name_ar": "جيل للايدى",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Shaving Gel",
+    "name_ar": "جيل حلاقة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Vaseline",
+    "name_ar": "فازلين",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Lotion",
+    "name_ar": "لوشن",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Body/Face Lotion",
+    "name_ar": "لوشن وجه/جسم",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Skin Lotion",
+    "name_ar": "لوشن للجلد",
+    "category": "Topical"
+  },
+  {
+    "name_en": "After Shave Lotion",
+    "name_ar": "لوشن بعد الحلاقة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Paint",
+    "name_ar": "مس",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Poultice",
+    "name_ar": "لبخة",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Liniment",
+    "name_ar": "مروخ",
+    "category": "Topical"
+  },
+  {
+    "name_en": "Dental/Oral Products",
+    "name_ar": "عناية بالفم و الاسنان",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Mouth Wash",
+    "name_ar": "غسول فم",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Teeth Whitener",
+    "name_ar": "مبيض أسنان",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Dental Floss",
+    "name_ar": "خيط تنظيف اسنان",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Dental Cast Cleaner",
+    "name_ar": "منظف طاقم أسنان",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Gargle",
+    "name_ar": "غرغرة",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Paste",
+    "name_ar": "معجون",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Dental Brush",
+    "name_ar": "فرشاة اسنان",
+    "category": "Oral Care"
+  },
+  {
+    "name_en": "Wound/Surgical Care",
+    "name_ar": "عناية بالجروح",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Cotton",
+    "name_ar": "قطن",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Gauze",
+    "name_ar": "شاش",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Gauze with Additives",
+    "name_ar": "شاش مع اضافات",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Plaster",
+    "name_ar": "بلاستر",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Gauze with Plaster",
+    "name_ar": "بلاستر بالشاش",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Foot Plaster",
+    "name_ar": "بلاستر قدم",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Specialized Plaster",
+    "name_ar": "بلاستر متخصص",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Umbilical Clip/Plaster",
+    "name_ar": "بلاستر / كليبس صرة",
+    "category": "Wound Care"
+  }
+,
+  {
+    "name_en": "Patch",
+    "name_ar": "لصقة",
+    "category": "Transdermal"
+  },
+  {
+    "name_en": "Counter Irritant Patch",
+    "name_ar": "لزقة مضادة للإلتهاب",
+    "category": "Transdermal"
+  },
+  {
+    "name_en": "Surgical Devices",
+    "name_ar": "ادوات جراحة",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Catgut",
+    "name_ar": "خيوط جراحية",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Body Support Products",
+    "name_ar": "دعامات للجسم",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Ankle Support",
+    "name_ar": "تدعيم للانكل",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Sports Support/Guard",
+    "name_ar": "دعامة / واقى رياضى",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Fixing Bandage",
+    "name_ar": "اربطه ضاغطه",
+    "category": "Wound Care"
+  },
+  {
+    "name_en": "Sport Machines",
+    "name_ar": "أجهزة / أدوات رياضية",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Antiseptic",
+    "name_ar": "مطهرات",
+    "category": "Antiseptic & Disinfectant"
+  },
+  {
+    "name_en": "Disinfectant",
+    "name_ar": "مطهر خارجى",
+    "category": "Antiseptic & Disinfectant"
+  },
+  {
+    "name_en": "Soap",
+    "name_ar": "صابون",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Air Freshener",
+    "name_ar": "معطر جو",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Insecticide",
+    "name_ar": "مبيد حشرى",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Dried Herbs",
+    "name_ar": "أعشاب جافة",
+    "category": "Herbal & Supplements"
+  },
+  {
+    "name_en": "Herbal Extract",
+    "name_ar": "مستخلص عشبى",
+    "category": "Herbal & Supplements"
+  },
+  {
+    "name_en": "Herbal Tea Bag",
+    "name_ar": "اكياس اعشاب",
+    "category": "Herbal & Supplements"
+  },
+  {
+    "name_en": "Food Products",
+    "name_ar": "منتجات غذائية",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Athletic Food/Supplement",
+    "name_ar": "اغذية للرياضيين",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Athletic Protein",
+    "name_ar": "بروتينات للرياضيين",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Diabetic Food",
+    "name_ar": "اغذية لمرضى السكر",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Baby Food",
+    "name_ar": "أغذية أطفال",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Ready Baby Food",
+    "name_ar": "غذاء أطفال جاهز",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Powder Baby Food",
+    "name_ar": "غذاء أطفال بودرة",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Milk/Infant Formula",
+    "name_ar": "لبن صناعي",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Baby Products",
+    "name_ar": "مستلزمات للاطفال",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Pacifier",
+    "name_ar": "سكاته",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Feeding Bottle",
+    "name_ar": "ببرونة",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Teether",
+    "name_ar": "عضاضة",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Feeding Nipple",
+    "name_ar": "حلمة رضاعة",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Baby Feeding Tool",
+    "name_ar": "أداة لأكل الأطفال",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Children Toy",
+    "name_ar": "لعب اطفال",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Child Cosmetics/Perfume",
+    "name_ar": "منتجات تجميل للأطفال",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Baby Diaper",
+    "name_ar": "حفاضات أطفال",
+    "category": "Baby Care"
+  },
+  {
+    "name_en": "Tissue/Diaper",
+    "name_ar": "مناديل ورق",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Tissue Box",
+    "name_ar": "علبة مناديل",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Toilet Roll",
+    "name_ar": "بكر تواليت",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Wipes",
+    "name_ar": "مناديل مبللة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Inhaler",
+    "name_ar": "استنشاق",
+    "category": "Inhalation"
+  },
+  {
+    "name_en": "Medicated Aerosol",
+    "name_ar": "بخاخ طبي",
+    "category": "Inhalation"
+  },
+  {
+    "name_en": "Aerosol",
+    "name_ar": "بخاخ / اسبراى",
+    "category": "Inhalation"
+  },
+  {
+    "name_en": "Oral Inhaler",
+    "name_ar": "بخاخ مستنشق بالفم",
+    "category": "Inhalation"
+  },
+  {
+    "name_en": "Nasal Inhaler",
+    "name_ar": "بخاخ يستنشق بالانف",
+    "category": "Inhalation"
+  },
+  {
+    "name_en": "Nasal Spray",
+    "name_ar": "بخاخ اسبراى للانف",
+    "category": "Inhalation"
+  }
+,
+  {
+    "name_en": "Sachet",
+    "name_ar": "أكياس",
+    "category": "Powder"
+  },
+  {
+    "name_en": "Condom",
+    "name_ar": "عازل طبى",
+    "category": "Contraceptive"
+  },
+  {
+    "name_en": "Oxygen Equipment",
+    "name_ar": "مستلزمات أجهزة أوكسيجين",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Nebulizer/Humidifier",
+    "name_ar": "جهاز استنشاق",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Sterile Device",
+    "name_ar": "أجهزة معقمة",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Handicap/Disabled Device",
+    "name_ar": "اجهزة للمعاقين",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Blood Pressure Device",
+    "name_ar": "اجهزة لقياس الضغط",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Blood Pressure Meter",
+    "name_ar": "مقياس ضغط الدم",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Diabetic Device",
+    "name_ar": "اجهزة لقياس السكر",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Blood Meter Strip",
+    "name_ar": "شرائط مقياس سكر الدم",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Urine Test Strip",
+    "name_ar": "شرائط قياس سكر البول",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Insulin Pen",
+    "name_ar": "قلم انسولين",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Other Diabetic Device",
+    "name_ar": "أدوات أخرى لمرضى السكر",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Maternity Device",
+    "name_ar": "اجهزة / ادوات للامومة",
+    "category": "Maternity & Contraceptive"
+  },
+  {
+    "name_en": "Breast Milk Suction Device",
+    "name_ar": "أدوات شفط لبن الام",
+    "category": "Maternity & Contraceptive"
+  },
+  {
+    "name_en": "Pregnancy Test",
+    "name_ar": "اختبار حمل",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Contraceptive Device",
+    "name_ar": "ادوات منع الحمل",
+    "category": "Contraceptive"
+  },
+  {
+    "name_en": "Intra-Uterine Device",
+    "name_ar": "لولب / أدوات داخل الرحم",
+    "category": "Contraceptive"
+  },
+  {
+    "name_en": "Other Contraceptive Device",
+    "name_ar": "أدوات منع حمل أخرى",
+    "category": "Contraceptive"
+  },
+  {
+    "name_en": "Tampon",
+    "name_ar": "حفاضات مهبلية",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Weight Gain Food",
+    "name_ar": "أغذية زيادة الوزن",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Weight Control Device",
+    "name_ar": "ادوات التحكم بالوزن",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Artificial Sweetener Tablet",
+    "name_ar": "أقراص تحلية صناعية",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Artificial Sweetener Powder",
+    "name_ar": "بودرة تحلية صناعية",
+    "category": "Nutrition & Supplements"
+  },
+  {
+    "name_en": "Weight Scale",
+    "name_ar": "ميزان",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Temperature Meter",
+    "name_ar": "أدوات قياس الحرارة /ترموميتر",
+    "category": "Diagnostic Devices"
+  },
+  {
+    "name_en": "Optical Device",
+    "name_ar": "عناية بالنظر",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Eye Glasses",
+    "name_ar": "نظارات",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Eye Glass Frame",
+    "name_ar": "شنبر نظارة",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Sun Glasses",
+    "name_ar": "نظارات شمس",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Contact Lens",
+    "name_ar": "عدسات لاصقة",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Contact Lens Case",
+    "name_ar": "حافظة عدسات لاصقة",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Contact Lens Cleaning Device",
+    "name_ar": "أدوات تنظيف عدسات لاصقة",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Eye Pad",
+    "name_ar": "وسادة للعين",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Other Optical Device",
+    "name_ar": "منتجات بصرية أخرى",
+    "category": "Optical"
+  },
+  {
+    "name_en": "Geriatric Product",
+    "name_ar": "كبار السن",
+    "category": "Geriatric Care"
+  },
+  {
+    "name_en": "Geriatric Device",
+    "name_ar": "أدوات لكبار السن",
+    "category": "Geriatric Care"
+  },
+  {
+    "name_en": "Geriatric Diaper",
+    "name_ar": "حفاضات كبار السن",
+    "category": "Geriatric Care"
+  },
+  {
+    "name_en": "Hair Shampoo",
+    "name_ar": "شامبو للشعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Shampoo & Conditioner",
+    "name_ar": "شامبو & بلسم",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Hair Balsam",
+    "name_ar": "بلسم للشعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Hair Dye",
+    "name_ar": "صبغة للشعر",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Hair Mascara",
+    "name_ar": "مسكرا للشعر",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Hair Spray",
+    "name_ar": "سبراي شعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Henna",
+    "name_ar": "حنة",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Bleacher",
+    "name_ar": "مشقر",
+    "category": "Cosmetics"
+  }
+,
+  {
+    "name_en": "Women Perfume",
+    "name_ar": "عطور للسيدات",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Men Perfume",
+    "name_ar": "عطور للرجال",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Children Perfume",
+    "name_ar": "عطور للأطفال",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Cologne",
+    "name_ar": "كولونيا",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Deodorant",
+    "name_ar": "مزيل عرق",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Deodorant Spray",
+    "name_ar": "مزيل رائحة العرق سبراى",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Deodorant Stick",
+    "name_ar": "مزيل رائحة العرق ستيك",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Deodorant Roll-On",
+    "name_ar": "مزيل رائحة العرق بلية دوارة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Blush",
+    "name_ar": "أحمر خدود",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Lip Stick",
+    "name_ar": "طلاء شفاه",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Lip Liner",
+    "name_ar": "محدد الشفاه",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Lip Gloss",
+    "name_ar": "ملمع شفاه",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Other Lip Product",
+    "name_ar": "منتجات اخرى للشفاه",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Eye Liner",
+    "name_ar": "محدد للعين",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Mascara",
+    "name_ar": "ماسكرا",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Eye Shadow",
+    "name_ar": "ظل جفون",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Kohl",
+    "name_ar": "كحل",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Compact Powder",
+    "name_ar": "بودرة وجه",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Facial Cleanser/Makeup Remover",
+    "name_ar": "منظف وجه/ماكياج",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Other Face Makeup/Accessory",
+    "name_ar": "منتجات اخرى لمكياج الوجه",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Other Cosmetic Device",
+    "name_ar": "أدوات أخرى للتجميل",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Non-Medical Cotton/Bud",
+    "name_ar": "قطن غير طبى",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Nail Polish",
+    "name_ar": "طلاء اظافر",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Nail Polish Remover",
+    "name_ar": "مزيل طلاء لاظافر",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Nail File",
+    "name_ar": "مبرد اظافر",
+    "category": "Cosmetics"
+  },
+  {
+    "name_en": "Nail Care Tool",
+    "name_ar": "عدة عناية بالاظافر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Skin Scrub",
+    "name_ar": "صنفرة للجلد",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Skin Peeler",
+    "name_ar": "مقشطة / مقشر للجلد",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Mask (Skin/Hair)",
+    "name_ar": "ماسك للجلد / للشعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Body Shampoo/Foam",
+    "name_ar": "شامبو / رغوة للجسم",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Depilation Spray",
+    "name_ar": "بخاخ ازالة شعر",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Wax",
+    "name_ar": "شمع",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Shaving Product",
+    "name_ar": "منتجات حلاقة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Shaving Foam",
+    "name_ar": "فوم حلاقة",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Chocolate",
+    "name_ar": "شيكولاته",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Chewing Gum",
+    "name_ar": "لبان",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Case/Bag/Container",
+    "name_ar": "شنطة/ كيس/ وعاء",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Socks",
+    "name_ar": "جوارب",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Gloves",
+    "name_ar": "جوانتى",
+    "category": "Medical Devices"
+  },
+  {
+    "name_en": "Shoes",
+    "name_ar": "أحذية/ ملبوسات",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Loofah",
+    "name_ar": "لوفه",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Hair Brush/Comb",
+    "name_ar": "فرشه \\ مشط",
+    "category": "Personal Care"
+  },
+  {
+    "name_en": "Books/Magazines",
+    "name_ar": "ادوات كتابية/كتب/مجلات",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Greeting Card",
+    "name_ar": "كروت معايدة",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Phone Card",
+    "name_ar": "كروت تليفونات",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Other Electronics",
+    "name_ar": "الكترونيات",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Batteries",
+    "name_ar": "بطاريات",
+    "category": "Non-Pharmacy"
+  },
+  {
+    "name_en": "Other",
+    "name_ar": "اخرى",
+    "category": "Other"
+  },
+  {
+    "name_en": "Vaginal Douche",
+    "name_ar": "دوش مهبلى",
+    "category": "Vaginal"
+  },
+  {
+    "name_en": "Vial",
+    "name_ar": "فيال",
+    "category": "Injectable"
+  }
+]
