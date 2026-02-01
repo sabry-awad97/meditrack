@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import { useEffect, useRef, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Home,
@@ -61,13 +61,40 @@ import {
   useDirection,
 } from "@meditrack/i18n";
 import { useAuth } from "@/hooks/use-auth";
-import { getSettingDefinition } from "@/lib/constants";
+import { getSettingDefinition, type SettingKey } from "@/lib/constants";
 import {
   SETTING_SIDEBAR_DEFAULT_STATE,
   SETTING_DEFAULT_THEME,
   SETTING_DEFAULT_LANGUAGE,
 } from "@/lib/constants";
 import { useInventoryStatistics } from "@/hooks/use-inventory";
+import {
+  useSidebarStore,
+  selectToggleExpanded,
+  selectSetExpandedItems,
+  createIsExpandedSelector,
+} from "@/stores/sidebar-store";
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const BADGE_EMPTY: BadgeConfig = { value: 0, show: false };
+
+const MOTION_CHEVRON = {
+  duration: 0.2,
+  ease: "easeInOut" as const,
+};
+
+const MOTION_SUBMENU = {
+  duration: 0.2,
+  ease: "easeInOut" as const,
+};
+
+const MOTION_SUBITEM = {
+  duration: 0.15,
+  ease: "easeOut" as const,
+};
 
 // ============================================================================
 // Types
@@ -97,11 +124,13 @@ interface BadgeConfig {
 // ============================================================================
 
 /**
- * Custom hook to manage expanded menu items state
+ * Custom hook to sync expanded menu items with current route
+ * Auto-expands parent menu when a subitem is active
  */
-function useExpandedMenuItems(currentPath: string, menuItems: MenuItem[]) {
-  // Auto-expand parent menu if a subitem is active
-  const getInitialExpandedItems = useCallback(() => {
+function useSyncExpandedWithRoute(currentPath: string, menuItems: MenuItem[]) {
+  const setExpandedItems = useSidebarStore(selectSetExpandedItems);
+
+  useEffect(() => {
     const expanded = new Set<string>();
     menuItems.forEach((item) => {
       if (item.subItems) {
@@ -115,111 +144,82 @@ function useExpandedMenuItems(currentPath: string, menuItems: MenuItem[]) {
         }
       }
     });
-    return expanded;
-  }, [currentPath, menuItems]);
-
-  const [expandedItems, setExpandedItems] = React.useState<Set<string>>(
-    getInitialExpandedItems,
-  );
-
-  // Update expanded items when route changes
-  useEffect(() => {
-    setExpandedItems(getInitialExpandedItems());
-  }, [getInitialExpandedItems]);
-
-  const toggleExpanded = useCallback((itemTitle: string) => {
-    setExpandedItems((prev) => {
-      const next = new Set(prev);
-      if (next.has(itemTitle)) {
-        next.delete(itemTitle);
-      } else {
-        next.add(itemTitle);
-      }
-      return next;
-    });
-  }, []);
-
-  return { expandedItems, toggleExpanded };
+    setExpandedItems(expanded);
+  }, [currentPath, menuItems, setExpandedItems]);
 }
 
 /**
  * Custom hook to manage all menu items configuration
  */
 function useMenuItems(t: (key: string) => string) {
-  const mainMenuItems = useMemo<MenuItem[]>(
-    () => [
-      {
-        title: t("navigation.home"),
-        url: "/",
-        icon: Home,
-      },
-      {
-        title: t("navigation.inventory"),
-        // No URL - parent item with submenu
-        icon: PackageSearch,
-        badge: "inventory",
-        subItems: [
-          {
-            title: t("navigation.allItems"),
-            url: "/inventory",
-            icon: PackageSearch,
-          },
-          {
-            title: t("navigation.manufacturers"),
-            url: "/inventory/manufacturers",
-            icon: Users,
-          },
-        ],
-      },
-      {
-        title: t("navigation.orders"),
-        url: "/special-orders",
-        icon: Package,
-        badge: "orders",
-      },
-      {
-        title: t("navigation.suppliers"),
-        url: "/suppliers",
-        icon: Users,
-      },
-      {
-        title: t("navigation.reports"),
-        // No URL - parent item with submenu
-        icon: BarChart3,
-        subItems: [
-          {
-            title: t("navigation.salesReports"),
-            url: "/reports/sales",
-            icon: TrendingUp,
-          },
-          {
-            title: t("navigation.inventoryReports"),
-            url: "/reports/inventory",
-            icon: FileText,
-          },
-        ],
-      },
-    ],
+  return useMemo(
+    () => ({
+      main: [
+        {
+          title: t("navigation.home"),
+          url: "/",
+          icon: Home,
+        },
+        {
+          title: t("navigation.inventory"),
+          icon: PackageSearch,
+          badge: "inventory" as const,
+          subItems: [
+            {
+              title: t("navigation.allItems"),
+              url: "/inventory",
+              icon: PackageSearch,
+            },
+            {
+              title: t("navigation.manufacturers"),
+              url: "/inventory/manufacturers",
+              icon: Users,
+            },
+          ],
+        },
+        {
+          title: t("navigation.orders"),
+          url: "/special-orders",
+          icon: Package,
+          badge: "orders" as const,
+        },
+        {
+          title: t("navigation.suppliers"),
+          url: "/suppliers",
+          icon: Users,
+        },
+        {
+          title: t("navigation.reports"),
+          icon: BarChart3,
+          subItems: [
+            {
+              title: t("navigation.salesReports"),
+              url: "/reports/sales",
+              icon: TrendingUp,
+            },
+            {
+              title: t("navigation.inventoryReports"),
+              url: "/reports/inventory",
+              icon: FileText,
+            },
+          ],
+        },
+      ] as MenuItem[],
+      secondary: [
+        {
+          title: t("navigation.settings"),
+          url: "/settings",
+          icon: Settings,
+        },
+        {
+          title: t("navigation.help"),
+          url: "/help",
+          icon: HelpCircle,
+        },
+      ] as MenuItem[],
+    }),
     [t],
   );
-
-  const secondaryMenuItems = useMemo<MenuItem[]>(
-    () => [
-      {
-        title: t("navigation.settings"),
-        url: "/settings",
-        icon: Settings,
-      },
-      {
-        title: t("navigation.help"),
-        url: "/help",
-        icon: HelpCircle,
-      },
-    ],
-    [t],
-  );
-
-  return { mainMenuItems, secondaryMenuItems };
 }
 
 /**
@@ -229,17 +229,14 @@ function useSidebarPersistence(
   open: boolean,
   setOpen: (open: boolean) => void,
   sidebarDefaultState: string | undefined,
+  upsertSettingValue: ReturnType<typeof useUpsertSettingValue>,
 ) {
-  const upsertSettingValue = useUpsertSettingValue();
   const isInitialMount = useRef(true);
 
   // Load sidebar state from settings on mount
   useEffect(() => {
-    if (sidebarDefaultState) {
-      const shouldBeOpen = sidebarDefaultState === "open";
-      if (open !== shouldBeOpen) {
-        setOpen(shouldBeOpen);
-      }
+    if (sidebarDefaultState && open !== (sidebarDefaultState === "open")) {
+      setOpen(sidebarDefaultState === "open");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -269,22 +266,16 @@ function useSidebarPersistence(
 
 /**
  * Check if a menu item is active based on current path
- * For submenu items, only exact matches are considered active
  */
 function isMenuItemActive(
   itemUrl: string | undefined,
   currentPath: string,
-  isSubItem: boolean = false,
+  isSubItem = false,
 ): boolean {
-  if (!itemUrl) return false; // Parent items with no URL are never active
-
-  // For subitems, only exact match
-  if (isSubItem) {
-    return currentPath === itemUrl;
-  }
-
-  // For main items, exact match or starts with (for nested routes)
-  return currentPath === itemUrl || currentPath.startsWith(itemUrl + "/");
+  if (!itemUrl) return false;
+  return isSubItem
+    ? currentPath === itemUrl
+    : currentPath === itemUrl || currentPath.startsWith(`${itemUrl}/`);
 }
 
 /**
@@ -295,44 +286,57 @@ function getBadgeConfig(
   totalAlerts: number,
   totalInventoryItems: number,
 ): BadgeConfig {
+  if (!badge) return BADGE_EMPTY;
   if (badge === "orders" && totalAlerts > 0) {
     return { value: totalAlerts, show: true };
   }
   if (badge === "inventory" && totalInventoryItems > 0) {
     return { value: totalInventoryItems, show: true };
   }
-  return { value: 0, show: false };
+  return BADGE_EMPTY;
 }
 
 // ============================================================================
 // Sub-Components
 // ============================================================================
 
-interface CollapsibleMenuItemProps {
+interface MenuItemProps {
   item: MenuItem;
-  isActive: boolean;
-  isExpanded: boolean;
-  badgeConfig: BadgeConfig;
   currentPath: string;
   sidebarState: "expanded" | "collapsed";
   isRTL: boolean;
-  onToggle: () => void;
+  totalAlerts: number;
+  totalInventoryItems: number;
 }
 
-function CollapsibleMenuItem({
+const CollapsibleMenuItem = memo(function CollapsibleMenuItem({
   item,
-  isActive,
-  isExpanded,
-  badgeConfig,
   currentPath,
   sidebarState,
   isRTL,
-  onToggle,
-}: CollapsibleMenuItemProps) {
+  totalAlerts,
+  totalInventoryItems,
+}: MenuItemProps) {
+  const isExpanded = useSidebarStore(createIsExpandedSelector(item.title));
+  const toggleExpanded = useSidebarStore(selectToggleExpanded);
+
+  const handleToggle = useCallback(() => {
+    toggleExpanded(item.title);
+  }, [toggleExpanded, item.title]);
+
+  const isActive = isMenuItemActive(item.url, currentPath);
+  const badgeConfig = getBadgeConfig(
+    item.badge,
+    totalAlerts,
+    totalInventoryItems,
+  );
+  const badgeClassName = isRTL ? "left-6 right-auto" : "right-6 left-auto";
+  const textAlign = isRTL ? "text-right" : "text-left";
+
   return (
     <Collapsible
       open={isExpanded}
-      onOpenChange={onToggle}
+      onOpenChange={handleToggle}
       className="group/collapsible"
     >
       <SidebarMenuItem>
@@ -345,12 +349,10 @@ function CollapsibleMenuItem({
               {...props}
             >
               <item.icon className="shrink-0 size-4" />
-              <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>
-                {item.title}
-              </span>
+              <span className={`flex-1 ${textAlign}`}>{item.title}</span>
               <motion.div
                 animate={{ rotate: isExpanded ? 90 : 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
+                transition={MOTION_CHEVRON}
                 className={`shrink-0 ${isRTL ? "rotate-180" : ""}`}
               >
                 <ChevronRight className="size-4" />
@@ -359,9 +361,7 @@ function CollapsibleMenuItem({
           )}
         />
         {badgeConfig.show && (
-          <SidebarMenuBadge
-            className={isRTL ? "left-6 right-auto" : "right-6 left-auto"}
-          >
+          <SidebarMenuBadge className={badgeClassName}>
             {badgeConfig.value}
           </SidebarMenuBadge>
         )}
@@ -372,45 +372,39 @@ function CollapsibleMenuItem({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
+                transition={MOTION_SUBMENU}
                 style={{ overflow: "hidden" }}
               >
                 <SidebarMenuSub>
-                  {item.subItems?.map((subItem, index) => {
-                    const isSubActive = isMenuItemActive(
-                      subItem.url,
-                      currentPath,
-                      true, // This is a subitem, use exact match only
-                    );
-                    return (
-                      <motion.div
-                        key={subItem.title}
-                        initial={{ x: -10, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{
-                          duration: 0.15,
-                          delay: index * 0.05,
-                          ease: "easeOut",
-                        }}
-                      >
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            isActive={isSubActive}
-                            render={(props) => (
-                              <Link to={subItem.url} {...props} />
-                            )}
-                          >
-                            <subItem.icon className="shrink-0 size-4" />
-                            <span
-                              className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
-                            >
-                              {subItem.title}
-                            </span>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </motion.div>
-                    );
-                  })}
+                  {item.subItems?.map((subItem, index) => (
+                    <motion.div
+                      key={subItem.title}
+                      initial={{ x: -10, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{
+                        ...MOTION_SUBITEM,
+                        delay: index * 0.05,
+                      }}
+                    >
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          isActive={isMenuItemActive(
+                            subItem.url,
+                            currentPath,
+                            true,
+                          )}
+                          render={(props) => (
+                            <Link to={subItem.url} {...props} />
+                          )}
+                        >
+                          <subItem.icon className="shrink-0 size-4" />
+                          <span className={`flex-1 ${textAlign}`}>
+                            {subItem.title}
+                          </span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </motion.div>
+                  ))}
                 </SidebarMenuSub>
               </motion.div>
             )}
@@ -419,23 +413,25 @@ function CollapsibleMenuItem({
       </SidebarMenuItem>
     </Collapsible>
   );
-}
+});
 
-interface SimpleMenuItemProps {
-  item: MenuItem;
-  isActive: boolean;
-  badgeConfig: BadgeConfig;
-  sidebarState: "expanded" | "collapsed";
-  isRTL: boolean;
-}
-
-function SimpleMenuItem({
+const SimpleMenuItem = memo(function SimpleMenuItem({
   item,
-  isActive,
-  badgeConfig,
+  currentPath,
   sidebarState,
   isRTL,
-}: SimpleMenuItemProps) {
+  totalAlerts,
+  totalInventoryItems,
+}: MenuItemProps) {
+  const isActive = isMenuItemActive(item.url, currentPath);
+  const badgeConfig = getBadgeConfig(
+    item.badge,
+    totalAlerts,
+    totalInventoryItems,
+  );
+  const badgeClassName = isRTL ? "left-1 right-auto" : "right-1 left-auto";
+  const textAlign = isRTL ? "text-right" : "text-left";
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -446,20 +442,59 @@ function SimpleMenuItem({
         }
       >
         <item.icon className="shrink-0 size-4" />
-        <span className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}>
-          {item.title}
-        </span>
+        <span className={`flex-1 ${textAlign}`}>{item.title}</span>
       </SidebarMenuButton>
       {badgeConfig.show && (
-        <SidebarMenuBadge
-          className={isRTL ? "left-1 right-auto" : "right-1 left-auto"}
-        >
+        <SidebarMenuBadge className={badgeClassName}>
           {badgeConfig.value}
         </SidebarMenuBadge>
       )}
     </SidebarMenuItem>
   );
+});
+
+// ============================================================================
+// Menu Rendering Helper
+// ============================================================================
+
+interface MenuGroupProps {
+  items: MenuItem[];
+  currentPath: string;
+  sidebarState: "expanded" | "collapsed";
+  isRTL: boolean;
+  totalAlerts: number;
+  totalInventoryItems: number;
 }
+
+const MenuGroup = memo(function MenuGroup({
+  items,
+  currentPath,
+  sidebarState,
+  isRTL,
+  totalAlerts,
+  totalInventoryItems,
+}: MenuGroupProps) {
+  return (
+    <>
+      {items.map((item) => {
+        const hasSubItems = item.subItems && item.subItems.length > 0;
+        const Component = hasSubItems ? CollapsibleMenuItem : SimpleMenuItem;
+
+        return (
+          <Component
+            key={item.title}
+            item={item}
+            currentPath={currentPath}
+            sidebarState={sidebarState}
+            isRTL={isRTL}
+            totalAlerts={totalAlerts}
+            totalInventoryItems={totalInventoryItems}
+          />
+        );
+      })}
+    </>
+  );
+});
 
 // ============================================================================
 // Main Component
@@ -471,8 +506,7 @@ export function AppSidebar() {
     SETTING_SIDEBAR_DEFAULT_STATE,
     "open",
   );
-  const routerState = useRouterState();
-  const currentPath = routerState.location.pathname;
+  const currentPath = useRouterState().location.pathname;
   const { theme, setTheme } = useTheme();
   const { data: alertStats } = useAlertStats();
   const { data: inventoryStats } = useInventoryStatistics();
@@ -484,7 +518,7 @@ export function AppSidebar() {
   const upsertSettingValue = useUpsertSettingValue();
 
   // Menu configuration
-  const { mainMenuItems, secondaryMenuItems } = useMenuItems(t);
+  const menuItems = useMenuItems(t);
 
   // Calculate badge values
   const totalAlerts = useMemo(
@@ -494,15 +528,13 @@ export function AppSidebar() {
       (alertStats?.delayed || 0),
     [alertStats],
   );
-
   const totalInventoryItems = inventoryStats?.active_items || 0;
 
-  // Custom hooks
-  const { expandedItems, toggleExpanded } = useExpandedMenuItems(
-    currentPath,
-    mainMenuItems,
-  );
-  useSidebarPersistence(open, setOpen, sidebarDefaultState);
+  // Sync expanded items with current route
+  useSyncExpandedWithRoute(currentPath, menuItems.main);
+
+  // Sidebar persistence
+  useSidebarPersistence(open, setOpen, sidebarDefaultState, upsertSettingValue);
 
   // Event handlers
   const handleLogout = useCallback(async () => {
@@ -510,38 +542,42 @@ export function AppSidebar() {
     navigate({ to: "/login" });
   }, [logout, navigate]);
 
+  const handleSettingChange = useCallback(
+    (key: SettingKey, value: string) => {
+      const def = getSettingDefinition(key);
+      upsertSettingValue.mutate({ key, value, category: def?.category });
+    },
+    [upsertSettingValue],
+  );
+
   const handleThemeChange = useCallback(() => {
     const newTheme: "light" | "dark" | "system" =
       theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
-
     setTheme(newTheme);
-
-    const def = getSettingDefinition(SETTING_DEFAULT_THEME);
-    upsertSettingValue.mutate({
-      key: SETTING_DEFAULT_THEME,
-      value: newTheme,
-      category: def?.category,
-    });
-  }, [theme, setTheme, upsertSettingValue]);
+    handleSettingChange(SETTING_DEFAULT_THEME, newTheme);
+  }, [theme, setTheme, handleSettingChange]);
 
   const handleLanguageChange = useCallback(() => {
     const newLocale = locale === "ar" ? "en" : "ar";
     setLocale(newLocale);
+    handleSettingChange(SETTING_DEFAULT_LANGUAGE, newLocale);
+  }, [locale, setLocale, handleSettingChange]);
 
-    const def = getSettingDefinition(SETTING_DEFAULT_LANGUAGE);
-    upsertSettingValue.mutate({
-      key: SETTING_DEFAULT_LANGUAGE,
-      value: newLocale,
-      category: def?.category,
-    });
-  }, [locale, setLocale, upsertSettingValue]);
+  const themeLabel =
+    theme === "light"
+      ? t("theme.dark")
+      : theme === "dark"
+        ? t("theme.system")
+        : t("theme.light");
+  const ThemeIcon =
+    theme === "light" ? Moon : theme === "dark" ? Settings : Sun;
+  const languageLabel = LOCALES[locale === "ar" ? "en" : "ar"].nativeName;
+  const textAlign = isRTL ? "text-right" : "text-left";
+  const sidebarSide = isRTL ? "right" : "left";
+  const sidebarBorder = isRTL ? "border-l" : "border-r";
 
   return (
-    <Sidebar
-      collapsible="icon"
-      side={isRTL ? "right" : "left"}
-      className={isRTL ? "border-l" : "border-r"}
-    >
+    <Sidebar collapsible="icon" side={sidebarSide} className={sidebarBorder}>
       {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
@@ -551,7 +587,7 @@ export function AppSidebar() {
                 <Pill className="size-4" />
               </div>
               <div
-                className={`grid flex-1 text-sm leading-tight min-w-0 group-data-[collapsible=icon]:hidden ${isRTL ? "text-right" : "text-left"}`}
+                className={`grid flex-1 text-sm leading-tight min-w-0 group-data-[collapsible=icon]:hidden ${textAlign}`}
               >
                 <span className="truncate font-bold text-base">
                   {t("app.title")}
@@ -572,43 +608,14 @@ export function AppSidebar() {
           <SidebarGroupLabel>{t("navigation.mainMenu")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainMenuItems.map((item) => {
-                const isActive = isMenuItemActive(item.url, currentPath);
-                const hasSubItems = item.subItems && item.subItems.length > 0;
-                const isExpanded = expandedItems.has(item.title);
-                const badgeConfig = getBadgeConfig(
-                  item.badge,
-                  totalAlerts,
-                  totalInventoryItems,
-                );
-
-                if (hasSubItems) {
-                  return (
-                    <CollapsibleMenuItem
-                      key={item.title}
-                      item={item}
-                      isActive={isActive}
-                      isExpanded={isExpanded}
-                      badgeConfig={badgeConfig}
-                      currentPath={currentPath}
-                      sidebarState={state}
-                      isRTL={isRTL}
-                      onToggle={() => toggleExpanded(item.title)}
-                    />
-                  );
-                }
-
-                return (
-                  <SimpleMenuItem
-                    key={item.title}
-                    item={item}
-                    isActive={isActive}
-                    badgeConfig={badgeConfig}
-                    sidebarState={state}
-                    isRTL={isRTL}
-                  />
-                );
-              })}
+              <MenuGroup
+                items={menuItems.main}
+                currentPath={currentPath}
+                sidebarState={state}
+                isRTL={isRTL}
+                totalAlerts={totalAlerts}
+                totalInventoryItems={totalInventoryItems}
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -620,19 +627,14 @@ export function AppSidebar() {
           <SidebarGroupLabel>{t("navigation.other")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {secondaryMenuItems.map((item) => {
-                const isActive = isMenuItemActive(item.url, currentPath);
-                return (
-                  <SimpleMenuItem
-                    key={item.title}
-                    item={item}
-                    isActive={isActive}
-                    badgeConfig={{ value: 0, show: false }}
-                    sidebarState={state}
-                    isRTL={isRTL}
-                  />
-                );
-              })}
+              <MenuGroup
+                items={menuItems.secondary}
+                currentPath={currentPath}
+                sidebarState={state}
+                isRTL={isRTL}
+                totalAlerts={0}
+                totalInventoryItems={0}
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -647,51 +649,19 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleThemeChange}
-                  tooltip={
-                    state === "collapsed"
-                      ? theme === "light"
-                        ? t("theme.dark")
-                        : theme === "dark"
-                          ? t("theme.system")
-                          : t("theme.light")
-                      : undefined
-                  }
-                  className="flex items-center gap-2"
+                  tooltip={state === "collapsed" ? themeLabel : undefined}
                 >
-                  {theme === "light" ? (
-                    <Moon className="shrink-0 size-4" />
-                  ) : theme === "dark" ? (
-                    <Settings className="shrink-0 size-4" />
-                  ) : (
-                    <Sun className="shrink-0 size-4" />
-                  )}
-                  <span
-                    className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
-                  >
-                    {theme === "light"
-                      ? t("theme.dark")
-                      : theme === "dark"
-                        ? t("theme.system")
-                        : t("theme.light")}
-                  </span>
+                  <ThemeIcon className="shrink-0 size-4" />
+                  <span className={`flex-1 ${textAlign}`}>{themeLabel}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleLanguageChange}
-                  tooltip={
-                    state === "collapsed"
-                      ? LOCALES[locale === "ar" ? "en" : "ar"].nativeName
-                      : undefined
-                  }
-                  className="flex items-center gap-2"
+                  tooltip={state === "collapsed" ? languageLabel : undefined}
                 >
                   <Languages className="shrink-0 size-4" />
-                  <span
-                    className={`flex-1 ${isRTL ? "text-right" : "text-left"}`}
-                  >
-                    {LOCALES[locale === "ar" ? "en" : "ar"].nativeName}
-                  </span>
+                  <span className={`flex-1 ${textAlign}`}>{languageLabel}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -721,7 +691,7 @@ export function AppSidebar() {
                     </AvatarFallback>
                   </Avatar>
                   <div
-                    className={`grid flex-1 text-sm leading-tight min-w-0 ${isRTL ? "text-right" : "text-left"}`}
+                    className={`grid flex-1 text-sm leading-tight min-w-0 ${textAlign}`}
                   >
                     <span className="truncate font-semibold">
                       {user?.display_name ||
