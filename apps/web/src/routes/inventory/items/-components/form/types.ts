@@ -3,7 +3,7 @@ export interface FormData {
   name: string;
   generic_name: string;
   concentration: string;
-  form: string;
+  medicine_form_id: string;
   manufacturer_id: string;
   barcode: string;
   // Step 2: Stock & Pricing

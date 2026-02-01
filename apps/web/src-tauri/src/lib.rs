@@ -137,6 +137,21 @@ pub async fn run() {
         ipc::commands::inventory::get_stock_history,
         ipc::commands::inventory::get_latest_stock_adjustment,
         ipc::commands::inventory::get_stock_history_statistics,
+        // Medicine Forms CRUD operations
+        ipc::commands::inventory::medicine_forms::create_medicine_form,
+        ipc::commands::inventory::medicine_forms::get_medicine_form,
+        ipc::commands::inventory::medicine_forms::update_medicine_form,
+        ipc::commands::inventory::medicine_forms::delete_medicine_form,
+        ipc::commands::inventory::medicine_forms::list_medicine_forms,
+        // Medicine Forms Retrieval
+        ipc::commands::inventory::medicine_forms::get_medicine_form_by_code,
+        ipc::commands::inventory::medicine_forms::list_active_medicine_forms,
+        // Medicine Forms Management
+        ipc::commands::inventory::medicine_forms::restore_medicine_form,
+        ipc::commands::inventory::medicine_forms::medicine_form_exists,
+        ipc::commands::inventory::medicine_forms::medicine_form_exists_by_code,
+        ipc::commands::inventory::medicine_forms::get_medicine_form_usage_count,
+        ipc::commands::inventory::medicine_forms::reorder_medicine_forms,
         // Manufacturer CRUD operations
         ipc::commands::manufacturer::create_manufacturer,
         ipc::commands::manufacturer::create_manufacturers_bulk,

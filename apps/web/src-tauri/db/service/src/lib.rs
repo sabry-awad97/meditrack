@@ -44,6 +44,9 @@ pub use inventory::{InventoryService, InventoryStatistics};
 // Export Manufacturer service
 pub use manufacturer::ManufacturerService;
 
+// Export Medicine Forms service
+pub use inventory::medicine_forms::MedicineFormsService;
+
 // Export Price History service
 pub use inventory::price_history::PriceHistoryService;
 
@@ -101,6 +104,10 @@ pub struct ServiceManager {
     /// Manufacturer service
     #[builder(setter(into))]
     manufacturer: Arc<ManufacturerService>,
+
+    /// Medicine forms service
+    #[builder(setter(into))]
+    medicine_forms: Arc<MedicineFormsService>,
 
     /// Price history service
     #[builder(setter(into))]
@@ -163,6 +170,7 @@ impl ServiceManager {
         let settings = Arc::new(SettingsService::new(db.clone()));
         let inventory = Arc::new(InventoryService::new(db.clone()));
         let manufacturer = Arc::new(ManufacturerService::new(db.clone()));
+        let medicine_forms = Arc::new(MedicineFormsService::new(db.clone()));
         let price_history = Arc::new(PriceHistoryService::new(db.clone()));
         let stock_history = Arc::new(StockHistoryService::new(db.clone()));
 
@@ -175,6 +183,7 @@ impl ServiceManager {
             .settings(settings)
             .inventory(inventory)
             .manufacturer(manufacturer)
+            .medicine_forms(medicine_forms)
             .price_history(price_history)
             .stock_history(stock_history)
             .build())

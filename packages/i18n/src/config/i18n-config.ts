@@ -15,6 +15,7 @@ import onboardingEn from "../locales/en/onboarding.json";
 import inventoryEn from "../locales/en/inventory.json";
 import loginEn from "../locales/en/login.json";
 import manufacturerEn from "../locales/en/manufacturer.json";
+import medicineFormsEn from "../locales/en/medicine-forms.json";
 import stockAdjustmentsEn from "../locales/en/stock-adjustments.json";
 import itemInquiryEn from "../locales/en/item-inquiry.json";
 
@@ -29,6 +30,7 @@ import onboardingAr from "../locales/ar/onboarding.json";
 import inventoryAr from "../locales/ar/inventory.json";
 import loginAr from "../locales/ar/login.json";
 import manufacturerAr from "../locales/ar/manufacturer.json";
+import medicineFormsAr from "../locales/ar/medicine-forms.json";
 import stockAdjustmentsAr from "../locales/ar/stock-adjustments.json";
 import itemInquiryAr from "../locales/ar/item-inquiry.json";
 
@@ -68,6 +70,7 @@ export async function initializeI18n(initialLocale?: Locale) {
           inventory: inventoryEn,
           login: loginEn,
           manufacturer: manufacturerEn,
+          "medicine-forms": medicineFormsEn,
           "stock-adjustments": stockAdjustmentsEn,
           "item-inquiry": itemInquiryEn,
         },
@@ -83,6 +86,7 @@ export async function initializeI18n(initialLocale?: Locale) {
           inventory: inventoryAr,
           login: loginAr,
           manufacturer: manufacturerAr,
+          "medicine-forms": medicineFormsAr,
           "stock-adjustments": stockAdjustmentsAr,
           "item-inquiry": itemInquiryAr,
         },

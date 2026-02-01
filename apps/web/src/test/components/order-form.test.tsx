@@ -8,9 +8,18 @@ vi.mock("@/hooks", () => ({
   useSettings: vi.fn(() => ({
     data: {
       requireCustomerPhone: true,
-      allowedMedicineForms: ["أقراص", "كبسولات", "شراب"],
       maxMedicinesPerOrder: 10,
     },
+  })),
+}));
+
+vi.mock("@/hooks/use-medicine-forms", () => ({
+  useActiveMedicineForms: vi.fn(() => ({
+    data: [
+      { id: "1", name_en: "Tablets", name_ar: "أقراص" },
+      { id: "2", name_en: "Capsules", name_ar: "كبسولات" },
+      { id: "3", name_en: "Syrup", name_ar: "شراب" },
+    ],
   })),
 }));
 

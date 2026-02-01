@@ -23,6 +23,9 @@ const OnboardingIndexLazyRouteImport = createFileRoute('/onboarding/')()
 const InventoryStockAdjustmentsIndexLazyRouteImport = createFileRoute(
   '/inventory/stock-adjustments/',
 )()
+const InventoryMedicineFormsIndexLazyRouteImport = createFileRoute(
+  '/inventory/medicine-forms/',
+)()
 const InventoryManufacturersIndexLazyRouteImport = createFileRoute(
   '/inventory/manufacturers/',
 )()
@@ -84,6 +87,14 @@ const InventoryStockAdjustmentsIndexLazyRoute =
       (d) => d.Route,
     ),
   )
+const InventoryMedicineFormsIndexLazyRoute =
+  InventoryMedicineFormsIndexLazyRouteImport.update({
+    id: '/inventory/medicine-forms/',
+    path: '/inventory/medicine-forms/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/inventory/medicine-forms/index.lazy').then((d) => d.Route),
+  )
 const InventoryManufacturersIndexLazyRoute =
   InventoryManufacturersIndexLazyRouteImport.update({
     id: '/inventory/manufacturers/',
@@ -120,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/inventory/item-inquiry/': typeof InventoryItemInquiryIndexLazyRoute
   '/inventory/items/': typeof InventoryItemsIndexLazyRoute
   '/inventory/manufacturers/': typeof InventoryManufacturersIndexLazyRoute
+  '/inventory/medicine-forms/': typeof InventoryMedicineFormsIndexLazyRoute
   '/inventory/stock-adjustments/': typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 export interface FileRoutesByTo {
@@ -134,6 +146,7 @@ export interface FileRoutesByTo {
   '/inventory/item-inquiry': typeof InventoryItemInquiryIndexLazyRoute
   '/inventory/items': typeof InventoryItemsIndexLazyRoute
   '/inventory/manufacturers': typeof InventoryManufacturersIndexLazyRoute
+  '/inventory/medicine-forms': typeof InventoryMedicineFormsIndexLazyRoute
   '/inventory/stock-adjustments': typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 export interface FileRoutesById {
@@ -149,6 +162,7 @@ export interface FileRoutesById {
   '/inventory/item-inquiry/': typeof InventoryItemInquiryIndexLazyRoute
   '/inventory/items/': typeof InventoryItemsIndexLazyRoute
   '/inventory/manufacturers/': typeof InventoryManufacturersIndexLazyRoute
+  '/inventory/medicine-forms/': typeof InventoryMedicineFormsIndexLazyRoute
   '/inventory/stock-adjustments/': typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 export interface FileRouteTypes {
@@ -165,6 +179,7 @@ export interface FileRouteTypes {
     | '/inventory/item-inquiry/'
     | '/inventory/items/'
     | '/inventory/manufacturers/'
+    | '/inventory/medicine-forms/'
     | '/inventory/stock-adjustments/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -179,6 +194,7 @@ export interface FileRouteTypes {
     | '/inventory/item-inquiry'
     | '/inventory/items'
     | '/inventory/manufacturers'
+    | '/inventory/medicine-forms'
     | '/inventory/stock-adjustments'
   id:
     | '__root__'
@@ -193,6 +209,7 @@ export interface FileRouteTypes {
     | '/inventory/item-inquiry/'
     | '/inventory/items/'
     | '/inventory/manufacturers/'
+    | '/inventory/medicine-forms/'
     | '/inventory/stock-adjustments/'
   fileRoutesById: FileRoutesById
 }
@@ -208,6 +225,7 @@ export interface RootRouteChildren {
   InventoryItemInquiryIndexLazyRoute: typeof InventoryItemInquiryIndexLazyRoute
   InventoryItemsIndexLazyRoute: typeof InventoryItemsIndexLazyRoute
   InventoryManufacturersIndexLazyRoute: typeof InventoryManufacturersIndexLazyRoute
+  InventoryMedicineFormsIndexLazyRoute: typeof InventoryMedicineFormsIndexLazyRoute
   InventoryStockAdjustmentsIndexLazyRoute: typeof InventoryStockAdjustmentsIndexLazyRoute
 }
 
@@ -276,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryStockAdjustmentsIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inventory/medicine-forms/': {
+      id: '/inventory/medicine-forms/'
+      path: '/inventory/medicine-forms'
+      fullPath: '/inventory/medicine-forms/'
+      preLoaderRoute: typeof InventoryMedicineFormsIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory/manufacturers/': {
       id: '/inventory/manufacturers/'
       path: '/inventory/manufacturers'
@@ -312,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryItemInquiryIndexLazyRoute: InventoryItemInquiryIndexLazyRoute,
   InventoryItemsIndexLazyRoute: InventoryItemsIndexLazyRoute,
   InventoryManufacturersIndexLazyRoute: InventoryManufacturersIndexLazyRoute,
+  InventoryMedicineFormsIndexLazyRoute: InventoryMedicineFormsIndexLazyRoute,
   InventoryStockAdjustmentsIndexLazyRoute:
     InventoryStockAdjustmentsIndexLazyRoute,
 }

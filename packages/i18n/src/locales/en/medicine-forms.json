@@ -1,0 +1,107 @@
+{
+  "title": "Medicine Forms",
+  "description": "Manage medicine dosage forms and classifications",
+  "addForm": "Add Form",
+  "loading": "Loading medicine forms...",
+  "noForms": "No medicine forms",
+  "noFormsFound": "No forms found",
+  "getStarted": "Start by adding a new medicine form",
+  "adjustFilters": "Try adjusting your search or filters",
+  "stats": {
+    "total": "Total Forms",
+    "active": "Active",
+    "inactive": "Inactive",
+    "mostUsed": "Most Used",
+    "inUse": "In Use"
+  },
+  "filters": {
+    "searchPlaceholder": "Search by code or name...",
+    "allStatus": "All Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "clearFilters": "Clear ({{count}})"
+  },
+  "table": {
+    "code": "Code",
+    "nameEn": "English Name",
+    "nameAr": "Arabic Name",
+    "displayOrder": "Order",
+    "status": "Status",
+    "usage": "Usage",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "items": "items"
+  },
+  "form": {
+    "createTitle": "Add Medicine Form",
+    "editTitle": "Edit Medicine Form",
+    "code": "Form Code",
+    "codePlaceholder": "e.g., TABLET",
+    "nameEn": "English Name",
+    "nameEnPlaceholder": "e.g., Tablets",
+    "nameAr": "Arabic Name",
+    "nameArPlaceholder": "e.g., أقراص",
+    "displayOrder": "Display Order",
+    "displayOrderPlaceholder": "e.g., 1",
+    "isActive": "Active",
+    "isActiveDescription": "Form is available for selection",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "validation": {
+      "codeRequired": "Form code is required",
+      "codeMin": "Code must be at least 2 characters",
+      "codeMax": "Code must be at most 50 characters",
+      "nameEnRequired": "English name is required",
+      "nameEnMin": "English name must be at least 2 characters",
+      "nameEnMax": "English name must be at most 100 characters",
+      "nameArRequired": "Arabic name is required",
+      "nameArMin": "Arabic name must be at least 2 characters",
+      "nameArMax": "Arabic name must be at most 100 characters",
+      "displayOrderRequired": "Display order is required",
+      "displayOrderMin": "Display order must be at least 0"
+    }
+  },
+  "details": {
+    "title": "Form Details",
+    "basicInfo": "Basic Information",
+    "code": "Code",
+    "nameEn": "English Name",
+    "nameAr": "Arabic Name",
+    "displayOrder": "Display Order",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "usage": "Usage Statistics",
+    "usedBy": "Used by",
+    "items": "inventory items",
+    "timeline": "Timeline",
+    "created": "Created",
+    "lastUpdated": "Last Updated"
+  },
+  "delete": {
+    "title": "Delete \"{{name}}\"?",
+    "description": "This action will deactivate the form. Items using this form will not be affected.",
+    "confirm": "Delete",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "formCreated": "Form \"{{name}}\" created successfully",
+    "formUpdated": "Form updated successfully",
+    "formDeleted": "Form deleted successfully",
+    "formRestored": "Form restored successfully"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "items": "items",
+    "rowsPerPage": "Rows per page:",
+    "previous": "Previous",
+    "next": "Next",
+    "firstPage": "First page",
+    "lastPage": "Last page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
+}

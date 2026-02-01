@@ -6,6 +6,7 @@ mod m20250130_000002_create_staff_table;
 mod m20250130_000003_create_roles_table;
 mod m20250130_000004_create_users_table;
 mod m20250131_000001_5_create_manufacturers_table;
+mod m20250131_000001_6_create_medicine_forms_table;
 mod m20250131_000001_create_customers_table;
 mod m20250131_000002_1_create_inventory_stock_table;
 mod m20250131_000002_2_create_inventory_price_history_table;
@@ -31,6 +32,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20250130_000004_create_users_table::Migration),
             Box::new(m20250131_000001_create_customers_table::Migration),
             Box::new(m20250131_000001_5_create_manufacturers_table::Migration),
+            Box::new(m20250131_000001_6_create_medicine_forms_table::Migration),
             Box::new(m20250131_000002_create_inventory_items_table::Migration),
             Box::new(m20250131_000002_1_create_inventory_stock_table::Migration),
             Box::new(m20250131_000002_2_create_inventory_price_history_table::Migration),

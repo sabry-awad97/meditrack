@@ -25,9 +25,9 @@ pub struct Model {
     #[sea_orm(column_type = "String(StringLen::N(50))")]
     pub concentration: String,
 
-    /// Dosage form (e.g., "tablet", "capsule", "syrup") - VARCHAR(50)
-    #[sea_orm(column_type = "String(StringLen::N(50))")]
-    pub form: String,
+    /// Medicine form ID - UUID (foreign key to medicine_forms table)
+    #[sea_orm(column_type = "Uuid")]
+    pub medicine_form_id: Id,
 
     /// Manufacturer ID - UUID (nullable, foreign key to manufacturers table)
     #[sea_orm(column_type = "Uuid", nullable)]
@@ -97,6 +97,14 @@ pub enum Relation {
         to = "super::manufacturer::Column::Id"
     )]
     Manufacturer,
+
+    /// Many-to-one: Inventory item belongs to a medicine form
+    #[sea_orm(
+        belongs_to = "super::medicine_form::Entity",
+        from = "Column::MedicineFormId",
+        to = "super::medicine_form::Column::Id"
+    )]
+    MedicineForm,
 }
 
 impl Related<super::special_order_item::Entity> for Entity {
@@ -126,6 +134,12 @@ impl Related<super::inventory_item_barcode::Entity> for Entity {
 impl Related<super::manufacturer::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Manufacturer.def()
+    }
+}
+
+impl Related<super::medicine_form::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::MedicineForm.def()
     }
 }
 

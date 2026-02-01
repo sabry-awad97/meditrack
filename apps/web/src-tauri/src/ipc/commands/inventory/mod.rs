@@ -1,3 +1,13 @@
+pub mod medicine_forms;
+
+// Re-export medicine forms commands
+pub use medicine_forms::{
+    create_medicine_form, delete_medicine_form, get_medicine_form, get_medicine_form_by_code,
+    get_medicine_form_usage_count, list_active_medicine_forms, list_medicine_forms,
+    medicine_form_exists, medicine_form_exists_by_code, reorder_medicine_forms,
+    restore_medicine_form, update_medicine_form,
+};
+
 use db_entity::inventory_item::dto::{
     CreateBarcodeInput, CreateInventoryItemWithStock, InventoryItemWithStockResponse,
     SetPrimaryBarcode, UpdateInventoryItem,

@@ -133,7 +133,7 @@ function InventoryComponent() {
           name: data.name,
           generic_name: data.generic_name,
           concentration: data.concentration,
-          form: data.form,
+          medicine_form_id: data.medicine_form_id,
           manufacturer_id: data.manufacturer_id,
           requires_prescription: data.requires_prescription,
           is_controlled: data.is_controlled,
@@ -227,7 +227,9 @@ function InventoryComponent() {
         );
 
       const matchesForm =
-        !formFilter || formFilter === "all" || item.form === formFilter;
+        !formFilter ||
+        formFilter === "all" ||
+        item.medicine_form_id === formFilter;
 
       const stockStatus = getStockStatus(
         item.stock_quantity,

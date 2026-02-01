@@ -360,7 +360,7 @@ export function ItemDetailsDialog({
                       <DetailField
                         icon={<Package className="h-4 w-4" />}
                         label={t("itemDetails.form")}
-                        value={item.form}
+                        value={item.medicine_form_name_en || t("table.na")}
                       />
                       <Separator />
                       <DetailField

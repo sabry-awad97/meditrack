@@ -15,7 +15,7 @@ import {
   FilterSelect,
   type FilterOption,
 } from "@/components/forms";
-import { MEDICINE_FORMS } from "@/lib/constants";
+import { useActiveMedicineForms } from "@/hooks/use-medicine-forms";
 import { cn } from "@/lib/utils";
 
 interface InventoryFiltersProps {
@@ -53,6 +53,7 @@ export function InventoryFilters({
 }: InventoryFiltersProps) {
   const { t } = useTranslation("inventory");
   const { isRTL } = useDirection();
+  const { data: medicineForms = [] } = useActiveMedicineForms();
 
   const hasActiveFilters =
     searchQuery ||
@@ -63,9 +64,9 @@ export function InventoryFilters({
   const formFilterItems: FilterOption[] = [
     { value: null, label: t("filters.filterByForm") },
     { value: "all", label: t("filters.allForms") },
-    ...MEDICINE_FORMS.map((form) => ({
-      value: form,
-      label: form,
+    ...medicineForms.map((form) => ({
+      value: form.id,
+      label: form.name_en,
     })),
   ];
 

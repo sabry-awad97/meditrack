@@ -22,6 +22,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useActiveManufacturers } from "@/hooks";
+import { useActiveMedicineForms } from "@/hooks/use-medicine-forms";
 import type {
   CreateInventoryItemWithStock,
   InventoryItemWithStockResponse,
@@ -83,15 +84,17 @@ export function InventoryForm({
   const [errors, setErrors] = useState<ValidationErrors>({});
   const STEPS = getSteps(t);
 
-  // Fetch active manufacturers for dropdown
+  // Fetch active manufacturers and medicine forms for dropdowns
   const { data: manufacturers = [], isLoading: isLoadingManufacturers } =
     useActiveManufacturers();
+  const { data: medicineForms = [], isLoading: isLoadingMedicineForms } =
+    useActiveMedicineForms();
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
     generic_name: "",
     concentration: "",
-    form: "",
+    medicine_form_id: "",
     manufacturer_id: "",
     barcode: "",
     stock_quantity: "0",
@@ -110,7 +113,7 @@ export function InventoryForm({
         name: mode === "duplicate" ? `${item.name} (Copy)` : item.name,
         generic_name: item.generic_name || "",
         concentration: item.concentration,
-        form: item.form,
+        medicine_form_id: item.medicine_form_id || "",
         manufacturer_id: item.manufacturer_id || "",
         barcode:
           mode === "duplicate"
@@ -132,7 +135,7 @@ export function InventoryForm({
         name: "",
         generic_name: "",
         concentration: "",
-        form: "",
+        medicine_form_id: "",
         manufacturer_id: "",
         barcode: "",
         stock_quantity: "0",
@@ -171,8 +174,8 @@ export function InventoryForm({
       if (!formData.concentration.trim()) {
         newErrors.concentration = t("form.validation.concentrationRequired");
       }
-      if (!formData.form) {
-        newErrors.form = t("form.validation.formRequired");
+      if (!formData.medicine_form_id) {
+        newErrors.medicine_form_id = t("form.validation.formRequired");
       }
     }
 
@@ -216,7 +219,7 @@ export function InventoryForm({
       name: formData.name.trim(),
       generic_name: formData.generic_name.trim() || undefined,
       concentration: formData.concentration.trim(),
-      form: formData.form,
+      medicine_form_id: formData.medicine_form_id,
       manufacturer_id: formData.manufacturer_id || undefined,
       barcodes: formData.barcode.trim()
         ? [
@@ -248,7 +251,7 @@ export function InventoryForm({
       name: "",
       generic_name: "",
       concentration: "",
-      form: "",
+      medicine_form_id: "",
       manufacturer_id: "",
       barcode: "",
       stock_quantity: "0",
@@ -300,7 +303,7 @@ export function InventoryForm({
           {/* Progress Bar */}
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
-              {STEPS.map((step, index) => (
+              {STEPS.map((step) => (
                 <div
                   key={step.id}
                   className={cn(
@@ -359,6 +362,8 @@ export function InventoryForm({
                     errors={errors}
                     manufacturers={manufacturers}
                     isLoadingManufacturers={isLoadingManufacturers}
+                    medicineForms={medicineForms}
+                    isLoadingMedicineForms={isLoadingMedicineForms}
                     onUpdateField={updateField}
                   />
                 )}
@@ -382,6 +387,7 @@ export function InventoryForm({
                   <ReviewStep
                     formData={formData}
                     manufacturers={manufacturers}
+                    medicineForms={medicineForms}
                   />
                 )}
               </motion.div>

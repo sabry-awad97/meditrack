@@ -1,4 +1,3 @@
-import { z } from "zod";
 import type { OrderStatus } from "./types";
 
 // ========================================
@@ -88,30 +87,6 @@ export const ORDER_STATUS_CONFIG: Record<
 };
 
 // ========================================
-// MEDICINE FORMS
-// ========================================
-
-// Pharmaceutical medicine forms (in Arabic)
-export const MEDICINE_FORMS = [
-  "أقراص",
-  "كبسولات",
-  "شراب",
-  "أمبول",
-  "حقن",
-  "مرهم",
-  "كريم",
-  "قطرة",
-  "بخاخ",
-  "لبوس",
-  "أخرى",
-] as const;
-
-// Schema for medicine form
-export const MedicineFormSchema = z.enum(MEDICINE_FORMS);
-
-export type MedicineForm = z.infer<typeof MedicineFormSchema>;
-
-// ========================================
 // SETTINGS KEYS
 // ========================================
 
@@ -132,7 +107,6 @@ export const SETTING_WORKING_HOURS = "workingHours" as const;
 export const SETTING_DEFAULT_ORDER_STATUS = "defaultOrderStatus" as const;
 export const SETTING_AUTO_ARCHIVE_DAYS = "autoArchiveDays" as const;
 export const SETTING_REQUIRE_CUSTOMER_PHONE = "requireCustomerPhone" as const;
-export const SETTING_ALLOWED_MEDICINE_FORMS = "allowedMedicineForms" as const;
 export const SETTING_MAX_MEDICINES_PER_ORDER = "maxMedicinesPerOrder" as const;
 
 // ========== Suppliers Settings ==========
@@ -173,7 +147,6 @@ export type SettingKey =
   | typeof SETTING_DEFAULT_ORDER_STATUS
   | typeof SETTING_AUTO_ARCHIVE_DAYS
   | typeof SETTING_REQUIRE_CUSTOMER_PHONE
-  | typeof SETTING_ALLOWED_MEDICINE_FORMS
   | typeof SETTING_MAX_MEDICINES_PER_ORDER
   | typeof SETTING_MIN_SUPPLIER_RATING
   | typeof SETTING_MAX_DELIVERY_DAYS
@@ -300,19 +273,6 @@ export const SETTINGS_DEFINITIONS: SettingDefinition[] = [
     },
     type: "boolean",
     defaultValue: true,
-  },
-  {
-    id: "allowed-medicine-forms",
-    category: "orders",
-    key: SETTING_ALLOWED_MEDICINE_FORMS,
-    label: "fields.allowedMedicineForms.label",
-    description: {
-      en: "Allowed pharmaceutical forms for medicines",
-      ar: "الأشكال الصيدلانية المسموح بها للأدوية",
-    },
-    type: "multiselect",
-    defaultValue: MEDICINE_FORMS,
-    options: MEDICINE_FORMS.map((form) => ({ value: form, label: form })),
   },
   {
     id: "max-medicines-per-order",

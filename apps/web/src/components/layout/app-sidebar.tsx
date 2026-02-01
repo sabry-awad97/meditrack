@@ -19,6 +19,7 @@ import {
   PackageSearch,
   FileText,
   TrendingUp,
+  Tablets,
 } from "lucide-react";
 
 import {
@@ -174,6 +175,11 @@ function useMenuItems(t: (key: string) => string) {
               title: t("navigation.manufacturers"),
               url: "/inventory/manufacturers",
               icon: Users,
+            },
+            {
+              title: t("navigation.medicineForms"),
+              url: "/inventory/medicine-forms",
+              icon: Tablets,
             },
             {
               title: t("navigation.stockAdjustments"),

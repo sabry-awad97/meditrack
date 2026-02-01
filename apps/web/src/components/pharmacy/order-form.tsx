@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { MEDICINE_FORMS } from "@/lib/constants";
+import { useActiveMedicineForms } from "@/hooks/use-medicine-forms";
 import { useSettingValue } from "@/hooks";
 import type { Order, OrderFormData } from "@/lib/types";
 
@@ -43,11 +43,8 @@ export function OrderForm({
   mode,
 }: OrderFormProps) {
   const { t } = useTranslation("orders");
+  const { data: medicineForms = [] } = useActiveMedicineForms();
 
-  const allowedMedicineForms = useSettingValue(
-    "allowedMedicineForms",
-    MEDICINE_FORMS,
-  );
   const requireCustomerPhone = useSettingValue<boolean>(
     "requireCustomerPhone",
     true,
@@ -82,8 +79,7 @@ export function OrderForm({
     ],
   );
 
-  // الحصول على أشكال الأدوية المسموحة من الإعدادات
-  const allowedForms = allowedMedicineForms || MEDICINE_FORMS;
+  // Get configuration values
   const phoneRequired = requireCustomerPhone ?? true;
   const maxMedicines = maxMedicinesPerOrder ?? 10;
 
@@ -322,9 +318,9 @@ export function OrderForm({
                         <SelectValue placeholder={t("form.formPlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
-                        {allowedForms.map((form: string) => (
-                          <SelectItem key={form} value={form}>
-                            {form}
+                        {medicineForms.map((form) => (
+                          <SelectItem key={form.id} value={form.name_en}>
+                            {form.name_en}
                           </SelectItem>
                         ))}
                       </SelectContent>

@@ -7,11 +7,14 @@ import {
   generateSeedInventory,
   generateSeedManufacturers,
   generateManufacturerIds,
+  generateSeedMedicineForms,
+  generateMedicineFormIds,
 } from "@/lib/seed-data";
 import { ordersCollection } from "./use-orders-db";
 import { suppliersCollection } from "./use-suppliers-db";
 import { inventoryApi } from "@/api/inventory.api";
 import { manufacturerApi } from "@/api/manufacturer.api";
+import { medicineFormsApi } from "@/api/medicine-forms.api";
 import { settingsApi } from "@/api/settings.api";
 import { clearAuth } from "@/lib/auth";
 
@@ -30,14 +33,16 @@ export function useSeedData() {
     ) => {
       setIsPending(true);
       try {
-        // Generate manufacturer IDs first - these will be used consistently
+        // Generate IDs first - these will be used consistently
         const manufacturerIds = generateManufacturerIds();
+        const formIds = generateMedicineFormIds();
 
         // توليد البيانات
         const orders = generateSeedOrders(15);
         const suppliers = generateSeedSuppliers(8);
         const manufacturers = generateSeedManufacturers(manufacturerIds);
-        const inventory = generateSeedInventory(manufacturerIds);
+        const medicineForms = generateSeedMedicineForms(formIds);
+        const inventory = generateSeedInventory(manufacturerIds, formIds);
 
         // إضافة الطلبات
         for (const order of orders) {
@@ -76,7 +81,32 @@ export function useSeedData() {
           logger.error("Error seeding manufacturers:", error);
         }
 
-        // Now create inventory using the actual manufacturer IDs
+        // إضافة أشكال الأدوية (قبل المخزون)
+        logger.info("Seeding medicine forms...");
+        let formsCount = 0;
+
+        // Create a map to store the actual IDs returned from the backend
+        const actualFormIds: Record<string, string> = {};
+
+        try {
+          // Create medicine forms one by one to maintain the mapping
+          for (const form of medicineForms) {
+            const { id: _id, ...formData } = form; // Remove the id field
+            const result = await medicineFormsApi.create(formData);
+
+            // Store the mapping: code -> actual_id
+            actualFormIds[form.code] = result.id;
+            formsCount++;
+
+            await delay(30);
+          }
+
+          logger.info(`Successfully created ${formsCount} medicine forms`);
+        } catch (error) {
+          logger.error("Error seeding medicine forms:", error);
+        }
+
+        // Now create inventory using the actual manufacturer and form IDs
         logger.info("Seeding inventory items...");
         let inventoryCount = 0;
         const createdItems: string[] = [];
@@ -96,7 +126,7 @@ export function useSeedData() {
               continue;
             }
 
-            // Get the actual ID from the backend
+            // Get the actual manufacturer ID from the backend
             const actualManufacturerId =
               actualManufacturerIds[
                 manufacturers.find((m) => m.id === item.manufacturer_id)
@@ -111,10 +141,32 @@ export function useSeedData() {
               continue;
             }
 
-            // Create the item with the actual manufacturer ID
+            // Find the form code from the original mapping
+            const formCode = Object.entries(formIds).find(
+              ([_, id]) => id === item.medicine_form_id,
+            )?.[0];
+
+            if (!formCode) {
+              logger.error(
+                "Could not find form code for ID:",
+                item.medicine_form_id,
+              );
+              continue;
+            }
+
+            // Get the actual form ID from the backend
+            const actualFormId = actualFormIds[formCode];
+
+            if (!actualFormId) {
+              logger.error("Could not find actual form ID for:", formCode);
+              continue;
+            }
+
+            // Create the item with the actual IDs
             const result = await inventoryApi.create({
               ...item,
               manufacturer_id: actualManufacturerId,
+              medicine_form_id: actualFormId,
             });
 
             createdItems.push(result.id);

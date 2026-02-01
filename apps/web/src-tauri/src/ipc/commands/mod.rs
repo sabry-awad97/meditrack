@@ -62,7 +62,10 @@ pub use inventory::{
     adjust_inventory_stock,
     // CRUD operations
     create_inventory_item,
+    // Medicine Forms
+    create_medicine_form,
     delete_inventory_item,
+    delete_medicine_form,
     get_inventory_item,
     get_inventory_item_by_barcode,
     // Statistics
@@ -74,19 +77,29 @@ pub use inventory::{
     get_latest_stock_adjustment,
     // Listing & filtering
     get_low_stock_items,
+    get_medicine_form,
+    get_medicine_form_by_code,
+    get_medicine_form_usage_count,
     get_out_of_stock_items,
     get_price_history,
     get_price_statistics,
     get_stock_history,
     get_stock_history_statistics,
     list_active_inventory_items,
+    list_active_medicine_forms,
+    list_medicine_forms,
+    medicine_form_exists,
+    medicine_form_exists_by_code,
     remove_barcode,
+    reorder_medicine_forms,
     restore_inventory_item,
+    restore_medicine_form,
     search_inventory_items,
     set_primary_barcode,
     update_barcode,
     update_inventory_item,
     update_inventory_stock,
+    update_medicine_form,
 };
 
 pub use manufacturer::{

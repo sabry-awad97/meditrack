@@ -10,9 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FilterSelect, type FilterOption } from "@/components/forms";
 import { cn } from "@/lib/utils";
-import { MEDICINE_FORMS } from "@/lib/constants";
 import type { ManufacturerResponse } from "@/api/manufacturer.api";
+import type { MedicineFormResponse } from "@/api/medicine-forms.api";
 import type { FormData, ValidationErrors } from "./types";
 
 interface BasicInfoStepProps {
@@ -20,6 +21,8 @@ interface BasicInfoStepProps {
   errors: ValidationErrors;
   manufacturers: ManufacturerResponse[];
   isLoadingManufacturers: boolean;
+  medicineForms: MedicineFormResponse[];
+  isLoadingMedicineForms: boolean;
   onUpdateField: (
     field: keyof FormData,
     value: FormData[keyof FormData],
@@ -31,9 +34,17 @@ export function BasicInfoStep({
   errors,
   manufacturers,
   isLoadingManufacturers,
+  medicineForms,
+  isLoadingMedicineForms,
   onUpdateField,
 }: BasicInfoStepProps) {
   const { t } = useTranslation("inventory");
+
+  // Prepare medicine form filter options
+  const medicineFormOptions: FilterOption[] = medicineForms.map((form) => ({
+    value: form.id,
+    label: form.name_en,
+  }));
 
   return (
     <div className="space-y-6">
@@ -99,35 +110,37 @@ export function BasicInfoStep({
           )}
         </div>
 
-        {/* Form */}
+        {/* Medicine Form */}
         <div className="space-y-2">
-          <Label htmlFor="form" className="flex items-center gap-2">
+          <Label htmlFor="medicine_form_id" className="flex items-center gap-2">
             {t("form.fields.form")}
             <span className="text-destructive">*</span>
           </Label>
-          <Select
-            value={formData.form || ""}
-            onValueChange={(value) => onUpdateField("form", value || "")}
-          >
-            <SelectTrigger className={cn(errors.form && "border-destructive")}>
-              <SelectValue placeholder={t("form.fields.formPlaceholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {MEDICINE_FORMS.map((form) => (
-                <SelectItem key={form} value={form}>
-                  {form}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.form && (
+          {isLoadingMedicineForms ? (
+            <div className="h-10 rounded-md border border-input bg-muted/50 flex items-center justify-center">
+              <span className="text-sm text-muted-foreground">
+                Loading forms...
+              </span>
+            </div>
+          ) : (
+            <FilterSelect
+              items={medicineFormOptions}
+              value={formData.medicine_form_id || null}
+              onValueChange={(value) =>
+                onUpdateField("medicine_form_id", value || "")
+              }
+              placeholder={t("form.fields.formPlaceholder")}
+              className={cn(errors.medicine_form_id && "border-destructive")}
+            />
+          )}
+          {errors.medicine_form_id && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-sm text-destructive flex items-center gap-1"
             >
               <AlertCircle className="h-3 w-3" />
-              {errors.form}
+              {errors.medicine_form_id}
             </motion.p>
           )}
         </div>

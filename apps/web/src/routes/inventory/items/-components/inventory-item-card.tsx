@@ -161,7 +161,7 @@ export function InventoryItemCard({
             {item.concentration}
           </Badge>
           <Badge variant="outline" className="font-normal">
-            {item.form}
+            {item.medicine_form_name_en || "—"}
           </Badge>
         </div>
 

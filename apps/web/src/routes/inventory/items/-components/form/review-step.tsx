@@ -2,15 +2,26 @@ import { Check, Package, DollarSign, Shield } from "lucide-react";
 import { useTranslation } from "@meditrack/i18n";
 import { Badge } from "@/components/ui/badge";
 import type { ManufacturerResponse } from "@/api/manufacturer.api";
+import type { MedicineFormResponse } from "@/api/medicine-forms.api";
 import type { FormData } from "./types";
 
 interface ReviewStepProps {
   formData: FormData;
   manufacturers: ManufacturerResponse[];
+  medicineForms: MedicineFormResponse[];
 }
 
-export function ReviewStep({ formData, manufacturers }: ReviewStepProps) {
+export function ReviewStep({
+  formData,
+  manufacturers,
+  medicineForms,
+}: ReviewStepProps) {
   const { t } = useTranslation("inventory");
+
+  // Find medicine form name
+  const medicineFormName =
+    medicineForms.find((f) => f.id === formData.medicine_form_id)?.name_en ||
+    "—";
 
   return (
     <div className="space-y-6">
@@ -43,7 +54,7 @@ export function ReviewStep({ formData, manufacturers }: ReviewStepProps) {
             label={t("form.fields.concentration")}
             value={formData.concentration}
           />
-          <ReviewField label={t("form.fields.form")} value={formData.form} />
+          <ReviewField label={t("form.fields.form")} value={medicineFormName} />
           <ReviewField
             label={t("form.fields.manufacturer")}
             value={

@@ -36,8 +36,8 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(
-                        ColumnDef::new(InventoryItem::Form)
-                            .string_len(50)
+                        ColumnDef::new(InventoryItem::MedicineFormId)
+                            .uuid()
                             .not_null(),
                     )
                     .col(ColumnDef::new(InventoryItem::ManufacturerId).uuid().null())
@@ -92,6 +92,14 @@ impl MigrationTrait for Migration {
                             .on_delete(ForeignKeyAction::SetNull)
                             .on_update(ForeignKeyAction::Cascade),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_inventory_items_medicine_form")
+                            .from(Alias::new("inventory_items"), InventoryItem::MedicineFormId)
+                            .to(Alias::new("medicine_forms"), Alias::new("id"))
+                            .on_delete(ForeignKeyAction::Restrict)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -120,9 +128,9 @@ impl MigrationTrait for Migration {
         manager
             .create_index(
                 Index::create()
-                    .name("idx_inventory_items_form")
+                    .name("idx_inventory_items_medicine_form_id")
                     .table(Alias::new("inventory_items"))
-                    .col(InventoryItem::Form)
+                    .col(InventoryItem::MedicineFormId)
                     .to_owned(),
             )
             .await?;
@@ -200,7 +208,7 @@ enum InventoryItem {
     Name,
     GenericName,
     Concentration,
-    Form,
+    MedicineFormId,
     ManufacturerId,
     RequiresPrescription,
     IsControlled,

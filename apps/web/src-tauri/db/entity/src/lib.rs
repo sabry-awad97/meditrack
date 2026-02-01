@@ -8,6 +8,7 @@ pub mod inventory_price_history;
 pub mod inventory_stock;
 pub mod inventory_stock_history;
 pub mod manufacturer;
+pub mod medicine_form;
 pub mod role;
 pub mod session;
 pub mod setting;
@@ -41,6 +42,9 @@ pub mod prelude {
     pub use super::manufacturer;
     pub use super::manufacturer::Entity as Manufacturer;
     pub use super::manufacturer::dto as manufacturer_dto;
+    pub use super::medicine_form;
+    pub use super::medicine_form::Entity as MedicineForm;
+    pub use super::medicine_form::dto as medicine_form_dto;
     pub use super::role;
     pub use super::role::Entity as Role;
     pub use super::role::dto as role_dto;

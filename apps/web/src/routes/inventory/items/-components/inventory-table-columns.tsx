@@ -74,11 +74,11 @@ export function useInventoryColumns({
         ),
       },
       {
-        accessorKey: "form",
+        accessorKey: "medicine_form_name_en",
         header: t("table.form"),
         cell: ({ row }) => (
           <Badge variant="outline" className="font-normal">
-            {row.original.form}
+            {row.original.medicine_form_name_en || "—"}
           </Badge>
         ),
       },

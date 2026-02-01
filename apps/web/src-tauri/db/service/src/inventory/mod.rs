@@ -1,3 +1,4 @@
+pub mod medicine_forms;
 pub mod price_history;
 pub mod stock_history;
 
@@ -64,12 +65,22 @@ impl InventoryService {
             None
         };
 
+        // Fetch medicine form names
+        let (medicine_form_name_en, medicine_form_name_ar) =
+            db_entity::medicine_form::Entity::find_by_id(item.medicine_form_id)
+                .one(self.db.as_ref())
+                .await?
+                .map(|f| (Some(f.name_en), Some(f.name_ar)))
+                .unwrap_or((None, None));
+
         Ok(InventoryItemWithStockResponse {
             id: item.id,
             name: item.name,
             generic_name: item.generic_name,
             concentration: item.concentration,
-            form: item.form,
+            medicine_form_id: item.medicine_form_id,
+            medicine_form_name_en,
+            medicine_form_name_ar,
             manufacturer_id: item.manufacturer_id,
             manufacturer_name,
             requires_prescription: item.requires_prescription,
@@ -112,7 +123,7 @@ impl InventoryService {
             name: Set(dto.name),
             generic_name: Set(dto.generic_name),
             concentration: Set(dto.concentration),
-            form: Set(dto.form),
+            medicine_form_id: Set(dto.medicine_form_id),
             manufacturer_id: Set(dto.manufacturer_id),
             requires_prescription: Set(dto.requires_prescription),
             is_controlled: Set(dto.is_controlled),
@@ -267,8 +278,8 @@ impl InventoryService {
         if let Some(concentration) = dto.concentration {
             item.concentration = Set(concentration);
         }
-        if let Some(form) = dto.form {
-            item.form = Set(form);
+        if let Some(medicine_form_id) = dto.medicine_form_id {
+            item.medicine_form_id = Set(medicine_form_id);
         }
         if let Some(manufacturer_id) = dto.manufacturer_id {
             item.manufacturer_id = Set(Some(manufacturer_id));

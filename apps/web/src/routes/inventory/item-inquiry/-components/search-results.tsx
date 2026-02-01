@@ -209,7 +209,7 @@ export function SearchResults({
                         {item.manufacturer_name || t("searchResults.na")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {item.form}
+                        {item.medicine_form_name_en || t("searchResults.na")}
                       </p>
                     </div>
 

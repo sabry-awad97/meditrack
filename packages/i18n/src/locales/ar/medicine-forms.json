@@ -1,0 +1,107 @@
+{
+  "title": "أشكال الأدوية",
+  "description": "إدارة أشكال جرعات الأدوية والتصنيفات",
+  "addForm": "إضافة شكل",
+  "loading": "جاري تحميل أشكال الأدوية...",
+  "noForms": "لا توجد أشكال أدوية",
+  "noFormsFound": "لم يتم العثور على أشكال",
+  "getStarted": "ابدأ بإضافة شكل دواء جديد",
+  "adjustFilters": "جرب تعديل البحث أو الفلاتر",
+  "stats": {
+    "total": "إجمالي الأشكال",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "mostUsed": "الأكثر استخداماً",
+    "inUse": "قيد الاستخدام"
+  },
+  "filters": {
+    "searchPlaceholder": "البحث بالرمز أو الاسم...",
+    "allStatus": "جميع الحالات",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "clearFilters": "مسح ({{count}})"
+  },
+  "table": {
+    "code": "الرمز",
+    "nameEn": "الاسم بالإنجليزية",
+    "nameAr": "الاسم بالعربية",
+    "displayOrder": "الترتيب",
+    "status": "الحالة",
+    "usage": "الاستخدام",
+    "actions": "الإجراءات",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "items": "عناصر"
+  },
+  "form": {
+    "createTitle": "إضافة شكل دواء",
+    "editTitle": "تعديل شكل الدواء",
+    "code": "رمز الشكل",
+    "codePlaceholder": "مثال: TABLET",
+    "nameEn": "الاسم بالإنجليزية",
+    "nameEnPlaceholder": "مثال: Tablets",
+    "nameAr": "الاسم بالعربية",
+    "nameArPlaceholder": "مثال: أقراص",
+    "displayOrder": "ترتيب العرض",
+    "displayOrderPlaceholder": "مثال: 1",
+    "isActive": "نشط",
+    "isActiveDescription": "الشكل متاح للاختيار",
+    "submit": "حفظ",
+    "cancel": "إلغاء",
+    "validation": {
+      "codeRequired": "رمز الشكل مطلوب",
+      "codeMin": "يجب أن يكون الرمز حرفين على الأقل",
+      "codeMax": "يجب ألا يتجاوز الرمز 50 حرفاً",
+      "nameEnRequired": "الاسم بالإنجليزية مطلوب",
+      "nameEnMin": "يجب أن يكون الاسم بالإنجليزية حرفين على الأقل",
+      "nameEnMax": "يجب ألا يتجاوز الاسم بالإنجليزية 100 حرف",
+      "nameArRequired": "الاسم بالعربية مطلوب",
+      "nameArMin": "يجب أن يكون الاسم بالعربية حرفين على الأقل",
+      "nameArMax": "يجب ألا يتجاوز الاسم بالعربية 100 حرف",
+      "displayOrderRequired": "ترتيب العرض مطلوب",
+      "displayOrderMin": "يجب أن يكون ترتيب العرض 0 على الأقل"
+    }
+  },
+  "details": {
+    "title": "تفاصيل الشكل",
+    "basicInfo": "المعلومات الأساسية",
+    "code": "الرمز",
+    "nameEn": "الاسم بالإنجليزية",
+    "nameAr": "الاسم بالعربية",
+    "displayOrder": "ترتيب العرض",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "usage": "إحصائيات الاستخدام",
+    "usedBy": "مستخدم بواسطة",
+    "items": "عناصر المخزون",
+    "timeline": "الجدول الزمني",
+    "created": "تاريخ الإنشاء",
+    "lastUpdated": "آخر تحديث"
+  },
+  "delete": {
+    "title": "حذف \"{{name}}\"؟",
+    "description": "سيتم إلغاء تنشيط الشكل. لن تتأثر العناصر التي تستخدم هذا الشكل.",
+    "confirm": "حذف",
+    "cancel": "إلغاء"
+  },
+  "messages": {
+    "formCreated": "تم إنشاء الشكل \"{{name}}\" بنجاح",
+    "formUpdated": "تم تحديث الشكل بنجاح",
+    "formDeleted": "تم حذف الشكل بنجاح",
+    "formRestored": "تم استعادة الشكل بنجاح"
+  },
+  "pagination": {
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "items": "عناصر",
+    "rowsPerPage": "صفوف لكل صفحة:",
+    "previous": "السابق",
+    "next": "التالي",
+    "firstPage": "الصفحة الأولى",
+    "lastPage": "الصفحة الأخيرة",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية"
+  }
+}

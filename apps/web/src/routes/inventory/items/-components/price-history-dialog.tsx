@@ -58,13 +58,11 @@ export function PriceHistoryDialog({
 
   const priceChange =
     priceHistory.length > 1
-      ? unitPrice - parseFloat(priceHistory[priceHistory.length - 1].unit_price)
+      ? unitPrice - priceHistory[priceHistory.length - 1].unit_price
       : 0;
   const priceChangePercent =
     priceHistory.length > 1
-      ? (priceChange /
-          parseFloat(priceHistory[priceHistory.length - 1].unit_price)) *
-        100
+      ? (priceChange / priceHistory[priceHistory.length - 1].unit_price) * 100
       : 0;
 
   return (
