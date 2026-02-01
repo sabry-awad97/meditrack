@@ -490,10 +490,16 @@ function LoginPage() {
                         touched.username &&
                         username &&
                         "border-green-500",
+                      isRTL ? "text-right" : "text-left",
                     )}
                   />
                   {touched.username && username && !errors.username && (
-                    <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                    <CheckCircle2
+                      className={cn(
+                        "absolute top-1/2 -translate-y-1/2 h-4 w-4 text-green-500",
+                        isRTL ? "left-3" : "right-3",
+                      )}
+                    />
                   )}
                 </div>
                 {errors.username && touched.username && (
@@ -534,7 +540,7 @@ function LoginPage() {
                       errors.password ? "password-error" : undefined
                     }
                     className={cn(
-                      "pr-10",
+                      isRTL ? "pl-10 text-right" : "pr-10 text-left",
                       errors.password &&
                         touched.password &&
                         "border-destructive",
@@ -548,7 +554,10 @@ function LoginPage() {
                     type="button"
                     onClick={togglePasswordVisibility}
                     disabled={isLoading || isLocked}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                    className={cn(
+                      "absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50",
+                      isRTL ? "left-3" : "right-3",
+                    )}
                     tabIndex={-1}
                     aria-label={
                       showPassword
