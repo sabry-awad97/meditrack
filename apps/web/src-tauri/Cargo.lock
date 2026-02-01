@@ -160,7 +160,6 @@ name = "app"
 version = "0.2.0"
 dependencies = [
  "app_config",
- "app_seeder",
  "clap",
  "db_entity",
  "db_migration",

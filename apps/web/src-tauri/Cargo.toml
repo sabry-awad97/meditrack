@@ -37,7 +37,6 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 typed-builder = { workspace = true }
 
 app_config = { workspace = true }
-app_seeder = { workspace = true }
 db_entity = { workspace = true }
 db_migration = { workspace = true }
 db_service = { workspace = true }
