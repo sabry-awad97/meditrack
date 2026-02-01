@@ -136,13 +136,6 @@ export const selectToggleExpanded = (state: SidebarState) =>
 export const selectIsExpanded = (state: SidebarState) => state.isExpanded;
 
 /**
- * Select setExpandedItems function
- * Use this when you need to set multiple expanded items at once
- */
-export const selectSetExpandedItems = (state: SidebarState) =>
-  state.setExpandedItems;
-
-/**
  * Create a selector for a specific item's expanded state
  * Use this for individual menu items to prevent unnecessary re-renders
  *

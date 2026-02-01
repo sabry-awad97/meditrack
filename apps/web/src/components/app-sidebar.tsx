@@ -71,7 +71,6 @@ import { useInventoryStatistics } from "@/hooks/use-inventory";
 import {
   useSidebarStore,
   selectToggleExpanded,
-  selectSetExpandedItems,
   createIsExpandedSelector,
 } from "@/stores/sidebar-store";
 
@@ -126,12 +125,13 @@ interface BadgeConfig {
 /**
  * Custom hook to sync expanded menu items with current route
  * Auto-expands parent menu when a subitem is active
+ * Only expands items that aren't already expanded to avoid re-triggering animations
  */
 function useSyncExpandedWithRoute(currentPath: string, menuItems: MenuItem[]) {
-  const setExpandedItems = useSidebarStore(selectSetExpandedItems);
-
   useEffect(() => {
-    const expanded = new Set<string>();
+    // Get current state directly to avoid dependency on expandedItems
+    const { expandedItems, expandItem } = useSidebarStore.getState();
+
     menuItems.forEach((item) => {
       if (item.subItems) {
         const hasActiveSubItem = item.subItems.some(
@@ -139,13 +139,13 @@ function useSyncExpandedWithRoute(currentPath: string, menuItems: MenuItem[]) {
             currentPath === subItem.url ||
             currentPath.startsWith(subItem.url + "/"),
         );
-        if (hasActiveSubItem) {
-          expanded.add(item.title);
+        // Only expand if it has an active sub-item AND is not already expanded
+        if (hasActiveSubItem && !expandedItems.has(item.title)) {
+          expandItem(item.title);
         }
       }
     });
-    setExpandedItems(expanded);
-  }, [currentPath, menuItems, setExpandedItems]);
+  }, [currentPath, menuItems]);
 }
 
 /**
@@ -351,6 +351,7 @@ const CollapsibleMenuItem = memo(function CollapsibleMenuItem({
               <item.icon className="shrink-0 size-4" />
               <span className={`flex-1 ${textAlign}`}>{item.title}</span>
               <motion.div
+                initial={false}
                 animate={{ rotate: isExpanded ? 90 : 0 }}
                 transition={MOTION_CHEVRON}
                 className={`shrink-0 ${isRTL ? "rotate-180" : ""}`}
