@@ -114,7 +114,7 @@ tasks:
     cmds:
       - docker-compose up -d postgres
       - echo "⏳ Waiting for database to be ready..."
-      - sleep 5
+      - powershell -Command "Start-Sleep -Seconds 1"
       - docker-compose exec postgres pg_isready -U meditrack -d meditrack || echo "⚠️  Database not ready yet, please wait..."
 
   docker:db:stop:
@@ -144,7 +144,7 @@ tasks:
         prompt: "⚠️  This will DELETE ALL DATA. Continue?"
       - docker-compose up -d postgres
       - echo "⏳ Waiting for database to be ready..."
-      - sleep 5
+      - powershell -Command "Start-Sleep -Seconds 5"
 
   # ─────────────────────────────────────────────────────────────────────────
   #  pgAdmin
@@ -213,7 +213,7 @@ tasks:
     cmds:
       - task: docker:db:start
       - echo "⏳ Waiting for database to be fully ready..."
-      - sleep 3
+      - powershell -Command "Start-Sleep -Seconds 3"
       - task: db:check
       - task: db:build
       - task: db:migrate
@@ -223,7 +223,7 @@ tasks:
     cmds:
       - task: docker:db:reset
       - echo "⏳ Waiting for database to be fully ready..."
-      - sleep 3
+      - powershell -Command "Start-Sleep -Seconds 3"
       - task: db:check
       - task: db:build
       - task: db:migrate:fresh
